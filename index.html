@@ -329,14 +329,15 @@ main>section,main>div{position:relative;z-index:3}
 
 .interlude__pins{position:absolute;left:0;right:0;top:-6%;height:112%;z-index:3;pointer-events:none;will-change:transform}
 /* hotspots in the page's own language: a registration mark and a squared plate with a numbered tag chip */
-.interlude__pins{counter-reset:pin}
-.pin{position:absolute;left:0;top:0;display:flex;align-items:center;gap:12px;transform:translate(-7px,-50%);color:var(--straw);counter-increment:pin}
+.pin{position:absolute;left:0;top:0;display:flex;align-items:center;gap:12px;transform:translate(-7px,-50%);color:var(--straw)}
 .pin.l{flex-direction:row-reverse;transform:translate(calc(-100% + 7px),-50%)}
 .pin i{position:relative;flex:none;width:14px;height:14px;border:1px solid var(--straw);opacity:0;scale:.6;filter:blur(3px);transition:opacity .35s var(--ease-out),scale .45s var(--ease-out),filter .35s var(--ease-out)}
 .pin i::after{content:"";position:absolute;left:50%;top:50%;width:4px;height:4px;margin:-2px 0 0 -2px;background:var(--ember)}
 .pin.on i{opacity:1;scale:1;filter:blur(0px)}
 .pin>span{display:flex;flex-direction:column;gap:5px;padding:10px 12px 11px;border-radius:2px;background:rgba(15,13,10,.86);box-shadow:inset 0 0 0 1px rgba(241,230,200,.14);max-width:min(250px,44vw);opacity:0;filter:blur(6px);transition:opacity .4s var(--ease-out),filter .45s var(--ease-out)}
-.pin>span::before{content:counter(pin,decimal-leading-zero);align-self:flex-start;font-family:var(--f-mono);font-size:10px;font-weight:500;letter-spacing:.06em;color:var(--coal);background:var(--straw);padding:2px 5px;border-radius:2px;line-height:1.2}
+.pin>span::before{content:attr(data-n);align-self:flex-start;font-family:var(--f-mono);font-size:10px;font-weight:500;letter-spacing:.06em;color:var(--coal);background:var(--straw);padding:2px 5px;border-radius:2px;line-height:1.2}
+.pin.up{align-items:flex-end;transform:translate(-7px,calc(-100% + 7px))}
+.pin.l.up{transform:translate(calc(-100% + 7px),calc(-100% + 7px))}
 .pin.l>span{text-align:right}.pin.l>span::before{align-self:flex-end}
 .pin.on>span{opacity:1;filter:blur(0px);transition-delay:.1s}
 .pin b{font-family:var(--f-display);font-weight:400;font-size:18px;letter-spacing:-.015em;line-height:1.1}
@@ -724,11 +725,11 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
     <div class="interlude__card" id="interCard">
       <img src="img/harvesters.jpg" alt="Pieter Bruegel the Elder, The Harvesters, 1565: peasants cutting and binding wheat, others resting under a pear tree" id="interImg">
       <div class="interlude__pins" id="pins" aria-hidden="true">
-        <span class="pin" data-u=".215" data-v=".745"><i></i><span><b>The reapers</b><em>Dawn to dusk, by hand</em></span></span>
-        <span class="pin" data-u=".555" data-v=".86"><i></i><span><b>Asleep at noon</b><em>The August day is twelve hours long</em></span></span>
-        <span class="pin l" data-u=".725" data-v=".29"><i></i><span><b>The church</b><em>One tenth of every harvest</em></span></span>
-        <span class="pin l" data-u=".77" data-v=".8"><i></i><span><b>Lunch</b><em>Bread, porridge, a few pears</em></span></span>
-        <span class="pin l" data-u=".875" data-v=".63"><i></i><span><b>The sheaves</b><em>Stacked, counted, carted off</em></span></span>
+        <span class="pin" data-u=".215" data-v=".745"><i></i><span data-n="01"><b>The reapers</b><em>Dawn to dusk, by hand</em></span></span>
+        <span class="pin" data-u=".56" data-v=".8"><i></i><span data-n="02"><b>Asleep at noon</b><em>The August day is twelve hours long</em></span></span>
+        <span class="pin l" data-u=".725" data-v=".29"><i></i><span data-n="03"><b>The church</b><em>One tenth of every harvest</em></span></span>
+        <span class="pin l" data-u=".77" data-v=".8"><i></i><span data-n="04"><b>Lunch</b><em>Bread, porridge, a few pears</em></span></span>
+        <span class="pin l" data-u=".875" data-v=".63"><i></i><span data-n="05"><b>The sheaves</b><em>Stacked, counted, carted off</em></span></span>
       </div>
       <ul class="sr-only"><li>The reapers: dawn to dusk, by hand.</li><li>The sheaves: stacked, counted, carted off.</li><li>The church: one tenth of every harvest.</li><li>Lunch: bread, porridge, a few pears.</li><li>Asleep at noon: the August day is twelve hours long.</li></ul>
       <div class="interlude__words" role="img" aria-label="More grain, more toil, no way back."><span class="iw" aria-hidden="true">More <em>grain,</em></span><span class="iw" aria-hidden="true">more <em>toil,</em></span><span class="iw" aria-hidden="true">no way <em>back.</em></span></div>
@@ -1717,11 +1718,13 @@ const interCard = $('#interCard'), interImg = $('#interImg'), iwords = $$('.iw')
 const PAINT = { A: 'PAINT_A', B: 'PAINT_B', shape: 3, den: 1 };
 const pinsBox = $('#pins'), pins = $$('#pins .pin'), PINU = pins.map(p => +p.dataset.u);
 // the eye travels across the painting left to right, at a steady pace, and stays on the right as it dissolves
-const interFocus = pr => { const k = map(pr, .04, .34); return lerp(PINU[0] - .07, PINU[PINU.length - 1] + .05, k * .7 + easeIO(k) * .3); };
+// the eye moves left to right and stops on each hotspot: a short travel, then a long hold on that detail
+const interFocus = pr => { const n = PINU.length, k = map(pr, .02, .36) * n, i = Math.min(n - 1, Math.floor(k)), l = k - i;
+  return lerp(i ? PINU[i - 1] : PINU[0] - .07, PINU[i], easeIO(map(l, 0, .35))); };
 let interPanPx = 0;
 let pinPan = .5;
 function layoutPins() { const W = pinsBox.offsetWidth, H = pinsBox.offsetHeight, iw = interImg.naturalWidth || 3200, ih = interImg.naturalHeight || 2359, s = Math.max(W / iw, H / ih), ox = (W - iw * s) * pinPan, oy = (H - ih * s) / 2, cw = interCard.clientWidth, chh = interCard.clientHeight, top = pinsBox.offsetTop;
-  pins.forEach(p => { const x = ox + p.dataset.u * iw * s, y = oy + p.dataset.v * ih * s; p.style.left = x.toFixed(1) + 'px'; p.style.top = y.toFixed(1) + 'px'; p.classList.toggle('l', x > cw * .55); p.hidden = x < 28 || x > cw - 28 || top + y < 96 || top + y > chh - 120; }); }
+  pins.forEach(p => { const x = ox + p.dataset.u * iw * s, y = oy + p.dataset.v * ih * s; p.style.left = x.toFixed(1) + 'px'; p.style.top = y.toFixed(1) + 'px'; p.classList.toggle('l', x > cw * .55); p.classList.toggle('up', top + y > chh * .62); p.hidden = x < 28 || x > cw - 28 || top + y < 96 || top + y > chh - 24; }); }
 new ResizeObserver(layoutPins).observe(pinsBox); interImg.addEventListener('load', layoutPins);
 { const ei = new Image(); ei.onload = () => { const go = () => { if (!F.EAR_LAND) return setTimeout(go, 150); try { buildEarPhoto(ei); } catch (e) { console.warn(e); } }; go(); }; ei.src = 'img/wheat-ear.jpg'; }
 (interImg.complete && interImg.naturalWidth ? Promise.resolve() : new Promise(r => interImg.addEventListener('load', r, { once: true }))).then(() => { try { buildPaint(interImg); } catch (e) { console.warn(e); } });
