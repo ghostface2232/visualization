@@ -163,6 +163,7 @@ main>section,main>div{position:relative;z-index:3}
 .anno i{display:block;width:5px;height:5px;border-radius:50%;border:1px solid currentColor;flex:none}
 .anno b{display:block;width:18px;height:1px;background:currentColor;opacity:.5;flex:none}
 .anno.l{flex-direction:row-reverse}
+.anno.bare i,.anno.bare b{display:none}
 .anno.hi{color:#ffd88a}
 .anno.box span{background:var(--straw);color:var(--coal);padding:2px 6px;border-radius:2px}
 .anno.big{font-family:var(--f-display);font-size:17px;letter-spacing:-.01em;text-transform:none;color:var(--straw)}
@@ -1363,10 +1364,10 @@ function buildLabels() {
     ...[140, 160, 180].map(t => ({ el: anno(String(t), 'l'), pos: () => B.tick(t), a: () => .7 })), { el: anno('Men'), pos: () => [B.mX, B.G - .2, 0], a: () => .8 }, { el: anno('Women'), pos: () => [B.wX, B.G - .2, 0], a: () => .8 },
     { el: anno('Ice Age outline', 'hi'), pos: () => B.top(B.mX - .62, 175), a: l => map(l, .5, .7) }];
   { const top = (c, r) => () => [c()[0] - r() * .62, c()[1] + r() + .08, 0], bandC = () => arenaLayout.band, bandR = () => arenaLayout.rb, vilC = () => arenaLayout.vil, vilR = () => arenaLayout.rv;
-  LBL[2] = [{ el: anno('Forager band · 30', 'big'), pos: top(bandC, bandR), a: () => 1, dy: -26 },
-    { el: anno('Infected 0 / 30', 'box'), pos: top(bandC, bandR), a: () => 1, text: () => `Infected ${AG.counts()[0]} / 30` },
-    { el: anno('Farming village · 360 + livestock', 'big'), pos: top(vilC, vilR), a: () => 1, dy: -26 },
-    { el: anno('Infected 0 / 360', 'box'), pos: top(vilC, vilR), a: () => 1, text: () => `Infected ${AG.counts()[1]} / 360` }]; }
+  LBL[2] = [{ el: anno('Forager band · 30', 'big bare'), pos: top(bandC, bandR), a: () => 1, dy: -26 },
+    { el: anno('Infected 0 / 30', 'box bare'), pos: top(bandC, bandR), a: () => 1, text: () => `Infected ${AG.counts()[0]} / 30` },
+    { el: anno('Farming village · 360 + livestock', 'big bare'), pos: top(vilC, vilR), a: () => 1, dy: -26 },
+    { el: anno('Infected 0 / 360', 'box bare'), pos: top(vilC, vilR), a: () => 1, text: () => `Infected ${AG.counts()[1]} / 360` }]; }
   const foods = ['Acorns', 'Wild barley', 'Pistachios', 'Gazelle', 'Figs', 'Lentils', 'River fish', 'Mushrooms', 'Wild honey', 'Tubers', 'Shellfish', 'Almonds', 'Locusts', 'Grass seed'];
   LBL[3] = [...foods.map((f, k) => ({ el: anno(f), pos: () => ANCH.diet.species[k], a: l => 1 - map(l, .05, .25), rot: true })),
     ...['Rice · ~20%', 'Wheat · ~20%', 'Maize · ~20%'].map((t, k) => ({ el: anno(t, 'big hi'), pos: () => ANCH.diet.groups[k], a: l => map(l, .7, .88), rot: true })),
@@ -1649,7 +1650,7 @@ let cardRad = parseFloat(getComputedStyle(heroCard).borderRadius) || 20;
 const setText = (el, v) => { if (el._t !== v) { el._t = v; el.textContent = v; } };
 let curKey = '', simStarted = false, vertical = innerWidth < 900;
 // the outbreak arena stacks vertically on phones and can use more of the card's width there
-const chScale = (st, box) => vertical && st && st.A === 'ARENA' ? Math.min(box.w / 3.9, box.h / 5.9) : Math.min(box.w / 5.8, box.h / 4.8);
+const chScale = (st, box) => vertical && st && st.A === 'ARENA' ? Math.min(box.w / 3.9, box.h / 6.3) : Math.min(box.w / 5.8, box.h / 4.8);
 function cardBox(r) { const vis = 2 * pCam.position.z * Math.tan(pCam.fov * Math.PI / 360), visW = vis * pCam.aspect; return { cx: ((r.left + r.width / 2) / innerWidth - .5) * visW, cy: (.5 - (r.top + r.height / 2) / VH) * vis, w: r.width / innerWidth * visW, h: r.height / innerHeight * vis }; }
 function setAttrs(prev, cur) { const key = prev.B + '|' + cur.A + '|' + cur.B; if (key === curKey) return; curKey = key; pGeo.setAttribute('pPrev', F[prev.B].p); pGeo.setAttribute('cPrev', F[prev.B].c); pGeo.setAttribute('pA', F[cur.A].p); pGeo.setAttribute('cA', F[cur.A].c); pGeo.setAttribute('pB', F[cur.B].p); pGeo.setAttribute('cB', F[cur.B].c); }
 const rotFor = (s, t, l) => s.rot === 'sway' ? Math.sin(t * .22) * .32 : s.rot === 'spin' ? t * .1 + l * 2.2 : 0;
@@ -1743,7 +1744,7 @@ function frame() {
       tV.set(pos[0] * sc_ + box.cx, pos[1] * sc_ + box.cy, pos[2] * sc_).project(pCam);
       const sx = (tV.x * .5 + .5) * vw - active.r.left, sy = (-tV.y * .5 + .5) * vh - active.r.top;
       if (L.text) { const tx = L.text(local); if (L.tx !== tx) { L.tx = tx; L.el.lastChild.textContent = tx; L.w = 0; } }
-      if (!L.w) L.w = L.el.offsetWidth; const ins = 16, lw = L.w; let lx = L.el.classList.contains('l') ? sx - lw + 3 : sx - 3; lx = Math.min(Math.max(lx, ins), active.r.width - lw - ins); L.el.style.transform = `translate(${lx}px,${sy - 6 + (L.dy || 0)}px)`; L.el.style.opacity = (L.a(local) * map(morph, .5, 1)).toFixed(3); L.vis = true;
+      if (!L.w) L.w = L.el.offsetWidth; const ins = 16, lw = L.w; let lx = L.el.classList.contains('l') ? sx - lw + 3 : sx - 3; lx = Math.min(Math.max(lx, ins), active.r.width - lw - ins); L.el.style.transform = `translate(${lx}px,${Math.max(ins, sy - 6 + (L.dy || 0))}px)`; L.el.style.opacity = (L.a(local) * map(morph, .5, 1)).toFixed(3); L.vis = true;
     }));
   } else { AG.m.material.uniforms.uAlpha.value = 0; grat.material.opacity = 0; }
 
