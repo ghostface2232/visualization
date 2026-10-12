@@ -192,7 +192,7 @@ main>section,main>div{position:relative;z-index:3}
 
 /* ---------- THESIS ---------- */
 .thesis{position:relative;z-index:3;background:var(--paper)}
-.torn{position:absolute;left:0;top:calc(1px - var(--torn-h));display:block;width:100%;height:var(--torn-h);image-rendering:pixelated;pointer-events:none;--torn-h:150px}
+.torn{position:absolute;left:0;top:calc(1px - var(--torn-h));display:block;width:100%;height:var(--torn-h);pointer-events:none;--torn-h:150px}
 @media (max-width:700px){.torn{--torn-h:96px}}
 .thesis__stage{height:100svh;display:flex;flex-direction:column;justify-content:center;gap:clamp(40px,8vh,100px);padding:0 var(--gutter)}
 .fill{position:relative;font-family:var(--f-display);font-size:clamp(30px,4.4vw,74px);letter-spacing:-.035em;line-height:1.14;text-indent:clamp(90px,17vw,300px);max-width:min(1400px,92%)}
@@ -1116,7 +1116,7 @@ function layoutTitle() {
   const baseLast = (padT + asc + (lines.length - 1) * lh) * k, top = Math.max(vh * .15, horizonY + fsx * (cv < 700 ? -.75 : .16) - baseLast), left = (cv - sw) / 2;
   const D = 64, cam = new THREE.PerspectiveCamera(fieldCam.fov, vw / vh, .05, 1500); cam.position.set(HERO.px, HERO.py, HERO.pz); cam.lookAt(HERO.tx, HERO.ty, HERO.tz); cam.updateMatrixWorld();
   const hh = D * Math.tan(cam.fov * Math.PI / 360), hw = hh * cam.aspect, cxN = ((left + sw / 2) / vw) * 2 - 1, cyN = 1 - ((top + sh / 2) / vh) * 2;
-  title.mesh.position.copy(new THREE.Vector3(cxN * hw, cyN * hh, -D).applyMatrix4(cam.matrixWorld)); title.mesh.quaternion.copy(cam.quaternion); title.mesh.scale.set(sw / vw * 2 * hw, sh / vh * 2 * hh, 1);
+  title.local = new THREE.Vector3(cxN * hw, cyN * hh, -D); title.mesh.position.copy(title.local.clone().applyMatrix4(cam.matrixWorld)); title.mesh.quaternion.copy(cam.quaternion); title.mesh.scale.set(sw / vw * 2 * hw, sh / vh * 2 * hh, 1);
 }
 const CLOSE = { px: .32, py: .95, pz: 1.5, tx: 0, ty: .95, tz: 0 }, HIGH = { px: 0, py: 24, pz: 42, tx: 0, ty: 0, tz: -30 };
 const fcam = { ...HERO }, look = new THREE.Vector3(), par = { x: 0, y: 0 };
@@ -1569,15 +1569,16 @@ lb.addEventListener('click', e => { if (e.target === lb) closeLB(); });
 addEventListener('keydown', e => { if (e.key === 'Escape') closeLB(); });
 // grunge edge: a coarse noise field thresholded against height; as the page covers the hero the paper eats upward through it in specks and clumps
 const torn = (function () {
-  const cv = $('#torn'), ctx = cv.getContext('2d'), CELL = 2, col = [235, 229, 217], st = { cv, ctx, W: 0, H: 0, N: null, img: null, key: '' };
+  const cv = $('#torn'), ctx = cv.getContext('2d'), st = { cv, ctx, W: 0, H: 0, N: null, img: null, key: '' };
   const hs = (x, y) => { const h = Math.sin(x * 127.1 + y * 311.7) * 43758.5453; return h - Math.floor(h); };
   const vn = (x, y) => { const i = Math.floor(x), j = Math.floor(y), fx = x - i, fy = y - j, ux = fx * fx * (3 - 2 * fx), uy = fy * fy * (3 - 2 * fy);
     return lerp(lerp(hs(i, j), hs(i + 1, j), ux), lerp(hs(i, j + 1), hs(i + 1, j + 1), ux), uy); };
-  st.build = () => { const r = cv.getBoundingClientRect(); if (!r.width) return; const W = Math.ceil(r.width / CELL), H = Math.ceil(r.height / CELL); if (W === st.W && H === st.H) return;
-    st.W = W; st.H = H; cv.width = W; cv.height = H; st.img = ctx.createImageData(W, H); const N = st.N = new Float32Array(W * H);
-    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
-      const big = vn(x / 46, y / 16) * .45 + vn(x / 19 + 7.3, y / 8 + 1.1) * .25, fine = vn(x / 5 + 3.1, y / 3.2 + 9.4) * .17 + hs(x, y) * .13;
-      N[y * W + x] = big + fine; }
+  st.build = () => { const r = cv.getBoundingClientRect(); if (!r.width) return;
+    // one sample per device pixel (capped), so the grit stays fine on high-density screens
+    const cell = Math.max(1 / Math.min(devicePixelRatio || 1, 2), Math.sqrt(r.width * r.height / 420000)), W = Math.ceil(r.width / cell), H = Math.ceil(r.height / cell);
+    if (W === st.W && H === st.H) return; st.W = W; st.H = H; cv.width = W; cv.height = H; st.img = ctx.createImageData(W, H); const N = st.N = new Float32Array(W * H);
+    for (let y = 0; y < H; y++) { const py = y * cell; for (let x = 0; x < W; x++) { const px = x * cell;
+      N[y * W + x] = vn(px / 92, py / 32) * .42 + vn(px / 38 + 7.3, py / 16 + 1.1) * .24 + vn(px / 11 + 3.1, py / 7 + 9.4) * .16 + vn(px / 3.2 + 5.7, py / 2.6 + 2.2) * .1 + hs(Math.floor(px * 1.5), Math.floor(py * 1.5)) * .08; } }
     st.key = ''; };
   new ResizeObserver(() => { st.build(); st.key = ''; }).observe(cv);
   return st; })();
@@ -1672,7 +1673,9 @@ function frame() {
   else { const m = map(rP, .43, .8), k = easeIO(m), kb = easeO(m); setCam(CLOSE, HIGH, k); fcam.pz = lerp(CLOSE.pz, HIGH.pz, kb); fcam.px = lerp(CLOSE.px, HIGH.px, kb);
     FU.uHide.value = 0; FU.uRadius.value = 95 * Math.pow(map(rP, .45, .8), 2); FU.uFogNear.value = lerp(6, 26, k); FU.uFogFar.value = lerp(42, 170, k); title.mat.uniforms.uAlpha.value = 0; }
   par.x = lerp(par.x, S.mx, .035); par.y = lerp(par.y, S.my, .035); const hi = clamp(fcam.py / 6);
-  fieldCam.position.set(fcam.px + par.x * (.5 + hi * 3), fcam.py - par.y * (.16 + hi * 2), fcam.pz); look.set(fcam.tx + par.x * .6, fcam.ty, fcam.tz); fieldCam.lookAt(look); sky.position.copy(fieldCam.position);
+  fieldCam.position.set(fcam.px + par.x * (.5 + hi * 3), fcam.py - par.y * (.16 + hi * 2), fcam.pz); look.set(fcam.tx + par.x * .6, fcam.ty, fcam.tz); fieldCam.lookAt(look); fieldCam.updateMatrixWorld();
+  if (title.local && title.mat.uniforms.uAlpha.value > 0) { title.mesh.position.copy(title.local).applyMatrix4(fieldCam.matrixWorld); title.mesh.quaternion.copy(fieldCam.quaternion); }
+  sky.position.copy(fieldCam.position);
   FU.uTime.value = t; FU.uMouseStr.value = lerp(FU.uMouseStr.value, now - S.moved < 1300 ? 1 : 0, .06);
   ndc.set(S.px / vw * 2 - 1, -(S.py / vh) * 2 + 1);
   if (W.field > .05) { ray.setFromCamera(ndc, fieldCam); if (ray.ray.intersectPlane(groundPlane, hit)) FU.uMouse.value.set(hit.x, hit.z); }
