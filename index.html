@@ -995,7 +995,7 @@ const FU = {
   uGust: { value: new THREE.Vector3(0, 0, -999) }, uCamPos: { value: fieldCam.position }, uWindDir: { value: new THREE.Vector2(.92, .38).normalize() },
   uHorizon: { value: new THREE.Color('#f08a30') }, uZenith: { value: new THREE.Color('#2a1510') }, uRose: { value: new THREE.Color('#d0582a') },
   uSunDir: { value: new THREE.Vector3(.1, .05, -1).normalize() }, uSunCol: { value: new THREE.Color('#ff8f2e') },
-  uFogNear: { value: 8 }, uFogFar: { value: 70 }, uExposure: { value: 1 }, uNight: { value: 0 }
+  uFogNear: { value: 8 }, uFogFar: { value: 70 }, uExposure: { value: 1 }, uNight: { value: 0 }, uDim: { value: 0 }
 };
 function wheatAtlas() {
   const c = document.createElement('canvas'); c.width = 256; c.height = 1024; const x = c.getContext('2d');
@@ -1017,7 +1017,7 @@ const ATLAS = wheatAtlas();
 const sky = new THREE.Mesh(new THREE.SphereGeometry(900, 48, 24), new THREE.ShaderMaterial({
   uniforms: FU, side: THREE.BackSide, depthWrite: false,
   vertexShader: `varying vec3 vDir; void main(){ vDir = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
-  fragmentShader: `uniform vec3 uHorizon,uZenith,uRose,uSunDir,uSunCol; uniform float uTime,uExposure,uNight; varying vec3 vDir;
+  fragmentShader: `uniform vec3 uHorizon,uZenith,uRose,uSunDir,uSunCol; uniform float uTime,uExposure,uNight,uDim; varying vec3 vDir;
     float h2(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
     float n2(vec2 p){ vec2 i = floor(p), f = fract(p); f = f*f*(3.-2.*f); return mix(mix(h2(i), h2(i+vec2(1,0)), f.x), mix(h2(i+vec2(0,1)), h2(i+vec2(1,1)), f.x), f.y); }
     float fbm(vec2 p){ float fw = length(fwidth(p)) * 1.5, a = .5, s = 0.; for (int i = 0; i < 5; i++){ s += a * mix(n2(p), .5, smoothstep(.2, .7, fw)); p = p * 2.03 + 11.7; fw *= 2.03; a *= .5; } return s; }
@@ -1033,7 +1033,7 @@ const sky = new THREE.Mesh(new THREE.SphereGeometry(900, 48, 24), new THREE.Shad
         col = mix(col, mix(uRose * 0.75 + uZenith * 0.3, vec3(1.0, 0.6, 0.35), pow(s, 2.0) * 0.8 + 0.15), c * 0.58); }
       col += mix(vec3(1.0, 0.66, 0.32), vec3(0.9, 0.93, 1.0), uNight) * smoothstep(0.9991, 0.99975, s) * mix(0.85, 1.1, uNight);
       col = mix(col, uHorizon * 0.55, smoothstep(0.0, -0.12, y));
-      gl_FragColor = vec4(min(col, vec3(1.7)) * uExposure, 1.0); }`
+      gl_FragColor = vec4(min(col, vec3(1.7)) * uExposure * mix(1.0, 0.55, uDim), 1.0); }`
 }));
 sky.renderOrder = -2; fieldScene.add(sky);
 (function hills() {
@@ -1043,14 +1043,14 @@ sky.renderOrder = -2; fieldScene.add(sky);
   const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('vv', new THREE.Float32BufferAttribute(vv, 1)); g.setIndex(idx);
   fieldScene.add(new THREE.Mesh(g, new THREE.ShaderMaterial({ uniforms: FU, side: THREE.DoubleSide,
     vertexShader: `attribute float vv; varying float vV; varying vec3 vW; void main(){ vV = vv; vec4 w = modelMatrix * vec4(position,1.0); vW = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }`,
-    fragmentShader: `uniform vec3 uHorizon,uZenith,uSunDir,uSunCol; uniform float uExposure; varying float vV; varying vec3 vW;
+    fragmentShader: `uniform vec3 uHorizon,uZenith,uSunDir,uSunCol; uniform float uExposure,uDim; varying float vV; varying vec3 vW;
       void main(){ vec3 d = normalize(vW); float s = pow(max(dot(normalize(vec3(d.x,0.,d.z)), normalize(vec3(uSunDir.x,0.,uSunDir.z))),0.),12.);
-        gl_FragColor = vec4((mix(mix(uHorizon, uZenith, 0.55) * 0.7, uHorizon * 0.85, 1.0 - vV) + uSunCol * s * 0.12 * vV) * uExposure, 1.0); }` })));
+        gl_FragColor = vec4((mix(mix(uHorizon, uZenith, 0.55) * 0.7, uHorizon * 0.85, 1.0 - vV) + uSunCol * s * 0.12 * vV) * uExposure * mix(1.0, 0.55, uDim), 1.0); }` })));
 })();
 const ground = new THREE.Mesh(new THREE.PlaneGeometry(1400, 1400), new THREE.ShaderMaterial({ uniforms: FU,
   vertexShader: `varying vec3 vW; void main(){ vec4 w = modelMatrix * vec4(position,1.0); vW = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }`,
-  fragmentShader: `uniform vec3 uHorizon,uZenith,uCamPos; uniform float uFogNear,uFogFar,uExposure; varying vec3 vW;
-    void main(){ float d = length(vW - uCamPos); vec3 col = mix(vec3(0.06, 0.035, 0.02), mix(uHorizon, uZenith, 0.35) * 0.72, smoothstep(uFogNear, uFogFar * 2.2, d)); gl_FragColor = vec4(col * uExposure, 1.0); }` }));
+  fragmentShader: `uniform vec3 uHorizon,uZenith,uCamPos; uniform float uFogNear,uFogFar,uExposure,uDim; varying vec3 vW;
+    void main(){ float d = length(vW - uCamPos); vec3 col = mix(vec3(0.06, 0.035, 0.02), mix(uHorizon, uZenith, 0.35) * 0.72, smoothstep(uFogNear, uFogFar * 2.2, d)); gl_FragColor = vec4(col * uExposure * mix(1.0, 0.5, uDim), 1.0); }` }));
 ground.rotation.x = -Math.PI / 2; fieldScene.add(ground);
 const WN = small ? 34000 : 76000;
 (function wheat() {
@@ -1799,7 +1799,7 @@ function frame() {
   finalPass.uniforms.uRays.value = (tV.z < 1 && Math.abs(tV.x) < 1.6 && Math.abs(tV.y) < 1.6) ? W.field * .28 : 0; finalPass.uniforms.uTime.value = t;
   const pm = W.particles * (1 - W.field); bloom.strength = lerp(.22, .5, pm); bloom.radius = lerp(.3, .45, pm); bloom.threshold = lerp(.96, .82, pm);
   finalPass.uniforms.uVig.value = active && (active.type === 'chapter' || active.type === 'painting') ? .45 : 1;
-  finalPass.uniforms.uDot.value = !active ? 0 : active.type === 'hero' ? 1 : active.type === 'reveal' ? W.field : 0; finalPass.uniforms.uCell.value = vw < 700 ? 3.1 : 4.2; finalPass.uniforms.uLift.value = active && active.type === 'reveal' ? W.field : 0;
+  finalPass.uniforms.uDot.value = !active ? 0 : active.type === 'hero' ? 1 : active.type === 'reveal' ? W.field : 0; finalPass.uniforms.uCell.value = vw < 700 ? 3.1 : 4.2; finalPass.uniforms.uLift.value = active && active.type === 'reveal' ? W.field : 0; FU.uDim.value = active && active.type === 'reveal' ? 1 : 0;
 
   // editorial motion: chapter media grow-in, cards grow, interlude
   if (!reduce) windows.forEach(g => { const r = g.getBoundingClientRect(); if (r.top > vh || r.bottom < 0) return; const e = easeIO(clamp((vh - r.top) / (vh * .9))), iy = (1 - e) * 8, ix = (1 - e) * (vw < 900 ? 10 : 22), rr = lerp(40, parseFloat(getComputedStyle(g).borderRadius) || 24, e); g.style.clipPath = e >= 1 ? '' : `inset(${iy.toFixed(2)}% ${ix.toFixed(2)}% ${iy.toFixed(2)}% ${ix.toFixed(2)}% round ${rr.toFixed(1)}px)`; });
