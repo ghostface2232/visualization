@@ -191,8 +191,14 @@ main>section,main>div{position:relative;z-index:3}
 .scroll-pill svg{width:14px;height:14px;animation:bob 1.8s infinite var(--ease-swift)}
 @keyframes bob{0%,100%{transform:translateY(-2px)}50%{transform:translateY(2px)}}
 
+.skytoggle{position:absolute;left:var(--inset);bottom:var(--inset);z-index:3;display:flex;gap:2px;padding:3px;border-radius:999px;background:rgba(12,10,8,.42);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+.skytoggle button{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:rgba(241,230,200,.75);padding:7px 12px;border-radius:999px;transition:background-color .35s var(--ease-out),color .35s}
+.skytoggle button.on{background:var(--straw);color:var(--coal)}
+html.night .eyebrow{color:var(--straw)}
+.eyebrow{transition:color 1.2s var(--ease-out)}
 /* ---------- THESIS ---------- */
 .thesis{position:relative;z-index:3;background:var(--paper)}
+.thesis::before{content:"";position:absolute;left:0;right:0;top:-30px;height:32px;background:var(--paper);-webkit-mask:var(--torn) center/100% 100% no-repeat;mask:var(--torn) center/100% 100% no-repeat;pointer-events:none}
 .thesis__stage{height:100svh;display:flex;flex-direction:column;justify-content:center;gap:clamp(40px,8vh,100px);padding:0 var(--gutter)}
 .fill{position:relative;font-family:var(--f-display);font-size:clamp(30px,4.4vw,74px);letter-spacing:-.035em;line-height:1.06;text-indent:clamp(90px,17vw,300px);max-width:min(1400px,92%)}
 .fill::before{content:"";position:absolute;left:clamp(28px,6vw,110px);top:.36em;width:clamp(12px,1.3vw,22px);height:clamp(12px,1.3vw,22px);border-radius:50%;background:var(--ember)}
@@ -308,17 +314,18 @@ main>section,main>div{position:relative;z-index:3}
 .sim-reset.on{opacity:1;pointer-events:auto}
 
 /* ---------- INTERLUDE ---------- */
-.interlude{height:240vh}
+.interlude{height:340vh}
 .interlude__sticky{position:sticky;top:0;height:100svh;padding:10px}
-.interlude__card{position:relative;height:100%;border-radius:var(--radius);overflow:hidden;background:var(--coal);will-change:transform}
+.interlude__card{position:relative;height:100%;border-radius:var(--radius);overflow:hidden;background:transparent;will-change:transform}
+.interlude__card img{z-index:1}
 .interlude__card img{position:absolute;inset:-6% 0;width:100%;height:112%;object-fit:cover;will-change:transform}
-.interlude__card::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(180deg,rgba(15,12,9,.45),rgba(15,12,9,0) 40%,rgba(15,12,9,.6));box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)}
-.interlude__stack{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(8px,1.6vh,16px)}
-.stackpill{display:inline-block;padding:.18em .6em .24em;border-radius:999px;font-family:var(--f-display);font-size:clamp(44px,8vw,128px);letter-spacing:-.05em;line-height:1;opacity:0;will-change:transform,opacity;box-shadow:0 30px 60px -20px rgba(0,0,0,.5)}
-.stackpill--paper{background:var(--paper-hi);color:var(--ink)}
-.stackpill--ember{background:var(--ember);color:var(--paper-hi)}
-.stackpill--gold{background:var(--pill-gold);color:var(--ink)}
-.interlude__cap{position:absolute;left:var(--inset);bottom:var(--inset);z-index:2;color:rgba(245,241,232,.82);display:flex;gap:16px;flex-wrap:wrap}
+.interlude__card::after{content:"";position:absolute;inset:0;z-index:2;border-radius:inherit;background:linear-gradient(180deg,rgba(15,12,9,.45),rgba(15,12,9,0) 40%,rgba(15,12,9,.6));box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)}
+.interlude__words{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;justify-content:center;gap:.04em;padding:0 var(--inset);pointer-events:none}
+.iw{display:block;font-family:var(--f-display);font-size:clamp(56px,10.5vw,176px);line-height:.88;letter-spacing:-.055em;color:var(--paper-hi);text-shadow:0 12px 60px rgba(0,0,0,.5);opacity:0;will-change:transform,opacity,filter}
+.iw em{font-family:var(--f-latin);font-style:italic;letter-spacing:-.02em;color:var(--pill-gold)}
+.iw:nth-child(1){align-self:flex-start}.iw:nth-child(2){align-self:center}.iw:nth-child(3){align-self:flex-end}
+.interlude__tag{z-index:3}
+.interlude__cap{z-index:3;position:absolute;left:var(--inset);bottom:var(--inset);z-index:2;color:rgba(245,241,232,.82);display:flex;gap:16px;flex-wrap:wrap}
 .interlude__cap .latin{font-size:16px;letter-spacing:0;text-transform:none}
 
 /* ---------- RECORD (timeline) ---------- */
@@ -391,6 +398,15 @@ main>section,main>div{position:relative;z-index:3}
   .plate .spec__frame{height:auto;width:100%}
 }
 
+#exhibits .spec__frame{background:transparent;border-radius:0}
+#exhibits .spec__frame::after{display:none}
+#exhibits .spec__frame img{opacity:0!important}
+#exhibits .meta,#exhibits .display,#exhibits .display em,.hintro__note,.hintro__cue,#exhibits .spec__prop,#exhibits .spec__name{transition:color .9s var(--ease-out)}
+html.theme-dark #exhibits{color:var(--straw)}
+html.theme-dark #exhibits .meta,html.theme-dark .hintro__cue{color:var(--straw)}
+html.theme-dark #exhibits .display em,html.theme-dark .hintro__note,html.theme-dark #exhibits .spec__prop{color:rgba(241,230,200,.55)}
+html.theme-dark #exhibits .spec__idx{color:var(--ember)}
+html.theme-dark .hintro__cue b{color:var(--ember)}
 /* ---------- REVEAL ---------- */
 .reveal__stage{height:100svh;padding:10px}
 .reveal__stage .stage{height:100%}
@@ -467,13 +483,16 @@ main>section,main>div{position:relative;z-index:3}
 .tile::before,.tile::after{content:"";position:absolute;width:7px;height:7px;background:#f2d892;z-index:3}
 .tile::before{left:0;top:0}.tile::after{right:0;bottom:0}
 .tile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform 1.2s var(--ease-out),filter .6s}
-.tile.photo{overflow:hidden;clip-path:inset(0 0 100% 0);transition:clip-path var(--dur-l) var(--ease-swift)}
-.board.is-in .tile.photo{clip-path:inset(0 0 0 0)}
-.board.is-in .t4{transition-delay:.12s}.board.is-in .t5{transition-delay:.24s}.board.is-in .t7{transition-delay:.36s}
+@property --sw{syntax:'<length>';inherits:true;initial-value:0px}
+.tile.photo{overflow:hidden;--sw:0px;transition:--sw 1.6s var(--ease-swift)}
+.tile.photo img{-webkit-mask-image:repeating-linear-gradient(90deg,#000 0 var(--sw),transparent var(--sw) 10px);mask-image:repeating-linear-gradient(90deg,#000 0 var(--sw),transparent var(--sw) 10px)}
+.board.is-in .tile.photo{--sw:10.5px}
+.board.is-in .t4{transition-delay:.15s}.board.is-in .t5{transition-delay:.3s}.board.is-in .t7{transition-delay:.45s}
 .tile.photo img{filter:saturate(.92) contrast(1.04)}
 @media (hover:hover) and (pointer:fine){.tile.photo:hover img{transform:scale(1.05);filter:saturate(1.05) contrast(1.06)}}
 .tile canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
-.tile.dots{background:#14110e}
+.tile.dots{background:transparent;outline:none}
+.tile.dots::before,.tile.dots::after{display:none}
 .tile.aura{overflow:hidden;background:#1a0d06}
 .tile.aura img{filter:url(#duo) blur(26px) saturate(1.4);transform:scale(1.25)}
 .tile.aura .tnote{position:absolute;right:var(--inset-sm);top:var(--inset-sm);color:rgba(241,230,200,.8);z-index:2}
@@ -499,6 +518,19 @@ main>section,main>div{position:relative;z-index:3}
 }
 
 
+/* ---------- Party A notifications ---------- */
+.toasts{position:fixed;left:var(--gutter);bottom:calc(env(safe-area-inset-bottom,0px) + var(--gutter));z-index:130;display:flex;flex-direction:column;gap:10px;width:min(360px,calc(100vw - var(--gutter) * 2));pointer-events:none}
+.toast{display:grid;grid-template-columns:36px minmax(0,1fr);gap:3px 12px;align-items:center;padding:12px 16px 13px 12px;border-radius:18px;background:rgba(24,20,16,.84);-webkit-backdrop-filter:blur(16px) saturate(1.3);backdrop-filter:blur(16px) saturate(1.3);color:var(--straw);box-shadow:0 22px 44px -20px rgba(0,0,0,.65),inset 0 0 0 1px rgba(255,255,255,.08);opacity:0;transform:translateY(18px) scale(.96);transition:transform .55s cubic-bezier(.34,1.56,.64,1),opacity .3s}
+.toast.on{opacity:1;transform:none}
+.toast.off{opacity:0;transform:translateY(-6px) scale(.98);transition:transform .3s var(--ease-out),opacity .25s}
+.toast .av{grid-row:span 2;width:36px;height:36px;border-radius:50%;background:var(--ember);display:grid;place-items:center}
+.toast .av svg{width:13px;height:19px}
+.toast .av path{fill:none;stroke:var(--paper-hi);stroke-width:1.6;stroke-linecap:round}
+.toast .hd{display:flex;justify-content:space-between;gap:12px;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--straw-3)}
+.toast .hd b{font-weight:500;color:var(--straw)}
+.toast p{font-size:14px;line-height:1.38}
+@media (max-width:560px){.toasts{left:16px;right:16px;width:auto}}
+@media (prefers-reduced-motion:reduce){.toast,.toast.off{transform:none!important}}
 /* ---------- section index (wayfinding) ---------- */
 .index{position:fixed;right:var(--gutter);top:50%;transform:translateY(-50%);z-index:110;color:var(--ink);opacity:0;pointer-events:none;transition:color .3s,opacity .5s var(--ease-out)}
 .index.on{opacity:1;pointer-events:auto}
@@ -595,6 +627,7 @@ html.theme-dark .board__note{color:rgba(241,230,200,.55)}
 <div class="progressbar" id="progressBar"></div>
 <div class="grain" aria-hidden="true"></div>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="duo" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values=".33 .33 .33 0 0 .33 .33 .33 0 0 .33 .33 .33 0 0 0 0 0 1 0"/><feComponentTransfer><feFuncR type="table" tableValues=".07 .35 .88 .95 1"/><feFuncG type="table" tableValues=".05 .12 .32 .64 .9"/><feFuncB type="table" tableValues=".04 .05 .1 .25 .7"/></feComponentTransfer></filter></svg>
+<div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="preview" id="preview" aria-hidden="true"><img id="previewImg" alt=""></div>
 
 <header class="hud">
@@ -630,7 +663,7 @@ html.theme-dark .board__note{color:rgba(241,230,200,.55)}
       <h1 class="sr-only">The greatest con in human history</h1>
       <p class="hero__fallback" aria-hidden="true">The greatest con<br>in human history</p>
       <div class="grid-ov" style="opacity:.25"></div>
-      <div class="tag bl"><b>F01</b><span>Field · rendered live</span></div><div class="tag br"><b>S01</b><span>37.6°N · 39.8°E · Karacadağ</span></div>
+      <div class="skytoggle" role="group" aria-label="Sky"><button type="button" class="on" data-sky="0" aria-pressed="true" data-hover>Dusk</button><button type="button" data-sky="1" aria-pressed="false" data-hover>Night</button></div><div class="tag br"><b>S01</b><span>37.6°N · 39.8°E · Karacadağ</span></div>
       <p class="eyebrow mono" id="eyebrow">Case No. 10,000 BC · Unsolved</p>
       <div class="hero__foot">
         <div class="suspect">
@@ -774,7 +807,8 @@ html.theme-dark .board__note{color:rgba(241,230,200,.55)}
   <div class="interlude__sticky">
     <div class="interlude__card" id="interCard">
       <img src="img/harvesters.jpg" alt="Pieter Bruegel the Elder, The Harvesters, 1565: peasants cutting and binding wheat, others resting under a pear tree" id="interImg">
-      <div class="interlude__stack"><span class="stackpill stackpill--paper">More grain</span><span class="stackpill stackpill--ember">More toil</span><span class="stackpill stackpill--gold">No way back</span></div>
+      <div class="interlude__words" role="img" aria-label="More grain, more toil, no way back."><span class="iw" aria-hidden="true">More <em>grain,</em></span><span class="iw" aria-hidden="true">more <em>toil,</em></span><span class="iw" aria-hidden="true">no way <em>back.</em></span></div>
+      <div class="tag tr interlude__tag"><b>P07</b><span id="paintTag">Oil on oak · 119 × 162 cm</span></div>
       <p class="interlude__cap mono"><span class="latin">The Harvesters</span><span>Pieter Bruegel the Elder · 1565</span><span>The Met · CC0</span></p>
     </div>
   </div>
@@ -1086,9 +1120,9 @@ float snoise(vec3 v){ const vec2 C=vec2(1./6.,1./3.); const vec4 D=vec4(0.,.5,1.
 const FU = {
   uTime: { value: 0 }, uRadius: { value: 95 }, uHide: { value: 1 }, uHideR: { value: innerWidth < innerHeight ? 4.6 : 3.2 }, uMouse: { value: new THREE.Vector2(999, 999) }, uMouseStr: { value: 0 },
   uGust: { value: new THREE.Vector3(0, 0, -999) }, uCamPos: { value: fieldCam.position }, uWindDir: { value: new THREE.Vector2(.92, .38).normalize() },
-  uHorizon: { value: new THREE.Color('#e8682c') }, uZenith: { value: new THREE.Color('#1c1630') }, uRose: { value: new THREE.Color('#b8475a') },
-  uSunDir: { value: new THREE.Vector3(.1, .05, -1).normalize() }, uSunCol: { value: new THREE.Color('#ff7a2a') },
-  uFogNear: { value: 8 }, uFogFar: { value: 70 }, uExposure: { value: 1 }
+  uHorizon: { value: new THREE.Color('#f08a30') }, uZenith: { value: new THREE.Color('#2a1510') }, uRose: { value: new THREE.Color('#d0582a') },
+  uSunDir: { value: new THREE.Vector3(.1, .05, -1).normalize() }, uSunCol: { value: new THREE.Color('#ff8f2e') },
+  uFogNear: { value: 8 }, uFogFar: { value: 70 }, uExposure: { value: 1 }, uNight: { value: 0 }
 };
 function wheatAtlas() {
   const c = document.createElement('canvas'); c.width = 256; c.height = 1024; const x = c.getContext('2d');
@@ -1110,7 +1144,7 @@ const ATLAS = wheatAtlas();
 const sky = new THREE.Mesh(new THREE.SphereGeometry(900, 48, 24), new THREE.ShaderMaterial({
   uniforms: FU, side: THREE.BackSide, depthWrite: false,
   vertexShader: `varying vec3 vDir; void main(){ vDir = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
-  fragmentShader: `uniform vec3 uHorizon,uZenith,uRose,uSunDir,uSunCol; uniform float uTime,uExposure; varying vec3 vDir;
+  fragmentShader: `uniform vec3 uHorizon,uZenith,uRose,uSunDir,uSunCol; uniform float uTime,uExposure,uNight; varying vec3 vDir;
     float h2(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
     float n2(vec2 p){ vec2 i = floor(p), f = fract(p); f = f*f*(3.-2.*f); return mix(mix(h2(i), h2(i+vec2(1,0)), f.x), mix(h2(i+vec2(0,1)), h2(i+vec2(1,1)), f.x), f.y); }
     float fbm(vec2 p){ float a = .5, s = 0.; for (int i = 0; i < 5; i++){ s += a * n2(p); p = p * 2.03 + 11.7; a *= .5; } return s; }
@@ -1118,12 +1152,13 @@ const sky = new THREE.Mesh(new THREE.SphereGeometry(900, 48, 24), new THREE.Shad
       float hy = max(y, 0.0);
       vec3 col = mix(uHorizon, uRose, smoothstep(0.0, 0.16, hy));
       col = mix(col, uZenith, smoothstep(0.1, 0.62, hy));
-      col += vec3(1.0, 0.62, 0.25) * 0.28 * exp(-hy * 16.0);
-      col += uSunCol * (pow(s, 4.0) * 0.22 + pow(s, 30.0) * 0.32) + vec3(1.0, 0.55, 0.2) * pow(s, 300.0) * 0.35;
+      col += vec3(1.0, 0.62, 0.25) * 0.28 * exp(-hy * 16.0) * (1.0 - uNight * 0.85);
+      col += uSunCol * (pow(s, 4.0) * 0.22 * (1.0 - uNight * 0.75) + pow(s, 30.0) * 0.32 * (1.0 - uNight * 0.5)) + mix(vec3(1.0, 0.55, 0.2), vec3(0.8, 0.86, 1.0), uNight) * pow(s, 300.0) * 0.35;
+      if (y > 0.0) { vec3 sd = floor(d * 520.0); float hs = fract(sin(dot(sd, vec3(12.9898, 78.233, 37.719))) * 43758.5453); col += vec3(0.9, 0.93, 1.0) * step(0.9972, hs) * smoothstep(0.03, 0.28, y) * uNight * (0.55 + 0.45 * sin(uTime * 2.6 + hs * 60.0)); }
       if (y > 0.0) { vec2 uv = d.xz / (y + 0.08); vec2 q = vec2(uv.x * 0.22, uv.y * 0.9) + vec2(uTime * 0.006, 0.0); float c = fbm(q * 1.4);
         c = smoothstep(0.5, 0.86, c) * smoothstep(0.0, 0.07, y) * (1.0 - smoothstep(0.32, 0.62, y));
         col = mix(col, mix(uRose * 0.75 + uZenith * 0.3, vec3(1.0, 0.6, 0.35), pow(s, 2.0) * 0.8 + 0.15), c * 0.58); }
-      col += vec3(1.0, 0.66, 0.32) * smoothstep(0.99935, 0.9997, s) * 0.85;
+      col += mix(vec3(1.0, 0.66, 0.32), vec3(0.9, 0.93, 1.0), uNight) * smoothstep(0.99935, 0.9997, s) * mix(0.85, 1.1, uNight);
       col = mix(col, uHorizon * 0.55, smoothstep(0.0, -0.12, y));
       gl_FragColor = vec4(min(col, vec3(1.7)) * uExposure, 1.0); }`
 }));
@@ -1205,16 +1240,16 @@ const WN = small ? 34000 : 76000;
 // hero title in the sky: the wheat occludes it
 const title = (function () {
   const cvs = document.createElement('canvas'), ctx = cvs.getContext('2d'), tex = new THREE.CanvasTexture(cvs); tex.colorSpace = THREE.NoColorSpace; tex.anisotropy = 8;
-  const mat = new THREE.ShaderMaterial({ uniforms: { uTex: { value: tex }, uRev: { value: new THREE.Vector4(0, 0, 0, 0) }, uLines: { value: 2 }, uAlpha: { value: 1 }, uHorizon: FU.uHorizon, uExposure: FU.uExposure },
+  const mat = new THREE.ShaderMaterial({ uniforms: { uTex: { value: tex }, uRev: { value: new THREE.Vector4(0, 0, 0, 0) }, uLines: { value: 2 }, uAlpha: { value: 1 }, uHorizon: FU.uHorizon, uExposure: FU.uExposure, uNight: FU.uNight },
     transparent: true, depthWrite: false,
     vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
-    fragmentShader: `uniform sampler2D uTex; uniform vec4 uRev; uniform float uLines,uAlpha,uExposure; uniform vec3 uHorizon; varying vec2 vUv;
+    fragmentShader: `uniform sampler2D uTex; uniform vec4 uRev; uniform float uLines,uAlpha,uExposure,uNight; uniform vec3 uHorizon; varying vec2 vUv;
       void main(){ float yy = 1.0 - vUv.y; float band = min(floor(yy * uLines), uLines - 1.0);
         float r = band < 0.5 ? uRev.x : band < 1.5 ? uRev.y : band < 2.5 ? uRev.z : uRev.w; float e = 1.0 - pow(1.0 - r, 3.0);
         float bh = 1.0 / uLines; float sy = yy - (1.0 - e) * bh * 0.95; if (sy < band * bh) discard;
         vec4 t = texture2D(uTex, vec2(vUv.x, 1.0 - sy)); float a = t.a * uAlpha * smoothstep(0.0, 0.25, e);
         a *= mix(1.0, 0.55, smoothstep(0.5, 1.0, yy));
-        gl_FragColor = vec4(vec3(0.07, 0.05, 0.04) * uExposure, a * min(uExposure * 1.5, 1.0)); }` });
+        gl_FragColor = vec4(mix(vec3(0.07, 0.05, 0.04), vec3(0.96, 0.92, 0.82), uNight) * uExposure, a * min(uExposure * 1.5, 1.0)); }` });
   const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), mat); mesh.renderOrder = 5; fieldScene.add(mesh);
   return { cvs, ctx, tex, mat, mesh };
 })();
@@ -1357,6 +1392,24 @@ function buildFormations(vertical) {
     pts.forEach((p, i) => { const part = p[3] / 255; sp(f, i, (p[0] - 128) * s, (280 - p[1]) * s + .2, gauss() * .05, part > .8 ? 1 : .7); const l = p[2] / 255 * .6 + .5; if (part > .8) sc(f, i, 1.5 * l, 1.02 * l, .45, .16); else sc(f, i, 1.35, .98, .5, .2); });
     commit('EAR', f); }
 }
+let PAINT_ASPECT = 1.356;
+function buildPaint(img) {
+  const aspect = img.naturalWidth / img.naturalHeight; PAINT_ASPECT = aspect;
+  const cols = Math.round(Math.sqrt(N * aspect)), rows = Math.floor(N / cols), H = 4.6, Wd = H * aspect;
+  const c = document.createElement('canvas'); c.width = cols; c.height = rows; const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(img, 0, 0, cols, rows);
+  const d = x.getImageData(0, 0, cols, rows).data, A = newF(), B = newF(); seed = 91;
+  for (let i = 0; i < N; i++) {
+    const cx = i % cols, cy = Math.floor(i / cols);
+    if (cy >= rows) { sp(A, i, 0, 0, -9, 0); sc(A, i, 0, 0, 0, 0); sp(B, i, 0, 0, -9, 0); sc(B, i, 0, 0, 0, 0); continue; }
+    const k = (cy * cols + cx) * 4, r = d[k] / 255, g = d[k + 1] / 255, b = d[k + 2] / 255, L = r * .3 + g * .59 + b * .11;
+    const px = (cx / cols - .5) * Wd, py = (.5 - cy / rows) * H;
+    sp(A, i, px, py, (L - .5) * .25, 1.5); sc(A, i, Math.min(1.25, r * 1.14), Math.min(1.25, g * 1.1), b * 1.04, 1);
+    const gust = .6 + R() * 1.6, lift = (R() - .35) * 1.8;
+    sp(B, i, px + gust * (2.4 + R() * 3.6), py + lift + (R() - .5) * .6, (R() - .5) * 3, .55 + R() * .5);
+    sc(B, i, lerp(r, 1.45, .55), lerp(g, .98, .55), lerp(b, .42, .55), .35 + R() * .3);
+  }
+  commit('PAINT_A', A); commit('PAINT_B', B);
+}
 const pGeo = new THREE.BufferGeometry();
 pGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(N * 3), 3));
 { const idx = new Float32Array(N), rnd = new Float32Array(N * 2); for (let i = 0; i < N; i++) { idx[i] = i / N; rnd[i * 2] = Math.random(); rnd[i * 2 + 1] = Math.random(); } pGeo.setAttribute('aIdx', new THREE.BufferAttribute(idx, 1)); pGeo.setAttribute('aRnd', new THREE.BufferAttribute(rnd, 2)); }
@@ -1380,7 +1433,7 @@ const pMat = new THREE.ShaderMaterial({ uniforms: PU, transparent: true, depthWr
       float m = clamp((uMorph - r * 0.4) / 0.6, 0.0, 1.0); m = m * m * (3.0 - 2.0 * m);
       vec3 p = mix(prev, cur, m); vec4 col = mix(cPrev, cc, m); float sz = mix(pPrev.w, cs, m);
       float tb = sin(3.14159 * m); if (tb > 0.01) { vec3 q = p * 0.45 + vec3(0.0, 0.0, uTime * 0.15); p += vec3(snoise(q), snoise(q + 19.1), snoise(q + 37.7)) * tb * (0.5 + aRnd.y * 0.7) * uXfCur.z; }
-      p.xy += vec2(snoise(p * 0.9 + uTime * 0.12), snoise(p * 0.9 + 11.0 + uTime * 0.12)) * 0.01;
+      p.xy += vec2(snoise(p * 0.9 + uTime * 0.12), snoise(p * 0.9 + 11.0 + uTime * 0.12)) * 0.01 * (1.0 - step(2.5, uShapeCur) * step(uShapeCur, 3.5) * (1.0 - uLocal));
       vec2 dm = p.xy - uMouse.xy; float dl = length(dm); float rep = smoothstep(1.0 * uXfCur.z, 0.0, dl) * uMouseOn;
       p.xy += normalize(dm + 1e-4) * rep * 0.38 * uXfCur.z + vec2(-dm.y, dm.x) * rep * 0.2; p.z += rep * 0.4;
       p.x += snoise(p * 1.4 + uTime) * uVel * 0.04;
@@ -1478,6 +1531,7 @@ const ch = { idx: -1, num: $('#chNum'), title: $('#chTitle'), stat: $('#chStat')
 function setDesc(s) { ch.desc.innerHTML = s.desc.split(/\s+/).map(w => `<span class="cw">${w}</span>`).join(' '); ch.words = $$('.cw', ch.desc); }
 function applyStep(i) {
   if (i === ch.idx) return; const first = ch.idx === -1; ch.idx = i; const s = STEPS[i], tok = ch.tok = (ch.tok || 0) + 1;
+  setTimeout(() => { if (ch.idx === i) notify('step' + i, STEP_TOASTS[i], STEPS[i].year(.5)); }, 700);
   const fill = () => { ch.num.textContent = String(i + 1).padStart(2, '0'); ch.title.textContent = s.title; setDesc(s); ch.src.textContent = s.src; ch.capN.textContent = `FIG. 0${i + 1}`; ch.capT.textContent = s.cap; ch.tagId.textContent = `P0${i + 1}`; ch.tagStep.textContent = `Proviso ${i + 1} of 6`; };
   $('#chapterCard').dataset.cursor = s.interactive ? 'Infect' : 'Exhibit';
   $('#simReset').classList.toggle('on', !!s.interactive); $('#simReset').hidden = !s.interactive;
@@ -1499,6 +1553,10 @@ function cycleSuspects() {
   words.forEach(w => { tl.call(() => { suspect.className = 's-word'; suspect.textContent = w; Sound.tick(1200); }).to({}, { duration: .32 }).call(() => suspect.classList.add('struck')).to({}, { duration: .28 }); });
   tl.call(() => { suspect.className = 's-word'; suspect.textContent = 'The Agricultural Revolution'; }).fromTo(suspect, { opacity: 0, y: 16, filter: 'blur(8px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 1, ease: 'expo.out' }).to(cite, { opacity: 1, duration: .8 }, '-=.5');
 }
+const SKY = [{ h: '#f08a30', z: '#2a1510', r: '#d0582a', s: '#ff8f2e' }, { h: '#2b3b66', z: '#04060d', r: '#1b2446', s: '#a9bcff' }].map(o => ({ h: new THREE.Color(o.h), z: new THREE.Color(o.z), r: new THREE.Color(o.r), s: new THREE.Color(o.s) }));
+const skyState = { n: 0 };
+function applySky() { const n = skyState.n, a = SKY[0], b = SKY[1]; FU.uHorizon.value.lerpColors(a.h, b.h, n); FU.uZenith.value.lerpColors(a.z, b.z, n); FU.uRose.value.lerpColors(a.r, b.r, n); FU.uSunCol.value.lerpColors(a.s, b.s, n); FU.uNight.value = n; }
+$$('.skytoggle button').forEach(b => b.addEventListener('click', () => { const n = +b.dataset.sky; $$('.skytoggle button').forEach(x => { x.classList.toggle('on', x === b); x.setAttribute('aria-pressed', x === b); }); document.documentElement.classList.toggle('night', n === 1); gsap.to(skyState, { n, duration: reduce ? .01 : 1.8, ease: 'power2.inOut', onUpdate: applySky }); Sound.tick(n ? 520 : 760); }));
 $('#scrollCue').addEventListener('click', () => { goTo($('#thesis').getBoundingClientRect().top + scrollY); $('#thesis').tabIndex = -1; $('#thesis').focus({ preventScroll: true }); });
 (function paper() {
   const c = document.createElement('canvas'); c.width = c.height = 512; const x = c.getContext('2d'); x.fillStyle = '#e7dcc2'; x.fillRect(0, 0, 512, 512);
@@ -1543,7 +1601,19 @@ function autoScribble(done, fast) {
   for (let i = 0; i <= 50; i++) { const t = i / 50; pts.push({ x: sigW * .64 - t * sigW * .56, y: sigH * .74 + Math.sin(t * Math.PI) * sigH * .05 }); }
   const o = { k: 0 }; let dn = 0; gsap.to(o, { k: 1, duration: fast ? .01 : 1.5, ease: 'power1.inOut', onUpdate: () => { const n = Math.floor(o.k * (pts.length - 1)); for (; dn < n; dn++) inkLine(pts[dn], pts[dn + 1], 1.4 + Math.abs(Math.sin(dn * .21)) * 1.8); }, onComplete: done });
 }
+const toastsEl = $('#toasts'), sentToasts = new Set();
+function notify(key, msg, when = 'now') {
+  if (sentToasts.has(key)) return; sentToasts.add(key);
+  const el = document.createElement('div'); el.className = 'toast';
+  el.innerHTML = `<span class="av"><svg viewBox="0 0 22 30" aria-hidden="true"><path d="M11 29V9M11 13c-3-1-5-3-5-6 3 0 5 2 5 6zm0 0c3-1 5-3 5-6-3 0-5 2-5 6zm0 6c-3-1-5-3-5-6 3 0 5 2 5 6zm0 0c3-1 5-3 5-6-3 0-5 2-5 6zM11 9c-2-2-2-5 0-8 2 3 2 6 0 8z"/></svg></span><span class="hd"><b>Party A</b><span></span></span><p></p>`;
+  el.querySelector('.hd span').textContent = when; el.querySelector('p').textContent = msg;
+  toastsEl.appendChild(el); while (toastsEl.children.length > 2) toastsEl.firstElementChild.remove();
+  requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('on'))); Sound.tick(990);
+  setTimeout(() => { el.classList.add('off'); setTimeout(() => el.remove(), 400); }, 5600);
+}
+const STEP_TOASTS = ['Reminder: the field doesn’t weed itself. Your shift starts at dawn.', 'New ration plan: bread, porridge, bread.', 'Health notice: something is going around the village.', 'Menu update: rice, wheat, maize. That’s the list.', 'Tithe due: one tenth of your barley, payable to Kushim.', '8,200,000,000 members. Cancellation is not available.'];
 function stamp(text) {
+  setTimeout(() => notify('signed', 'Welcome to the settlement. Your first harvest is due in spring.', '9,500 BC'), 900);
   signed = true; signBtn.disabled = true; skipBtn.disabled = true; const fsg = $('#finalSig'); fsg.src = sigEl.toDataURL('image/png'); fsg.hidden = false;
   const stl = gsap.timeline().fromTo(seal, { opacity: 0, scale: reduce ? 1 : 2.6, rotate: reduce ? -12 : -34 }, { opacity: .92, scale: 1, rotate: -12, duration: reduce ? .2 : .32, ease: 'power4.in', onComplete: () => Sound.thump() }); if (!reduce) stl.fromTo('#deed', { y: 0 }, { y: 3, duration: .06, yoyo: true, repeat: 3, ease: 'none' });
   signMsg.innerHTML = `${text}<span class="mono">Sealed · 9,500 BC · keep scrolling to read the fine print</span>`; signMsg.tabIndex = -1; signMsg.focus({ preventScroll: true });
@@ -1554,13 +1624,36 @@ skipBtn.addEventListener('click', () => { skipBtn.disabled = true; signBtn.disab
 // dot-matrix plates that resolve into the photograph on hover
 function halftone(card) {
   const cv = $('canvas', card), img = $('img', card), frame = $('.spec__frame', card);
-  const draw = () => { const r = frame.getBoundingClientRect(); if (!r.width || !img.naturalWidth) return; const dpr = Math.min(devicePixelRatio || 1, 2); cv.width = r.width * dpr; cv.height = r.height * dpr; const x = cv.getContext('2d'); x.setTransform(dpr, 0, 0, dpr, 0, 0);
-    const cell = clamp(r.width / 70, 7, 12), cols = Math.ceil(r.width / cell), rows = Math.ceil(r.height / cell), off = document.createElement('canvas'); off.width = cols; off.height = rows; const o = off.getContext('2d');
-    const s = Math.max(cols / img.naturalWidth, rows / img.naturalHeight), w = img.naturalWidth * s, h = img.naturalHeight * s; o.drawImage(img, (cols - w) / 2, (rows - h) / 2, w, h);
-    const d = o.getImageData(0, 0, cols, rows).data; x.fillStyle = '#12100d'; x.fillRect(0, 0, r.width, r.height);
-    for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) { const k = (j * cols + i) * 4, L = (d[k] * .3 + d[k + 1] * .59 + d[k + 2] * .11) / 255, rad = Math.sqrt(L) * cell * .5;
-      if (rad < .5) continue; x.fillStyle = L > .78 ? '#f2d892' : L > .5 ? '#d9a441' : L > .3 ? '#e0521c' : '#6a4a2a'; x.beginPath(); x.arc(i * cell + cell / 2, j * cell + cell / 2, rad, 0, 6.283); x.fill(); } };
-  if (img.complete) draw(); else img.addEventListener('load', draw, { once: true }); new ResizeObserver(draw).observe(frame);
+  let data = null, cols = 0, rows = 0, cell = 5, W_ = 0, H_ = 0, bg = [0, 0, 0], bgL = 0, mx = -999, my = -999, raf = 0;
+  const draw = () => { raf = 0; if (!data) return; const x = cv.getContext('2d'); x.clearRect(0, 0, W_, H_);
+    for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) {
+      const k = (j * cols + i) * 4, r = data[k], g = data[k + 1], bl = data[k + 2], L = (r * .3 + g * .59 + bl * .11) / 255;
+      const diff = clamp((Math.hypot(r - bg[0], g - bg[1], bl - bg[2]) / 150 - .1) / .9);
+      const nx = (i / cols - .5) * 2, ny = (j / rows - .5) * 2, el = Math.hypot(nx * .92, ny), edge = 1 - Math.min(1, Math.max(0, (el - .55) / .47));
+      const hsh = ((i * 73856093) ^ (j * 19349663)) >>> 0, jit = (hsh % 1000) / 1000;
+      const cx = i * cell + cell / 2, cy = j * cell + cell / 2, near = Math.max(0, 1 - Math.hypot(cx - mx, cy - my) / (cell * 10));
+      const ink = bgL > .5 ? clamp((bgL - L) / bgL * 2.2 + diff * .25) : diff * .75 + .25 * L * diff;
+      const v = ink * edge * edge * (.85 + .3 * jit);
+      if (v < .06 + jit * .07) continue;
+      const rad = Math.min(cell * .66, Math.sqrt(v) * cell * .6 * (1 + near * 1.1));
+      if (rad < .5) continue;
+      if (bgL > .5) { const m = .45; x.fillStyle = `rgb(${Math.round(lerp(r * 1.25, 226, m))},${Math.round(lerp(g * 1.15, 120, m))},${Math.round(lerp(bl, 50, m))})`; }
+      else x.fillStyle = L > .7 ? '#f4e7c4' : L > .48 ? '#e2b864' : L > .26 ? '#e0521c' : '#c24a1d';
+      x.beginPath(); x.arc(cx, cy, rad, 0, 6.283); x.fill();
+    } };
+  const sample = () => { const rc = frame.getBoundingClientRect(); if (!rc.width || !img.naturalWidth) return; W_ = rc.width; H_ = rc.height;
+    const dpr = Math.min(devicePixelRatio || 1, 2); cv.width = W_ * dpr; cv.height = H_ * dpr; cv.getContext('2d').setTransform(dpr, 0, 0, dpr, 0, 0);
+    cell = clamp(W_ / 140, 3.6, 5.5); cols = Math.ceil(W_ / cell); rows = Math.ceil(H_ / cell);
+    const off = document.createElement('canvas'); off.width = cols; off.height = rows; const o = off.getContext('2d', { willReadFrequently: true });
+    const sc2 = Math.max(cols / img.naturalWidth, rows / img.naturalHeight), w = img.naturalWidth * sc2, h = img.naturalHeight * sc2; o.drawImage(img, (cols - w) / 2, (rows - h) / 2, w, h);
+    data = o.getImageData(0, 0, cols, rows).data;
+    let sr = 0, sg = 0, sb = 0, n = 0; const add = k => { sr += data[k]; sg += data[k + 1]; sb += data[k + 2]; n++; };
+    for (let i = 0; i < cols; i++) for (const j of [0, 1, rows - 2, rows - 1]) add((j * cols + i) * 4);
+    for (let j = 0; j < rows; j++) for (const i of [0, 1, cols - 2, cols - 1]) add((j * cols + i) * 4);
+    bg = [sr / n, sg / n, sb / n]; bgL = (bg[0] * .3 + bg[1] * .59 + bg[2] * .11) / 255; draw(); };
+  if (img.complete && img.naturalWidth) sample(); else img.addEventListener('load', sample, { once: true }); new ResizeObserver(sample).observe(frame);
+  if (!coarse) { card.addEventListener('pointermove', e => { const rc = frame.getBoundingClientRect(); mx = e.clientX - rc.left; my = e.clientY - rc.top; if (!raf) raf = requestAnimationFrame(draw); });
+    card.addEventListener('pointerleave', () => { mx = my = -999; if (!raf) raf = requestAnimationFrame(draw); }); }
   card.tabIndex = 0; card.setAttribute('role', 'button'); card.setAttribute('aria-label', 'Open photograph: ' + (img.alt || 'exhibit'));
   const meta = () => [$('.spec__idx', card).textContent, $('.spec__name', card).textContent, $('.spec__prop', card).textContent];
   const go = () => openLB(card, frame, meta()); card.addEventListener('click', go); card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
@@ -1575,11 +1668,11 @@ $$('#board .tile.dots').forEach(tile => {
   const draw = () => { raf = 0; if (!data) return; const x = cv.getContext('2d'); x.clearRect(0, 0, W_, H_);
     for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) { const k = (j * cols + i) * 4, L = (data[k] * .3 + data[k + 1] * .59 + data[k + 2] * .11) / 255, cx = i * cell + cell / 2, cy = j * cell + cell / 2;
       const near = Math.max(0, 1 - Math.hypot(cx - mx, cy - my) / (cell * 6)); const base = Math.sqrt(L) * cell * .46 * (1 + near * .7);
-      if (L < .08) { if ((i + j) % 4 === 0) { x.fillStyle = 'rgba(143,179,160,.55)'; x.beginPath(); x.arc(cx, cy, 1.1, 0, 6.283); x.fill(); } continue; }
+      if (L < .08) continue;
       if (L < .4) { x.strokeStyle = pal[1]; x.lineWidth = 1.1; x.beginPath(); x.arc(cx, cy, Math.max(1.6, base), 0, 6.283); x.stroke(); }
       else { x.fillStyle = L > .7 ? pal[0] : pal[2]; x.beginPath(); x.arc(cx, cy, base, 0, 6.283); x.fill(); if (L > .55) { x.strokeStyle = 'rgba(224,82,28,.8)'; x.lineWidth = 1; x.beginPath(); x.arc(cx, cy, base + 2.2, 0, 6.283); x.stroke(); } } } };
   const sample = () => { const r = tile.getBoundingClientRect(); if (!r.width || !src.naturalWidth) return; W_ = r.width; H_ = r.height; const dpr = Math.min(devicePixelRatio || 1, 2); cv.width = W_ * dpr; cv.height = H_ * dpr; cv.getContext('2d').setTransform(dpr, 0, 0, dpr, 0, 0);
-    cell = Math.max(10, W_ / 30); cols = Math.ceil(W_ / cell); rows = Math.ceil(H_ / cell); const off = document.createElement('canvas'); off.width = cols; off.height = rows; const o = off.getContext('2d', { willReadFrequently: true });
+    cell = clamp(W_ / 48, 6, 9); cols = Math.ceil(W_ / cell); rows = Math.ceil(H_ / cell); const off = document.createElement('canvas'); off.width = cols; off.height = rows; const o = off.getContext('2d', { willReadFrequently: true });
     const s2 = Math.max(cols / src.naturalWidth, rows / src.naturalHeight); o.drawImage(src, (cols - src.naturalWidth * s2) / 2, (rows - src.naturalHeight * s2) / 2, src.naturalWidth * s2, src.naturalHeight * s2); data = o.getImageData(0, 0, cols, rows).data; draw(); };
   src.onload = sample; new ResizeObserver(sample).observe(tile);
   tile.addEventListener('pointermove', e => { const r = tile.getBoundingClientRect(); mx = e.clientX - r.left; my = e.clientY - r.top; if (!raf) raf = requestAnimationFrame(draw); });
@@ -1624,6 +1717,9 @@ lb.addEventListener('click', e => { if (e.target === lb) closeLB(); });
 addEventListener('keydown', e => { if (e.key === 'Escape') closeLB(); });
 $$('#board .tile.photo').forEach(tile => { tile.tabIndex = 0; tile.setAttribute('role', 'button'); const cap = $('.tcap', tile).textContent.trim(); tile.setAttribute('aria-label', 'Open photograph: ' + cap);
   const go = () => openLB(tile, tile, [ $('.ttag b', tile).textContent, cap, 'Photograph · Unsplash' ]); tile.addEventListener('click', go); tile.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } }); });
+(function torn() { let x = 0; const pts = []; seed = 17; while (x <= 1600) { pts.push([x, 10 + R() * 12 + (R() < .18 ? R() * 9 : 0)]); x += 4 + R() * 18; }
+  const d = 'M0 32 ' + pts.map(p => `L${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join(' ') + ' L1600 32 Z';
+  document.documentElement.style.setProperty('--torn', `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 32' preserveAspectRatio='none'><path d='${d}' fill='black'/></svg>`)}")`); })();
 function fitWord() { const el = $('.footer__word'), host = el.parentElement, cs = getComputedStyle(host), avail = host.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight); el.style.fontSize = '100px'; const w = el.scrollWidth; el.style.fontSize = (100 * avail / w * .995) + 'px'; }
 fitWord(); document.fonts && document.fonts.ready.then(fitWord); addEventListener('resize', fitWord);
 
@@ -1654,19 +1750,22 @@ function buildScroll() {
     return () => { hST = null; };
   });
   revealST = ScrollTrigger.create({ trigger: '#revealStage', start: 'top top', end: () => '+=' + innerHeight * 5.4, pin: true, anticipatePin: 1 });
+  ScrollTrigger.create({ trigger: '#verdict', start: 'top 40%', onEnter: () => notify('verdict', 'No hard feelings. See you at harvest.', 'now') });
   ScrollTrigger.create({ trigger: '#verdict', start: 'top 70%', onEnter: () => { if (!signed) { signed = true; $('#finalSig').alt = 'Signature added for you'; autoScribble(() => stamp('Your ancestors already signed.'), true); } } });
   ScrollTrigger.refresh();
 }
 
 /* ============================== frame loop ============================== */
 const heroCard = $('#heroCard'), heroShade = $('#heroShade'), chapterCard = $('#chapterCard'), chapterMedia = $('#chapterMedia'), revealCard = $('#revealCard');
-const interCard = $('#interCard'), interImg = $('#interImg'), pills = $$('.stackpill'), interSec = $('#interlude');
+const interCard = $('#interCard'), interImg = $('#interImg'), iwords = $$('.iw'), interSec = $('#interlude');
+const PAINT = { A: 'PAINT_A', B: 'PAINT_B', shape: 3, den: 1 };
+(interImg.complete && interImg.naturalWidth ? Promise.resolve() : new Promise(r => interImg.addEventListener('load', r, { once: true }))).then(() => { try { buildPaint(interImg); } catch (e) { console.warn(e); } });
 const marquee = $('#marqueeTrack'); let mqX = 0, mqHalf = 0;
 const windows = $$('[data-window]'), progressBar = $('#progressBar');
 const rv = { q: $('.rv-q'), sig: $('.rv-sig'), origin: $('.rv-origin'), area: $('.rv-area'), quote: $('.rv-quote') }, areaNum = $('#areaNum'), revTag = $('#revTag');
 const lvTime = $('#lvTime'), lvWheat = $('#lvWheat'), lvBirth = $('#lvBirth'), tagXY = $('#tagXY');
 const sections = $$('main [data-year]'), hud = $('.hud'); let frameN = 0;
-const idx = $('#index'), idxItems = $$('#index li'), idxTargets = $$('#index a').map(a => $(a.getAttribute('href'))), lineupSec = $('#lineup'), plates = $$('.plate'); let idxActive = -2;
+const idx = $('#index'), idxItems = $$('#index li'), idxTargets = $$('#index a').map(a => $(a.getAttribute('href'))), lineupSec = $('#lineup'), exSec = $('#exhibits'), plates = $$('.plate'); let idxActive = -2;
 const tV = new THREE.Vector3();
 let curKey = '', simStarted = false, vertical = innerWidth < 900;
 function cardBox(r) { const vis = 2 * pCam.position.z * Math.tan(pCam.fov * Math.PI / 360), visW = vis * pCam.aspect; return { cx: ((r.left + r.width / 2) / innerWidth - .5) * visW, cy: (.5 - (r.top + r.height / 2) / innerHeight) * vis, w: r.width / innerWidth * visW, h: r.height / innerHeight * vis }; }
@@ -1681,10 +1780,12 @@ function frame() {
   const cover = clamp(y / (vh * .95));
   heroCard.style.transform = `scale(${1 - cover * .07}) translateY(${-cover * 3}vh)`; heroShade.style.opacity = cover * .6;
 
+  const iR = interSec.getBoundingClientRect(), interPr = clamp(-iR.top / Math.max(1, iR.height - vh));
   // which stage card is the window this frame?
   let active = null, best = 0;
-  for (const [el, type] of [[heroCard, 'hero'], [chapterCard, 'chapter'], [revealCard, 'reveal']]) {
+  for (const [el, type] of [[heroCard, 'hero'], [chapterCard, 'chapter'], [interCard, 'painting'], [revealCard, 'reveal']]) {
     if (type === 'hero' && cover > .985) continue;
+    if (type === 'painting' && (!F.PAINT_A || interPr < .12 || reduce)) continue;
     const r = el.getBoundingClientRect(), a = Math.max(0, Math.min(r.bottom, vh) - Math.max(r.top, 0)) * Math.max(0, Math.min(r.right, vw) - Math.max(r.left, 0));
     if (a > best) { best = a; active = { type, r }; }
   }
@@ -1697,6 +1798,8 @@ function frame() {
   if (active && active.type === 'hero') W.field = 1 - cover * .6;
   if (active && active.type === 'chapter') W.particles = 1;
   if (active && active.type === 'reveal') { W.field = map(rP, .3, .4); W.particles = 1 - map(rP, .32, .42); }
+  if (active && active.type === 'painting') W.particles = map(interPr, .16, .26);
+  interImg.style.opacity = (active && active.type === 'painting') ? (1 - map(interPr, .2, .3)).toFixed(3) : 1;
   FU.uExposure.value = W.field; PU.uAlpha.value = W.particles;
 
   // field camera
@@ -1722,12 +1825,14 @@ function frame() {
       applyStep(stepIdx); ch.lastWithin = f; paintDesc(f);
       ch.dots.forEach((d, i) => d.style.transform = `scaleX(${i < stepIdx ? 1 : i === stepIdx ? clamp(f) : 0})`); { const pr = clamp((stepIdx + clamp(f)) / 6); dialProg.style.strokeDashoffset = (169.65 * (1 - pr)).toFixed(2); dialHand.style.transform = `rotate(${(pr * 360).toFixed(1)}deg)`; }
       ch.stat.textContent = cur.stat(local); ch.statU.textContent = cur.statU(local); setYear(cur.year(local));
+    } else if (active.type === 'painting') {
+      prev = PAINT; cur = PAINT; morph = 1; local = map(interPr, .3, .86); box = cardBox(active.r); fullXf = 'paint';
     } else {
       prev = { B: 'DUST', den: .4 }; cur = { A: 'EAR', B: 'EAR', shape: 5, den: .55 }; morph = easeIO(map(rP, .02, .2)); local = 0; box = cardBox(active.r); fullXf = true;
     }
     setAttrs(prev, cur);
-    const scale = fullXf ? box.h / 8.6 : Math.min(box.w / 5.8, box.h / 4.8);
-    const sc_ = scale, cyOff = fullXf ? box.h * .04 : 0;
+    const scale = fullXf === 'paint' ? Math.max(box.w / (4.6 * PAINT_ASPECT), box.h / 4.6) * 1.06 : fullXf ? box.h / 8.6 : Math.min(box.w / 5.8, box.h / 4.8);
+    const sc_ = scale, cyOff = fullXf === true ? box.h * .04 : 0;
     PU.uXfCur.value.set(box.cx, box.cy + cyOff, sc_, rotFor(cur, t, local));
     const prevScale = prev === PRE ? Math.min(box.w, box.h) / 6.4 : sc_;
     PU.uXfPrev.value.set(box.cx, box.cy + cyOff, prevScale, prev.rot ? rotFor(prev, t, 1) : 0);
@@ -1761,6 +1866,7 @@ function frame() {
     rv.area.style.opacity = map(rP, .5, .56) * (1 - map(rP, .79, .83)); const rr = Math.pow(map(rP, .45, .8), 2); areaNum.firstChild.nodeValue = fmt(2190000 * rr * rr);
     rv.quote.style.opacity = map(rP, .84, .9); rv.quote.style.transform = `translateY(calc(-50% + ${(1 - map(rP, .84, .92)) * 30}px))`;
     revTag.textContent = rP > .16 ? 'Identity: Triticum aestivum' : 'Identity: withheld';
+    if (rP > .2) notify('reveal', 'Hi. It’s me, the grass. Thanks for 12,000 years.', 'just now');
   }
 
   // post
@@ -1768,19 +1874,20 @@ function frame() {
   finalPass.uniforms.uSun.value.set(tV.x * .5 + .5, tV.y * .5 + .5);
   finalPass.uniforms.uRays.value = (tV.z < 1 && Math.abs(tV.x) < 1.6 && Math.abs(tV.y) < 1.6) ? W.field * .28 : 0; finalPass.uniforms.uTime.value = t;
   const pm = W.particles * (1 - W.field); bloom.strength = lerp(.22, .5, pm); bloom.radius = lerp(.3, .45, pm); bloom.threshold = lerp(.96, .82, pm);
-  finalPass.uniforms.uVig.value = active && active.type === 'chapter' ? .55 : 1;
+  finalPass.uniforms.uVig.value = active && (active.type === 'chapter' || active.type === 'painting') ? .45 : 1;
 
   // editorial motion: chapter media grow-in, cards grow, interlude, marquee
   const cmR = chapterMedia.getBoundingClientRect(); chapterMedia.style.transform = `scale(${(.9 + .1 * easeO(clamp((vh - cmR.top) / vh))).toFixed(4)})`;
   if (!reduce) windows.forEach(g => { const r = g.getBoundingClientRect(); if (r.top > vh || r.bottom < 0) return; const e = easeIO(clamp((vh - r.top) / (vh * .9))), iy = (1 - e) * 8, ix = (1 - e) * (vw < 900 ? 10 : 22), rr = lerp(40, parseFloat(getComputedStyle(g).borderRadius) || 24, e); g.style.clipPath = e >= 1 ? '' : `inset(${iy.toFixed(2)}% ${ix.toFixed(2)}% ${iy.toFixed(2)}% ${ix.toFixed(2)}% round ${rr.toFixed(1)}px)`; });
   { const r = interSec.getBoundingClientRect(), pr = clamp(-r.top / Math.max(1, r.height - vh)); interImg.style.transform = `translate3d(0,${(pr - .5) * -6}%,0) scale(${1.12 - pr * .1})`;
     { const e = reduce ? 1 : easeIO(clamp((vh - r.top) / vh)), iy = (1 - e) * 8, ix = (1 - e) * (vw < 900 ? 10 : 22); interCard.style.clipPath = e >= 1 ? '' : `inset(${iy.toFixed(2)}% ${ix.toFixed(2)}% ${iy.toFixed(2)}% ${ix.toFixed(2)}% round ${lerp(40, 24, e).toFixed(1)}px)`; }
-    pills.forEach((p, i) => { const pi = clamp(pr * 2.2 - i * .26), e = easeO(pi); p.style.opacity = Math.min(1, pi * 1.6).toFixed(3); p.style.transform = `translate3d(0,${((1 - e) * (150 + i * 90)).toFixed(1)}px,0) rotate(${((1 - e) * (i % 2 ? 5 : -5)).toFixed(2)}deg) scale(${(.72 + .28 * e).toFixed(4)})`; }); }
+    iwords.forEach((w, i) => { const a0 = .4 + i * .1, e = easeO(map(pr, a0, a0 + .14)); w.style.opacity = e.toFixed(3); w.style.transform = `translate3d(${((1 - e) * (i === 0 ? -60 : i === 2 ? 60 : 0)).toFixed(1)}px,${((1 - e) * 40).toFixed(1)}px,0)`; w.style.filter = e < 1 ? `blur(${((1 - e) * 10).toFixed(1)}px)` : ''; });
+    $('#paintTag').textContent = pr > .32 ? `Dissolving · ${Math.round(map(pr, .3, .86) * 100)}% to grain` : 'Oil on oak · 119 × 162 cm'; }
   if (!reduce) {
   if (!mqHalf) mqHalf = marquee.scrollWidth / 2; mqX -= .6 + Math.min(Math.abs(vel) * .12, 6); if (mqX <= -mqHalf) mqX += mqHalf;
   marquee.style.transform = `translate3d(${mqX.toFixed(2)}px,0,0) skewX(${clamp(vel * .3, -9, 9).toFixed(2)}deg)`;
   }
-  if (thesisST) paintFill(clamp(thesisST.progress * 1.05));
+  if (thesisST) { paintFill(clamp(thesisST.progress * 1.05)); if (thesisST.progress > .92) notify('offer', 'New offer: more food, a roof, more children. Tap to accept.', '10,000 BC'); }
   if (!reduce) for (const tl of boardTiles) { const r = tl.getBoundingClientRect(); if (r.bottom < -200 || r.top > vh + 200) continue; const rel = (r.top + r.height / 2) / vh - .5; tl.style.transform = `translate3d(0,${(rel * (+tl.dataset.speed || 0) * vh).toFixed(1)}px,0)`; }
 
   // HUD
@@ -1788,7 +1895,7 @@ function frame() {
     idx.classList.toggle('on', y > vh * .8);
     let ai = -1; idxTargets.forEach((t, i) => { const host = t.closest('.pin-spacer') || t; if (host.getBoundingClientRect().top < vh * .5) ai = i; });
     if (ai !== idxActive) { idxActive = ai; idxItems.forEach((li, i) => li.classList.toggle('active', i === ai)); }
-    const lu = lineupSec.getBoundingClientRect().top, dark = lu < vh * .55 && revealST && y < revealST.end - vh * .2;
+    const lu = exSec.getBoundingClientRect().top, dark = lu < vh * .55 && revealST && y < revealST.end - vh * .2;
     document.documentElement.classList.toggle('theme-dark', !!dark);
     const pt = document.elementsFromPoint(vw - 30, vh / 2).find(e => !e.closest('.index'));
     idx.classList.toggle('on-dark', !!dark || !!(pt && pt.closest('.stage,.desk,.board,.footer__card,.interlude__card')));
