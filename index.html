@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#ebe5d9">
+<meta name="theme-color" content="#0f0d0a">
+<style>html{background:#0f0d0a}body{margin:0}#loader{position:fixed;inset:0;z-index:10000;background:#0f0d0a}#loader.is-done{background:transparent}</style>
 <title>The Wheat Contract</title>
 <meta name="description" content="The greatest con in human history: the Agricultural Revolution, as a 12,000-year contract you sign yourself.">
 <link rel="preload" href="fonts/anthropic-serif.woff2" as="font" type="font/woff2" crossorigin>
@@ -111,7 +112,8 @@ a{color:inherit}
 .cursor-tag.is-on{opacity:1;scale:1}
 
 /* loader */
-.loader{position:fixed;inset:0;z-index:300;color:var(--paper-hi);pointer-events:none}
+.loader{position:fixed;inset:0;z-index:10000;color:var(--paper-hi);pointer-events:none;background:var(--coal)}
+.loader.is-done{background:transparent}
 .loader__grid{position:absolute;inset:0;display:grid;grid-template-columns:repeat(20,1fr);grid-template-rows:repeat(12,1fr)}
 .loader__grid i{display:block;background:var(--coal);margin:-.5px;transform-origin:50% 50%}
 .loader__grid i:nth-child(7n+3){background:#15120e}
@@ -530,11 +532,11 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
 }
 </style>
 </head>
-<body>
+<body class="locked">
 <div class="loader" id="loader" role="status" aria-live="polite">
   <div class="loader__grid" id="ldGrid" aria-hidden="true"></div>
   <div class="loader__inner">
-    <div class="loader__row"><span class="mono">The Wheat Contract — <span id="ldNote">planting the field</span></span><span class="loader__count" id="ldNum" aria-hidden="true">0</span></div>
+    <div class="loader__row"><span class="mono" id="ldNote">Planting the field</span><span class="loader__count" id="ldNum" aria-hidden="true">0</span></div>
     <div class="loader__bar" aria-hidden="true"><span id="ldBar"></span></div>
   </div>
 </div>
@@ -1932,18 +1934,28 @@ $('#ldGrid').innerHTML = '<i></i>'.repeat(240);
 const ldTick = () => { prog.v = lerp(prog.v, prog.target, .08); ldNum.textContent = Math.round(prog.v); ldBar.style.width = prog.v + '%'; };
 gsap.ticker.add(ldTick);
 const nextFrame = () => new Promise(r => setTimeout(r, 16));
+// every font face and every image the page will use, fetched and decoded behind the loader
+function preloadAll(onProgress) {
+  const fonts = ['400 100px "Anthropic Serif W"', 'italic 400 100px "Anthropic Serif W"', '400 16px "Anthropic Sans W"', '500 16px "Anthropic Sans W"',
+    '400 12px "IBM Plex Mono"', '500 12px "IBM Plex Mono"', '400 40px "Instrument Serif"', 'italic 400 40px "Instrument Serif"'];
+  const urls = [...new Set([...document.images].map(i => i.getAttribute('src')).concat(TRACE.map(o => o.src), FLOATS.map(f => f[0]), ['img/wheat-ear.jpg', 'img/cypresses.jpg']).filter(Boolean))];
+  const jobs = [...fonts.map(f => document.fonts.load(f).catch(() => {})),
+    ...urls.map(u => new Promise(res => { const im = new Image(); im.decoding = 'async'; im.onload = () => (im.decode ? im.decode() : Promise.resolve()).catch(() => {}).then(res); im.onerror = res; im.src = u; }))];
+  let n = 0; jobs.forEach(j => j.then(() => onProgress(++n / jobs.length)));
+  return Promise.all(jobs).then(() => document.fonts.ready);
+}
 (async function boot() {
   window.__booted = true;
-  await Promise.race([document.fonts.load('400 100px "Anthropic Serif W"').then(() => document.fonts.ready), new Promise(r => setTimeout(r, 3000))]);
-  prog.target = 34; ldNote.textContent = 'printing the contract'; await nextFrame();
+  await Promise.race([preloadAll(f => { prog.target = 4 + f * 30; }), new Promise(r => setTimeout(r, 12000))]);
+  prog.target = 34; await nextFrame();
   buildFormations(vertical); buildLabels(); layoutTitle(); setAttrs(PRE, PRE);
-  prog.target = 66; ldNote.textContent = 'filing the record'; await nextFrame();
+  prog.target = 66; await nextFrame();
   W.field = 1; W.particles = 1; canvas.style.visibility = 'visible'; renderer.compile(fieldScene, fieldCam); renderer.compile(pScene, pCam); composer.render();
   prog.target = 90; await nextFrame();
   buildScroll(); gsap.ticker.add(frame);   prog.target = 100; await new Promise(r => setTimeout(r, 650));
   gsap.ticker.remove(ldTick); ldNum.textContent = '100'; ldBar.style.width = '100%';
   const rev = title.mat.uniforms.uRev.value; finalPass.uniforms.uFade.value = 0;
-  $('#loader').classList.add('is-done');
+  $('#loader').classList.add('is-done'); document.querySelector('meta[name=theme-color]').content = '#ebe5d9';
   const cells = $$('#ldGrid i'); cells.forEach(c => c.style.background = Math.random() < .12 ? 'var(--ember)' : '');
   gsap.to(cells, { scale: 0, duration: reduce ? .01 : .55, ease: 'power3.in', stagger: { each: .012, grid: [12, 20], from: 'center' }, onComplete: () => $('#loader').remove() });
   document.body.classList.remove('locked'); lenis && lenis.start(); fitFp(); layoutTitle(); ScrollTrigger.refresh();
