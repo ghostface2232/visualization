@@ -80,7 +80,8 @@ a{color:inherit}
 .progressbar{position:fixed;top:0;left:0;z-index:150;width:100%;height:2px;background:var(--ember);transform-origin:left;transform:scaleX(0);pointer-events:none}
 .hud{position:fixed;left:0;right:0;top:0;z-index:120;display:flex;justify-content:space-between;align-items:flex-start;padding:calc(env(safe-area-inset-top,0px) + 26px) var(--gutter) 0;pointer-events:none;color:var(--ink);transition:color .3s}
 .hud.on-dark{color:var(--straw)}
-.hud::before{content:"";position:absolute;inset:0 0 -34px;z-index:-1;pointer-events:none;background:linear-gradient(var(--hud-scrim),transparent);transition:opacity .4s;--hud-scrim:rgba(235,229,217,.88)}
+@property --hud-scrim{syntax:'<color>';inherits:false;initial-value:rgba(235,229,217,.88)}
+.hud::before{content:"";position:absolute;inset:0 0 -34px;z-index:-1;pointer-events:none;background:linear-gradient(var(--hud-scrim),transparent);transition:opacity .4s,--hud-scrim .6s var(--ease-out);--hud-scrim:rgba(235,229,217,.88)}
 .hud.on-dark::before{--hud-scrim:rgba(12,10,8,.5)}
 .brand{display:flex;align-items:center;gap:10px}
 .brand svg{width:18px;height:26px}
@@ -434,8 +435,8 @@ html.theme-dark .trace__float{opacity:1}
 .verdict h3{font-family:var(--f-display);font-size:clamp(1.8rem,3.6vw,2.6rem);letter-spacing:-.035em}
 .v-btns{display:flex;gap:12px;flex-wrap:wrap}
 .v-btns .btn.chosen{box-shadow:0 0 0 3px #e8dec6,0 0 0 4px var(--ink)}
-.v-result{display:flex;flex-direction:column;gap:12px}
-.v-note{font-family:var(--f-mono);font-size:10px;letter-spacing:.06em;color:var(--ink-soft)}
+.v-note{font-family:var(--f-mono);font-size:10px;letter-spacing:.06em;color:var(--ink-soft);min-height:1.5em;opacity:0;transform:translateY(6px);transition:opacity .5s var(--ease-out),transform .6s var(--ease-out)}
+.v-note.on{opacity:1;transform:none}
 
 /* ---------- FOOTER ---------- */
 .footer{padding:10px}
@@ -700,7 +701,7 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
         <div><div aria-hidden="true">
           <div class="chapter__keeper"><span class="hl hl--clay" id="chKeeper">The fine print</span></div>
           <h3 class="chapter__title"><span class="swap" id="chTitle">More work</span></h3>
-          <div class="chapter__stat"><span class="v" id="chStat">20 h</span><span class="u mono" id="chStatU">of work per week</span></div>
+          <div class="chapter__stat"><span class="v swap" id="chStat">20 h</span><span class="u mono swap" id="chStatU">of work per week</span></div>
           <p class="chapter__desc" id="chDesc"></p>
           </div><div class="dots" id="chDots" role="group" aria-label="Jump to a proviso"><button type="button" data-step="0" aria-label="Proviso 1"><span></span></button><button type="button" data-step="1" aria-label="Proviso 2"><span></span></button><button type="button" data-step="2" aria-label="Proviso 3"><span></span></button><button type="button" data-step="3" aria-label="Proviso 4"><span></span></button><button type="button" data-step="4" aria-label="Proviso 5"><span></span></button><button type="button" data-step="5" aria-label="Proviso 6"><span></span></button></div>
         </div>
@@ -795,7 +796,6 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
           <button class="btn btn-ember" type="button" data-v="scam" aria-pressed="false" data-magnet>It was a con</button>
           <button class="btn btn-ink" type="button" data-v="deal" aria-pressed="false" data-magnet>It was a fair deal</button>
         </div>
-        <div class="v-result" id="vResult" hidden><span id="vpDeal">0%</span></div>
           <p class="v-note" id="vNote" aria-live="polite"></p>
         </div>
     </article>
@@ -1002,7 +1002,7 @@ float snoise(vec3 v){ const vec2 C=vec2(1./6.,1./3.); const vec4 D=vec4(0.,.5,1.
 
 /* ============================== FIELD WORLD ============================== */
 const FU = {
-  uTime: { value: 0 }, uHero0: { value: 0 }, uRadius: { value: 95 }, uHide: { value: 1 }, uHideR: { value: innerWidth < innerHeight ? 4.6 : 3.2 }, uMouse: { value: new THREE.Vector2(999, 999) }, uMouseStr: { value: 0 },
+  uTime: { value: 0 }, uHero0: { value: 0 }, uFloor: { value: 0 }, uCoal: { value: new THREE.Color(0x0f0d0a) }, uRadius: { value: 95 }, uHide: { value: 1 }, uHideR: { value: innerWidth < innerHeight ? 4.6 : 3.2 }, uMouse: { value: new THREE.Vector2(999, 999) }, uMouseStr: { value: 0 },
   uGust: { value: new THREE.Vector3(0, 0, -999) }, uCamPos: { value: fieldCam.position }, uWindDir: { value: new THREE.Vector2(.92, .38).normalize() },
   uHorizon: { value: new THREE.Color('#f08a30') }, uZenith: { value: new THREE.Color('#2a1510') }, uRose: { value: new THREE.Color('#d0582a') },
   uSunDir: { value: new THREE.Vector3(.1, .05, -1).normalize() }, uSunCol: { value: new THREE.Color('#ff8f2e') },
@@ -1028,8 +1028,9 @@ const ATLAS = wheatAtlas();
 const sky = new THREE.Mesh(new THREE.SphereGeometry(900, 48, 24), new THREE.ShaderMaterial({
   uniforms: FU, side: THREE.BackSide, depthWrite: false,
   vertexShader: `varying vec3 vDir; void main(){ vDir = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
-  fragmentShader: `uniform vec3 uHorizon,uZenith,uRose,uSunDir,uSunCol; uniform float uTime,uExposure,uNight,uDim; varying vec3 vDir;
-    float h2(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+  fragmentShader: `uniform vec3 uHorizon,uZenith,uRose,uSunDir,uSunCol,uCoal; uniform float uTime,uExposure,uNight,uDim,uFloor; varying vec3 vDir;
+    vec3 fade(vec3 c){ return mix(c * uExposure, mix(uCoal, c, uExposure), uFloor); }
+        float h2(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
     float n2(vec2 p){ vec2 i = floor(p), f = fract(p); f = f*f*(3.-2.*f); return mix(mix(h2(i), h2(i+vec2(1,0)), f.x), mix(h2(i+vec2(0,1)), h2(i+vec2(1,1)), f.x), f.y); }
     float fbm(vec2 p){ float fw = length(fwidth(p)) * 1.5, a = .5, s = 0.; for (int i = 0; i < 5; i++){ s += a * mix(n2(p), .5, smoothstep(.2, .7, fw)); p = p * 2.03 + 11.7; fw *= 2.03; a *= .5; } return s; }
     void main(){ vec3 d = normalize(vDir); float y = d.y; float s = max(dot(d, uSunDir), 0.0);
@@ -1044,7 +1045,7 @@ const sky = new THREE.Mesh(new THREE.SphereGeometry(900, 48, 24), new THREE.Shad
         col = mix(col, mix(uRose * 0.75 + uZenith * 0.3, vec3(1.0, 0.6, 0.35), pow(s, 2.0) * 0.8 + 0.15), c * 0.58); }
       col += mix(vec3(1.0, 0.66, 0.32), vec3(0.9, 0.93, 1.0), uNight) * smoothstep(0.9991, 0.99975, s) * mix(0.85, 1.1, uNight);
       col = mix(col, uHorizon * 0.55, smoothstep(0.0, -0.12, y));
-      gl_FragColor = vec4(min(col, vec3(1.7)) * uExposure * mix(1.0, 0.55, uDim), 1.0); }`
+      gl_FragColor = vec4(fade(min(col, vec3(1.7)) * mix(1.0, 0.55, uDim)), 1.0); }`
 }));
 sky.renderOrder = -2; fieldScene.add(sky);
 (function hills() {
@@ -1054,16 +1055,17 @@ sky.renderOrder = -2; fieldScene.add(sky);
   const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('vv', new THREE.Float32BufferAttribute(vv, 1)); g.setIndex(idx);
   fieldScene.add(new THREE.Mesh(g, new THREE.ShaderMaterial({ uniforms: FU, side: THREE.DoubleSide,
     vertexShader: `attribute float vv; varying float vV; varying vec3 vW; void main(){ vV = vv; vec4 w = modelMatrix * vec4(position,1.0); vW = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }`,
-    fragmentShader: `uniform vec3 uHorizon,uZenith,uSunDir,uSunCol; uniform float uExposure,uDim; varying float vV; varying vec3 vW;
+    fragmentShader: `uniform vec3 uHorizon,uZenith,uSunDir,uSunCol,uCoal; uniform float uExposure,uDim,uFloor; varying float vV; varying vec3 vW;
       void main(){ vec3 d = normalize(vW); float s = pow(max(dot(normalize(vec3(d.x,0.,d.z)), normalize(vec3(uSunDir.x,0.,uSunDir.z))),0.),12.);
-        gl_FragColor = vec4((mix(mix(uHorizon, uZenith, 0.55) * 0.7, uHorizon * 0.85, 1.0 - vV) + uSunCol * s * 0.12 * vV) * uExposure * mix(1.0, 0.55, uDim), 1.0); }` })));
+        gl_FragColor = vec4((mix(mix(uHorizon, uZenith, 0.55) * 0.7, uHorizon * 0.85, 1.0 - vV) + uSunCol * s * 0.12 * vV) * mix(1.0, 0.55, uDim) * (1.0 - uFloor) * uExposure + uFloor * mix(uCoal, (mix(mix(uHorizon, uZenith, 0.55) * 0.7, uHorizon * 0.85, 1.0 - vV) + uSunCol * s * 0.12 * vV) * mix(1.0, 0.55, uDim), uExposure), 1.0); }` })));
 })();
 const ground = new THREE.Mesh(new THREE.PlaneGeometry(1400, 1400), new THREE.ShaderMaterial({ uniforms: FU,
   vertexShader: `varying vec3 vW; void main(){ vec4 w = modelMatrix * vec4(position,1.0); vW = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }`,
-  fragmentShader: `uniform vec3 uHorizon,uZenith,uRose,uCamPos; uniform float uFogNear,uFogFar,uExposure,uDim; varying vec3 vW;
-    uniform float uRadius,uHide;
+  fragmentShader: `uniform vec3 uHorizon,uZenith,uRose,uCamPos,uCoal; uniform float uFogNear,uFogFar,uExposure,uDim,uFloor; varying vec3 vW;
+    vec3 fade(vec3 c){ return mix(c * uExposure, mix(uCoal, c, uExposure), uFloor); }
+        uniform float uRadius,uHide;
     void main(){ float d = length(vW - uCamPos); vec3 col = mix(vec3(0.06, 0.035, 0.02), mix(uHorizon, uZenith, 0.35) * 0.72, smoothstep(uFogNear, uFogFar * 2.2, d));
-      float cov = (1.0 - smoothstep(uRadius - 10.0, uRadius, length(vW.xz))) * (1.0 - uHide) * smoothstep(40.0, 120.0, d); col = mix(col, mix(vec3(0.3, 0.18, 0.07), mix(uHorizon, uRose, 0.25) * 0.8, smoothstep(uFogNear, uFogFar * 1.3, d)), cov); gl_FragColor = vec4(col * uExposure * mix(1.0, 0.36, uDim), 1.0); }` }));
+      float cov = (1.0 - smoothstep(uRadius - 10.0, uRadius, length(vW.xz))) * (1.0 - uHide) * smoothstep(40.0, 120.0, d); col = mix(col, mix(vec3(0.3, 0.18, 0.07), mix(uHorizon, uRose, 0.25) * 0.8, smoothstep(uFogNear, uFogFar * 1.3, d)), cov); gl_FragColor = vec4(fade(col * mix(1.0, 0.36, uDim)), 1.0); }` }));
 ground.rotation.x = -Math.PI / 2; fieldScene.add(ground);
 const WN = small ? 34000 : 76000;
 (function wheat() {
@@ -1095,8 +1097,9 @@ const WN = small ? 34000 : 76000;
         vec2 off = (wind + push + gp) * t * t * h * (1.0 - uHero0 * step(d, 0.4)); lp.xz += off; lp.y -= dot(off, off) * 0.42;
         vec3 wp = vec3(base.x, 0.0, base.y) + lp; vSheen = smoothstep(0.15, 1.0, wave * gust) + ring * 0.8; vW = wp; vRand = aRand.y;
         vFog = smoothstep(uFogNear, uFogFar, length(wp - uCamPos)); gl_Position = projectionMatrix * viewMatrix * vec4(wp, 1.0); }`,
-    fragmentShader: `uniform sampler2D uTex; uniform vec3 uSunDir,uSunCol,uHorizon,uRose,uCamPos; uniform float uExposure;
-      uniform float uHero0; varying vec2 vUv; varying float vFog; varying float vSheen; varying vec3 vW; varying float vRand; varying float vFar;
+    fragmentShader: `uniform sampler2D uTex; uniform vec3 uSunDir,uSunCol,uHorizon,uRose,uCamPos,uCoal; uniform float uExposure,uFloor;
+      vec3 fade(vec3 c){ return mix(c * uExposure, mix(uCoal, c, uExposure), uFloor); }
+          uniform float uHero0; varying vec2 vUv; varying float vFog; varying float vSheen; varying vec3 vW; varying float vRand; varying float vFar;
       void main(){ vec4 tx = texture2D(uTex, vUv); float sharp = (tx.a - 0.42) / max(fwidth(tx.a), 1e-4) + 0.5;
         float a = mix(sharp, smoothstep(0.08, 0.55, tx.a), vFar); if (a < 0.01) discard;
         float part = tx.g, lum = tx.r;
@@ -1108,7 +1111,7 @@ const WN = small ? 34000 : 76000;
         col += uSunCol * back * thin * smoothstep(0.35, 1.0, vUv.y) * (1.25 + 0.6 * lum);
         col += vec3(1.0, 0.86, 0.62) * vSheen * 0.16 * smoothstep(0.55, 1.0, vUv.y);
         col *= mix(mix(0.4, 1.0, smoothstep(2.0, 15.0, length(vW - uCamPos))), 1.35, uHero0 * step(length(vW.xz), 0.4));
-        col = mix(col, mix(uHorizon, uRose, 0.25) * 0.92, vFog); gl_FragColor = vec4(col * uExposure, clamp(a, 0.0, 1.0)); }` }));
+        col = mix(col, mix(uHorizon, uRose, 0.25) * 0.92, vFog); gl_FragColor = vec4(fade(col), clamp(a, 0.0, 1.0)); }` }));
   mesh.frustumCulled = false; fieldScene.add(mesh);
 })();
 (function dust() {
@@ -1462,9 +1465,9 @@ function applyStep(i) {
   $('#chapterCard').dataset.cursor = s.interactive ? 'Infect' : 'Exhibit';
 
   if (first) { fill(); ch.tintStart = 0; return; }
-  ch.tintStart = null; [ch.num, ch.title].forEach(e => { e.classList.add('is-out'); }); ch.desc.classList.add('is-out');
-  setTimeout(() => { if (tok !== ch.tok) return; fill(); [ch.num, ch.title].forEach(e => { e.classList.remove('is-out'); e.classList.add('is-below'); void e.offsetWidth; e.classList.remove('is-below'); }); ch.desc.classList.remove('is-out'); setTimeout(() => { if (ch.idx === i) ch.tintStart = ch.lastWithin || 0; }, 280); }, 360);
-  setTimeout(() => { if (tok !== ch.tok) return; [ch.num, ch.title].forEach(e => e.classList.remove('is-out', 'is-below')); ch.desc.classList.remove('is-out'); }, 1200);
+  ch.tintStart = null; ch.swapping = true; [ch.num, ch.title, ch.stat, ch.statU].forEach(e => { e.classList.add('is-out'); }); ch.desc.classList.add('is-out');
+  setTimeout(() => { if (tok !== ch.tok) return; ch.swapping = false; fill(); [ch.num, ch.title, ch.stat, ch.statU].forEach(e => { e.classList.remove('is-out'); e.classList.add('is-below'); void e.offsetWidth; e.classList.remove('is-below'); }); ch.desc.classList.remove('is-out'); setTimeout(() => { if (ch.idx === i) ch.tintStart = ch.lastWithin || 0; }, 280); }, 360);
+  setTimeout(() => { if (tok !== ch.tok) return; [ch.num, ch.title, ch.stat, ch.statU].forEach(e => e.classList.remove('is-out', 'is-below')); ch.desc.classList.remove('is-out'); }, 1200);
 }
 function paintDesc(within) {
   if (!ch.words.length || ch.tintStart === null) return;
@@ -1632,7 +1635,7 @@ let myVote = null;
 try { myVote = localStorage.getItem('wheat-verdict'); } catch (e) {}
 const VERDICT_NOTE = { scam: 'Recorded: a con. Your verdict is saved in this browser.', deal: 'Recorded: a fair deal. Your verdict is saved in this browser.' };
 function renderVerdict() {
-  if (!myVote) return; $('#vResult').hidden = false;
+  if (!myVote) return; $('#vNote').classList.add('on');
   $$('.v-btns .btn').forEach(b => { b.classList.toggle('chosen', b.dataset.v === myVote); b.setAttribute('aria-pressed', b.dataset.v === myVote); });
   $('#vNote').textContent = VERDICT_NOTE[myVote];
 }
@@ -1795,7 +1798,7 @@ function frame() {
       box = cardBox(active.r); fullXf = false;
       applyStep(stepIdx); ch.lastWithin = f; paintDesc(f);
       ch.dots.forEach((d, i) => d.style.transform = `scaleX(${i < stepIdx ? 1 : i === stepIdx ? clamp(f) : 0})`); { const pr = clamp((stepIdx + clamp(f)) / 6); dialProg.style.strokeDashoffset = (169.65 * (1 - pr)).toFixed(2); dialHand.style.transform = `rotate(${(pr * 360).toFixed(1)}deg)`; }
-      setText(ch.stat, cur.stat(local)); setText(ch.statU, cur.statU(local)); setYear(cur.year(local));
+      if (!ch.swapping) { setText(ch.stat, cur.stat(local)); setText(ch.statU, cur.statU(local)); } setYear(cur.year(local));
     } else if (active.type === 'painting') {
       prev = PAINT; cur = PAINT; morph = 1; local = map(interPr, .48, .92); box = cardBox(active.r); box.cx += interPanPx / active.r.width * box.w; fullXf = 'paint';
     } else {
@@ -1859,7 +1862,7 @@ function frame() {
   finalPass.uniforms.uRays.value = (tV.z < 1 && Math.abs(tV.x) < 1.6 && Math.abs(tV.y) < 1.6) ? W.field * .28 : 0; finalPass.uniforms.uTime.value = t;
   const pm = active && active.type === 'reveal' ? 0 : W.particles * (1 - W.field); bloom.strength = lerp(.22, .5, pm); bloom.radius = lerp(.3, .45, pm); bloom.threshold = lerp(.96, .82, pm);
   finalPass.uniforms.uVig.value = active && (active.type === 'chapter' || active.type === 'painting') ? .45 : 1;
-  finalPass.uniforms.uDot.value = !active ? 0 : active.type === 'hero' ? 1 : active.type === 'reveal' ? W.field : 0; finalPass.uniforms.uCell.value = vw < 700 ? 3.1 : 4.2; finalPass.uniforms.uLift.value = active && active.type === 'reveal' ? W.field : 0; FU.uDim.value = active && active.type === 'reveal' ? 1 : 0;
+  finalPass.uniforms.uDot.value = !active ? 0 : active.type === 'hero' ? 1 : active.type === 'reveal' ? W.field : 0; finalPass.uniforms.uCell.value = vw < 700 ? 3.1 : 4.2; finalPass.uniforms.uLift.value = active && active.type === 'reveal' ? W.field : 0; FU.uDim.value = FU.uFloor.value = active && active.type === 'reveal' ? 1 : 0;
 
   // editorial motion: chapter media grow-in, cards grow, interlude
   if (!reduce) windows.forEach(g => { const r = g.getBoundingClientRect(); if (r.top > vh || r.bottom < 0) return; const e = easeIO(clamp((vh - r.top) / (vh * .9))), iy = (1 - e) * 8, ix = (1 - e) * (vw < 900 ? 10 : 22), rr = lerp(40, parseFloat(getComputedStyle(g).borderRadius) || 24, e); g.style.clipPath = e >= 1 ? '' : `inset(${iy.toFixed(2)}% ${ix.toFixed(2)}% ${iy.toFixed(2)}% ${ix.toFixed(2)}% round ${rr.toFixed(1)}px)`; });
