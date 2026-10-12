@@ -102,7 +102,8 @@ a{color:inherit}
 
 /* cursor */
 .cursor{position:fixed;left:0;top:0;z-index:260;pointer-events:none;display:none}
-.has-cursor .cursor{display:block}
+.has-cursor .cursor{display:block;opacity:0;transition:opacity .3s}
+.cursor-live .cursor{opacity:1}
 .cursor__dot{display:block;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:var(--ember);transition:transform .35s var(--ease-out)}
 .cursor.is-hover .cursor__dot{transform:scale(2.6)}
 .cursor.is-down .cursor__dot{transform:scale(.7)}
@@ -907,7 +908,9 @@ setYear('AD 2026');
 const cursor = $('#cursor'), cursorTag = $('#cursorTag');
 if (!coarse) {
   document.documentElement.classList.add('has-cursor');
-  let cx = -100, cy = -100;
+  let cx = -100, cy = -100; const H = document.documentElement;
+  addEventListener('pointermove', e => { if (e.pointerType !== 'mouse') return; if (!H.classList.contains('cursor-live')) { cx = e.clientX; cy = e.clientY; H.classList.add('cursor-live'); } }, { passive: true });
+  document.addEventListener('mouseleave', () => H.classList.remove('cursor-live')); addEventListener('blur', () => H.classList.remove('cursor-live'));
   addEventListener('mousedown', () => cursor.classList.add('is-down')); addEventListener('mouseup', () => cursor.classList.remove('is-down'));
   gsap.ticker.add(() => { cx = lerp(cx, S.px, .22); cy = lerp(cy, S.py, .22); cursor.style.transform = `translate3d(${cx}px,${cy}px,0)`; cursorTag.style.transform = `translate3d(${cx + 18}px,${cy + 20}px,0)`; });
   document.addEventListener('mouseover', e => {
@@ -1227,18 +1230,18 @@ function buildFormations(vertical) {
     ANCH.diet = { species: species.slice(0, 14).map(s => s.at), groups: groups.slice(0, 3).map(g => [g.at[0], g.at[1] + g.r + .14, 0]), others: [0, -1.12, 0], rest: [2.2, -1.86, 0] }; }
   // class
   { const rows = [1, 3, 6, 10, 16, 27], per = Math.floor(N / 64), tilt = p => rotX(p, .34), people = []; rows.forEach((n, k) => { for (let j = 0; j < n; j++) people.push({ k, j, n }); });
-    const tierY = k => 1.85 - k * .62, half = k => .18 + k * .35, cols = [[2.0, 1.35, .55], [1.35, 1.0, .55], [1.1, .9, .6], [.9, .78, .6], [.72, .64, .52], [.52, .47, .4]];
+    const tierY = k => 1.85 - k * .62, half = k => .18 + k * .35, OX = .34, cols = [[2.0, 1.35, .55], [1.35, 1.0, .55], [1.1, .9, .6], [.9, .78, .6], [.72, .64, .52], [.52, .47, .4]];
     const A = newF(), B = newF(); let i = 0; seed = 51;
-    people.forEach((pp, idx) => { const ang = idx / 63 * Math.PI * 2, ra = [Math.cos(ang) * 1.9, -.55, Math.sin(ang) * 1.9], zb = half(pp.k), xb = pp.n === 1 ? 0 : -zb + (pp.j / (pp.n - 1)) * zb * 2, rb = [xb, tierY(pp.k) + .08, zb * .5], king = pp.k === 0, sz = king ? 1.7 : 1;
+    people.forEach((pp, idx) => { const ang = idx / 63 * Math.PI * 2, ra = [Math.cos(ang) * 1.9, -.55, Math.sin(ang) * 1.9], zb = half(pp.k), xb = pp.n === 1 ? 0 : -zb + (pp.j / (pp.n - 1)) * zb * 2, rb = [xb + OX, tierY(pp.k) + .08, zb * .5], king = pp.k === 0, sz = king ? 1.7 : 1;
       for (let q = 0; q < per; q++, i++) { const head = R() < .25, v = [gauss(), gauss(), gauss()], L = Math.hypot(...v); let lx, ly, lz;
         if (head) { lx = v[0] / L * .045; ly = .17 + v[1] / L * .045; lz = v[2] / L * .045; } else { const u = Math.cbrt(R()); lx = v[0] / L * u * .05; ly = .02 + v[1] / L * u * .11; lz = v[2] / L * u * .05; }
         const a = tilt([ra[0] + lx, ra[1] + ly, ra[2] + lz]); sp(A, i, a[0], a[1], a[2], .75); sc(A, i, 1.0, .9, .7, .12);
         const b = tilt([rb[0] + lx * sz, rb[1] + ly * sz, rb[2] + lz * sz]); sp(B, i, b[0], b[1], b[2], king ? 1.1 : .75); const cc = cols[pp.k]; sc(B, i, cc[0], cc[1], cc[2], king ? .22 : .12); } });
     for (; i < N; i++) { const fa = R() * 6.283, fr = Math.pow(R(), 2) * .32, fh = R(); const a = tilt([Math.cos(fa) * fr * (1 - fh), -.6 + fh * .7, Math.sin(fa) * fr * (1 - fh)]); sp(A, i, a[0], a[1], a[2], .9); sc(A, i, 2.0, .7, .22, .16 + (1 - fh) * .14);
-      let b, gran = false; if (R() < .78) { const k = (R() * 6) | 0, hs = half(k) + .12, e = (R() * 4) | 0, t = R() * 2 - 1, yy = tierY(k) - .06; b = e === 0 ? [t * hs, yy, hs] : e === 1 ? [t * hs, yy, -hs] : e === 2 ? [hs, yy, t * hs] : [-hs, yy, t * hs]; if (R() < .3) b[1] -= R() * .58; }
-      else { gran = true; b = [.34 + (R() * 6 | 0) * .06 + R() * .03, tierY(0) + (R() * 5 | 0) * .06 + R() * .03, (R() * 4 | 0) * .06 - .09]; }
+      let b, gran = false; if (R() < .78) { const k = (R() * 6) | 0, hs = half(k) + .12, e = (R() * 4) | 0, t = R() * 2 - 1, yy = tierY(k) - .06; b = e === 0 ? [t * hs, yy, hs] : e === 1 ? [t * hs, yy, -hs] : e === 2 ? [hs, yy, t * hs] : [-hs, yy, t * hs]; if (R() < .3) b[1] -= R() * .58; b[0] += OX; }
+      else { gran = true; b = [OX + .34 + (R() * 6 | 0) * .06 + R() * .03, tierY(0) + (R() * 5 | 0) * .06 + R() * .03, (R() * 4 | 0) * .06 - .09]; }
       const bb = tilt(b); sp(B, i, bb[0], bb[1], bb[2], .7); if (gran) sc(B, i, 1.9, 1.3, .5, .14); else sc(B, i, .9, .72, .44, .1); }
-    commit('CLASS_A', A); commit('CLASS_B', B); ANCH.cls = { tier: k => tilt([-half(k) - .2, tierY(k) + .1, half(k) * .5]), granary: tilt([.5, tierY(0) + .3, 0]), fire: tilt([0, -.1, 0]) }; }
+    commit('CLASS_A', A); commit('CLASS_B', B); ANCH.cls = { tier: k => tilt([OX - half(k) - .2, tierY(k) + .1, half(k) * .5]), granary: tilt([OX + .5, tierY(0) + .3, 0]), fire: tilt([0, -.1, 0]) }; }
   // population globe (ASCII glyphs)
   { const f = newF(), R0 = 1.95, sd = [.42, .5, .76], L0 = Math.hypot(...sd); sd.forEach((v, k) => sd[k] = v / L0); const pts = [], ga = Math.PI * (3 - Math.sqrt(5));
     for (let i = 0; i < N; i++) { const y = 1 - (i + .5) / N * 2, r = Math.sqrt(1 - y * y), th = ga * i, p = [Math.cos(th) * r, y, Math.sin(th) * r];
