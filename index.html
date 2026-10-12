@@ -382,7 +382,6 @@ html.theme-dark .trace__float{opacity:1}
 .coda__stat .v{font-family:var(--f-display);font-size:clamp(34px,3.6vw,58px);letter-spacing:-.045em;line-height:1;font-variant-numeric:tabular-nums;color:var(--ember)}
 .coda__stat .u{opacity:.62}
 .coda__desc{font-size:clamp(16px,1.25vw,19px);line-height:1.55;opacity:.74;max-width:34rem;text-wrap:pretty}
-.coda__src{opacity:.45;letter-spacing:.06em}
 @media (max-width:900px){.coda__item{grid-template-columns:minmax(0,1fr);gap:20px;align-content:center}.coda__year{font-size:clamp(72px,22vw,128px)}.coda__body{gap:16px}}
 @media (max-width:700px){.trace__float canvas:nth-child(n+5),.trace__head .meta span:nth-child(3){display:none}.trace__rail{font-size:10px;letter-spacing:.04em}}
 .desk::after,.footer__card::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);pointer-events:none;z-index:3}
@@ -398,7 +397,7 @@ html.theme-dark .trace__float{opacity:1}
 .rv-sig .latin{font-size:clamp(36px,5vw,64px);line-height:1;color:var(--straw)}
 .rv-origin{bottom:11vh;display:flex;flex-direction:column;gap:12px;align-items:center}
 .rv-origin .mono{color:rgba(255,248,236,.9)}
-.rv-origin b,.rv-area,.rv-quote p,.rv-quote cite{color:#fffaf0}
+.rv-origin b,.rv-area,.rv-quote p{color:#fffaf0}
 .rv-origin b{font-family:var(--f-display);font-weight:400;font-size:clamp(24px,2.6vw,38px);letter-spacing:-.03em}
 .rv-area{top:12vh;display:flex;flex-direction:column;align-items:center;gap:14px}
 .area-num{font-family:var(--f-display);font-size:clamp(60px,10vw,160px);line-height:.88;letter-spacing:-.055em;font-variant-numeric:tabular-nums}
@@ -430,11 +429,9 @@ html.theme-dark .trace__float{opacity:1}
 .footer__bg{position:absolute;inset:0;background-size:cover;background-position:center 60%;opacity:.28;filter:saturate(.8) contrast(1.05);mix-blend-mode:luminosity}
 .footer__card::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(18,16,13,.4),rgba(18,16,13,.92) 70%)}
 .footer__card>*{position:relative}
-.footer__cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gutter);padding:clamp(36px,6vh,64px) 0 clamp(40px,7vh,90px)}
+.footer__cols{display:grid;grid-template-columns:minmax(0,1fr);max-width:40rem;gap:var(--gutter);padding:clamp(36px,6vh,64px) 0 clamp(40px,7vh,90px)}
 .footer__col{display:flex;flex-direction:column;gap:12px;min-width:0}
-.footer__colTitle{color:var(--pill-gold)}
-.footer__col ol,.footer__col p{font-size:14px;line-height:1.55;color:rgba(245,241,232,.75)}
-.footer__col ol{padding-left:1.1em;display:flex;flex-direction:column;gap:6px}
+.footer__col p{font-size:14px;line-height:1.55;color:rgba(245,241,232,.75)}
 .footer__word{width:max-content;font-family:var(--f-display);font-size:12vw;letter-spacing:-.045em;line-height:.86;color:var(--ember);white-space:nowrap;padding-bottom:.06em}
 .footer__bar{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;border-top:1px solid rgba(245,241,232,.2);padding-top:16px;margin-top:20px;color:rgba(245,241,232,.7)}
 .footer__bar button:hover{color:var(--paper-hi)}
@@ -566,7 +563,7 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
       <div class="hero__foot">
         <div class="suspect">
           <span class="s-word" id="suspect">The Agricultural Revolution</span>
-          <span class="mono s-cite" id="suspectCite">“History’s biggest fraud” — Yuval Noah Harari, Sapiens</span>
+          <span class="mono s-cite" id="suspectCite">“History’s biggest fraud”</span>
         </div>
         <button class="pill scroll-pill mono" id="scrollCue" type="button" data-magnet data-hover><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M12 4 L12 20 M6 14 L12 20 L18 14"/></svg>Start reading</button>
       </div>
@@ -658,12 +655,12 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
 </section>
 <section id="chapter" data-year="9,000 BC">
   <ol class="sr-only">
-    <li>Proviso 1, More work: about 20 hours of work a week rose to about 30. Agta who farmed more had about ten fewer hours of leisure a week. Source: Dyble et al., 2019.</li>
-    <li>Proviso 2, Smaller bodies: average men fell from 175 cm to 160 cm and women from 165 cm to 152 cm by 3000 BC. Source: Jared Diamond, 1987.</li>
-    <li>Proviso 3, Crowd diseases: measles, smallpox and flu reached people through livestock and crowded settlements; a band of 30 on the move gives them nowhere to spread. Source: Jared Diamond, 1997.</li>
-    <li>Proviso 4, Three grains: of about 50,000 edible plants, 15 provide 90% of our calories and rice, wheat and maize two thirds of that. Source: FAO, 1995.</li>
-    <li>Proviso 5, Someone is king: stored grain created guards, counters and rulers; the first named person in history, Kushim, was a barley accountant. Source: Yuval Noah Harari, 2011.</li>
-    <li>Proviso 6, No way back: world population grew from about 5 million in 10,000 BC to 8.2 billion today. Source: UN.</li>
+    <li>Proviso 1, More work: about 20 hours of work a week rose to about 30. Agta who farmed more had about ten fewer hours of leisure a week.</li>
+    <li>Proviso 2, Smaller bodies: average men fell from 175 cm to 160 cm and women from 165 cm to 152 cm by 3000 BC.</li>
+    <li>Proviso 3, Crowd diseases: measles, smallpox and flu reached people through livestock and crowded settlements; a band of 30 on the move gives them nowhere to spread.</li>
+    <li>Proviso 4, Three grains: of about 50,000 edible plants, 15 provide 90% of our calories and rice, wheat and maize two thirds of that.</li>
+    <li>Proviso 5, Someone is king: stored grain created guards, counters and rulers; the first named person in history, Kushim, was a barley accountant.</li>
+    <li>Proviso 6, No way back: world population grew from about 5 million in 10,000 BC to 8.2 billion today.</li>
   </ol>
   <div class="chapter__stage" id="chapterStage">
     <div class="chapter__grid">
@@ -729,7 +726,6 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
       <p class="coda__line" data-lines>Malthus warns that people will always <em>outgrow their food.</em></p>
       <div class="coda__stat" data-reveal><span class="v"><span data-count="8">0</span>×</span><span class="u mono">as many people as when he wrote</span></div>
       <p class="coda__desc" data-reveal>People multiply, he argued, while food only adds up, so famine will always close the gap. About a billion people were alive as he wrote. The contract has since fed eight times as many.</p>
-      <p class="coda__src mono" data-reveal>T. R. Malthus, An Essay on the Principle of Population (1798)</p>
     </div>
   </div>
   <div class="coda__item" data-year="AD 1909">
@@ -739,7 +735,6 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
       <p class="coda__line" data-lines>Haber and Bosch pull fertiliser out of the air. <em>It now feeds half of us.</em></p>
       <div class="coda__stat" data-reveal><span class="v"><span data-count="48">0</span>%</span><span class="u mono">of humanity fed by synthetic nitrogen</span></div>
       <p class="coda__desc" data-reveal>For ten thousand years the harvest was rationed by the nitrogen in the soil. Fritz Haber made ammonia from air on a laboratory bench; by 1913 Carl Bosch had built it into a factory. About half the nitrogen in your body has passed through one.</p>
-      <p class="coda__src mono" data-reveal>J. W. Erisman et al., Nature Geoscience (2008) · V. Smil, Enriching the Earth (2001)</p>
     </div>
   </div>
   <div class="coda__item" data-year="AD 1960">
@@ -749,7 +744,6 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
       <p class="coda__line" data-lines>Semi-dwarf wheat multiplies the harvest. <em>The contract scales.</em></p>
       <div class="coda__stat" data-reveal><span class="v"><span data-count="3">0</span>×</span><span class="u mono">wheat per hectare since 1961</span></div>
       <p class="coda__desc" data-reveal>Fed on fertiliser, tall wheat grew heavy and fell over. Norman Borlaug’s short-stemmed varieties stood up under the extra grain. India’s wheat harvest nearly doubled in six years. The new seeds came with terms of their own: more fertiliser, more water.</p>
-      <p class="coda__src mono" data-reveal>FAOSTAT · N. Borlaug, Nobel Peace Prize lecture (1970)</p>
     </div>
   </div>
   <div class="coda__item" data-year="AD 2026">
@@ -759,7 +753,6 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
       <p class="coda__line" data-lines>8.2 billion signatories. <em>Not one has read the fine print.</em></p>
       <div class="coda__stat" data-reveal><span class="v"><span data-count="800">0</span></span><span class="u mono">million tonnes of wheat, every year</span></div>
       <p class="coda__desc" data-reveal>Wheat is grown on more land than any other food crop and supplies about a fifth of the world’s calories and protein. The terms are the ones agreed twelve thousand years ago: plant, harvest, store, repeat.</p>
-      <p class="coda__src mono" data-reveal>FAOSTAT (2023) · CIMMYT</p>
     </div>
   </div>
 </section>
@@ -773,7 +766,7 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
       <div class="rv rv-sig"><span class="mono">Party A · signature on file</span><span class="latin">Triticum aestivum</span><span class="mono" style="color:var(--straw-3)">Bread wheat · an annual grass</span></div>
       <div class="rv rv-origin"><span class="mono">c. 9000 BC · Karacadağ, south-east Turkey</span><b>A single wild wheat plant</b></div>
       <div class="rv rv-area"><span class="mono">Today, the world’s wheat harvest covers</span><span class="area-num" id="areaNum">0<small>km²</small></span><p>About the size of Greenland</p><span class="mono" style="color:rgba(255,248,236,.85);letter-spacing:.06em;text-transform:none">About 219 million hectares</span></div>
-      <blockquote class="rv rv-quote"><p>“We did not domesticate wheat. <em>It domesticated us.”</em></p><cite class="mono">Yuval Noah Harari, Sapiens</cite></blockquote>
+      <blockquote class="rv rv-quote"><p>“We did not domesticate wheat. <em>It domesticated us.”</em></p></blockquote>
     </div>
   </div>
 </section>
@@ -802,20 +795,9 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
 <footer class="footer" id="colophon">
   <div class="footer__card" data-window>
     <div class="footer__bg" style="background-image:url(img/cypresses.jpg)"></div>
-    <div class="meta meta--dark mono"><span>Colophon</span><span>Sources &amp; credits</span><span>2026</span></div>
+    <div class="meta meta--dark mono"><span>Colophon</span><span>About this page</span><span>2026</span></div>
     <div class="footer__cols">
-      <div class="footer__col"><span class="footer__colTitle mono">Sources</span>
-        <ol>
-          <li>Yuval Noah Harari, Sapiens (2011), ch. 5, “History’s Biggest Fraud”</li>
-          <li>Jared Diamond, “The Worst Mistake in the History of the Human Race,” Discover, 1987; Guns, Germs, and Steel, 1997</li>
-          <li>M. Dyble et al., Nature Human Behaviour, 2019</li>
-          <li>M. Heun et al., Science, 1997 · T. Molleson, Scientific American, 1994</li>
-          <li>FAO, Dimensions of Need (1995) · FAOSTAT (2022) · UN World Population Prospects</li>
-          <li>T. R. Malthus, An Essay on the Principle of Population, 1798 · J. W. Erisman et al., Nature Geoscience, 2008 · V. Smil, Enriching the Earth, 2001 · N. Borlaug, Nobel lecture, 1970</li>
-        </ol></div>
-      <div class="footer__col"><span class="footer__colTitle mono">Images</span>
-        <p>The Metropolitan Museum of Art, Open Access (CC0): Bruegel, The Harvesters (1565); Van Gogh, Wheat Field with Cypresses (1889); Model of a Granary with Scribes; Proto-cuneiform barley tablet; Servant Grinding Grain; Harvest Scenes, Tomb of Menna (facsimile). Unsplash: Marek Studzinski, Sandy Ravaloniaina, Lu, Andrey Soldatov.</p></div>
-      <div class="footer__col"><span class="footer__colTitle mono">Colophon</span>
+      <div class="footer__col">
         <p>All figures are estimates. This page argues one reading of the Agricultural Revolution: that it was a con. Archaeologists still disagree about why people settled and what it cost them.</p>
         <p>Type: Butler, SF Pro. Field, grain and globe rendered live in WebGL.</p></div>
     </div>
@@ -1419,12 +1401,12 @@ const popKF = [[-10000, 5e6], [-5000, 18e6], [-3000, 30e6], [-1000, 50e6], [1, 2
 const popAt = p => { const f = clamp(p) * (popKF.length - 1), i = Math.min(popKF.length - 2, Math.floor(f)), fr = f - i; return { year: lerp(popKF[i][0], popKF[i + 1][0], fr), n: Math.exp(lerp(Math.log(popKF[i][1]), Math.log(popKF[i + 1][1]), fr)) }; };
 const popWord = n => n >= 1e9 ? (n / 1e9).toFixed(1).replace(/\.0$/, '') + ' billion' : fmt(Math.round(n / 1e6)) + ' million';
 const STEPS = [
-  { A: 'WEEK_A', B: 'WEEK_B', shape: 3, den: .66, title: 'More work', cap: 'One week, 6 am to 3 pm', year: () => '9,000 BC', stat: l => `${Math.round(20 + 10 * clamp(map(l, .2, .85)))} h`, statU: () => 'of work per week', desc: 'A study of the Agta of the Philippines found that people who farmed more had about ten fewer hours of leisure a week than neighbours who mostly foraged.', src: 'Dyble et al., Nature Human Behaviour (2019)' },
-  { A: 'BODY_A', B: 'BODY_B', shape: 5, den: .3, title: 'Smaller bodies', cap: 'Stature from skeletons', year: () => '3,000 BC', stat: l => `${Math.round(lerp(175, 160, easeIO(l)))} cm`, statU: () => 'average adult man', desc: 'Ice Age hunter-gatherers in Greece and Turkey stood about 175 cm (men) and 165 cm (women). By 3000 BC their farming descendants averaged 160 and 152.', src: 'Jared Diamond, “The Worst Mistake in the History of the Human Race”, Discover (1987)' },
-  { A: 'ARENA', B: 'ARENA', shape: 1, den: .7, title: 'Crowd diseases', cap: 'Outbreak, band vs village', year: () => '5,000 BC', stat: () => `${AG.counts()[1]} / 360`, statU: () => 'villagers infected', desc: 'Measles, smallpox and flu reached people through livestock and packed settlements. It starts here with one sick forager and one sick cow. Select anyone in either group to infect them, and watch which group burns through.', src: 'Jared Diamond, Guns, Germs, and Steel (1997)', interactive: true },
-  { A: 'DIET_A', B: 'DIET_B', shape: 5, den: .38, rot: 'sway', title: 'Three grains', cap: 'The collapsing menu', year: () => 'AD 2026', stat: l => l > .62 ? '3' : '50,000', statU: () => 'plant species on the menu', desc: 'People can eat about 50,000 plant species. Today 90% of our calories come from 15 of them, and two thirds of that from just three: rice, wheat and maize.', src: 'FAO, Dimensions of Need (1995)' },
-  { A: 'CLASS_A', B: 'CLASS_B', shape: 5, den: .45, title: 'Someone is king', cap: 'A ziggurat of 63', year: () => '3,200 BC', stat: () => '29,086', statU: () => 'measures of barley, signed Kushim', desc: 'Grain keeps, and stored grain needs guards, counters and collectors. The first person in history we know by name, Kushim, was an accountant tallying barley in Uruk.', src: 'Yuval Noah Harari, Sapiens (2011)' },
-  { A: 'POP', B: 'POP', shape: 4, den: .55, rot: 'spin', count: true, title: 'No way back', cap: '1 glyph ≈ 125,000 people', year: l => yearStr(popAt(l).year), stat: l => popWord(popAt(l).n), statU: l => `world population · ${yearStr(popAt(l).year)}`, desc: 'The same land feeds far more farmers than foragers. Once the population grew, there was no returning to the old life. Harari calls it the luxury trap.', src: 'UN World Population Prospects · historical estimates' }
+  { A: 'WEEK_A', B: 'WEEK_B', shape: 3, den: .66, title: 'More work', cap: 'One week, 6 am to 3 pm', year: () => '9,000 BC', stat: l => `${Math.round(20 + 10 * clamp(map(l, .2, .85)))} h`, statU: () => 'of work per week', desc: 'A study of the Agta of the Philippines found that people who farmed more had about ten fewer hours of leisure a week than neighbours who mostly foraged.' },
+  { A: 'BODY_A', B: 'BODY_B', shape: 5, den: .3, title: 'Smaller bodies', cap: 'Stature from skeletons', year: () => '3,000 BC', stat: l => `${Math.round(lerp(175, 160, easeIO(l)))} cm`, statU: () => 'average adult man', desc: 'Ice Age hunter-gatherers in Greece and Turkey stood about 175 cm (men) and 165 cm (women). By 3000 BC their farming descendants averaged 160 and 152.' },
+  { A: 'ARENA', B: 'ARENA', shape: 1, den: .7, title: 'Crowd diseases', cap: 'Outbreak, band vs village', year: () => '5,000 BC', stat: () => `${AG.counts()[1]} / 360`, statU: () => 'villagers infected', desc: 'Measles, smallpox and flu reached people through livestock and packed settlements. It starts here with one sick forager and one sick cow. Select anyone in either group to infect them, and watch which group burns through.', interactive: true },
+  { A: 'DIET_A', B: 'DIET_B', shape: 5, den: .38, rot: 'sway', title: 'Three grains', cap: 'The collapsing menu', year: () => 'AD 2026', stat: l => l > .62 ? '3' : '50,000', statU: () => 'plant species on the menu', desc: 'People can eat about 50,000 plant species. Today 90% of our calories come from 15 of them, and two thirds of that from just three: rice, wheat and maize.' },
+  { A: 'CLASS_A', B: 'CLASS_B', shape: 5, den: .45, title: 'Someone is king', cap: 'A ziggurat of 63', year: () => '3,200 BC', stat: () => '29,086', statU: () => 'measures of barley, signed Kushim', desc: 'Grain keeps, and stored grain needs guards, counters and collectors. The first person in history we know by name, Kushim, was an accountant tallying barley in Uruk.' },
+  { A: 'POP', B: 'POP', shape: 4, den: .55, rot: 'spin', count: true, title: 'No way back', cap: '1 glyph ≈ 125,000 people', year: l => yearStr(popAt(l).year), stat: l => popWord(popAt(l).n), statU: l => `world population · ${yearStr(popAt(l).year)}`, desc: 'The same land feeds far more farmers than foragers. Once the population grew, there was no returning to the old life. Harari calls it the luxury trap.' }
 ];
 const PRE = { A: 'MARK', B: 'MARK', shape: 5, den: .5 }, EARS = { A: 'EAR', B: 'EAR_LAND', shape: 1, den: 1 };
 const annoRoot = $('#annos'), GAUGES = [];
