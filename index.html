@@ -1471,7 +1471,7 @@ function applyStep(i) {
 }
 function paintDesc(within) {
   if (!ch.words.length || ch.tintStart === null) return;
-  const st = Math.min(ch.tintStart, .6), w = clamp((within - st) / (.72 - st)), n = ch.words.length, band = Math.max(2, Math.round(n * .24)), f = w * (n + band - 1);
+  const st = Math.min(ch.tintStart, .62), w = clamp((within - st) / (.74 - st)), n = ch.words.length, band = Math.max(2, Math.round(n * .24)), f = w * (n + band - 1);
   ch.words.forEach((el, i) => { const e = clamp(f - i), s = clamp((f - i - 1) / (band - 1)); const css = s >= 1 ? 'var(--ink)' : e <= 0 ? 'rgba(23,20,15,.62)' : `color-mix(in oklab, var(--ink) ${(s * 100).toFixed(1)}%, color-mix(in oklab, var(--ember-ink) ${(e * 100).toFixed(1)}%, rgba(23,20,15,.45)))`; if (el._c !== css) { el._c = css; el.style.color = css; } });
 }
 
@@ -1708,7 +1708,7 @@ $$('[data-reveal],.meta,[data-lines]').forEach(el => io.observe(el));
 let thesisST, chapterST, revealST, traceST;
 function buildScroll() {
   thesisST = ScrollTrigger.create({ trigger: '#thesisStage', start: 'top top', end: () => '+=' + innerHeight * 1.7, pin: true });
-  chapterST = ScrollTrigger.create({ trigger: '#chapterStage', start: 'top top', end: () => '+=' + innerHeight * 13.8, pin: true, onEnter: () => $('#chKeeper').classList.add('is-lit') });
+  chapterST = ScrollTrigger.create({ trigger: '#chapterStage', start: 'top top', end: () => '+=' + innerHeight * 17.8, pin: true, onEnter: () => $('#chKeeper').classList.add('is-lit') });
   traceST = ScrollTrigger.create({ trigger: '#tracePin', start: 'top top', end: () => '+=' + innerHeight * 7, pin: true });
   revealST = ScrollTrigger.create({ trigger: '#revealStage', start: 'top top', end: () => '+=' + innerHeight * 5.4, pin: true });
   ScrollTrigger.create({ trigger: '#verdict', start: 'top 70%', onEnter: () => { if (!signed) { signed = true; $('#finalSig').alt = 'Signature added for you'; autoScribble(() => stamp('Your ancestors already signed.'), true); } } });
@@ -1797,7 +1797,7 @@ function frame() {
       const p = chapterST ? (y - chapterST.start) / Math.max(1, chapterST.end - chapterST.start) : 0, s = clamp(p, 0, .99999) * 6;
       stepIdx = Math.min(5, Math.floor(s)); const f = p < 0 ? 0 : s - stepIdx;
       cur = STEPS[stepIdx]; prev = stepIdx === 0 ? PRE : STEPS[stepIdx - 1];
-      morph = p < 0 ? 0 : easeIO(map(f, 0, .16)); local = map(f, .15, .5); grow = 1 + .06 * easeIO(map(f, .48, 1)); growPrev = stepIdx === 0 ? 1 : 1.06;
+      morph = p < 0 ? 0 : easeIO(map(f, 0, .34)); local = map(f, .32, .6); grow = 1 + .06 * easeIO(map(f, .58, 1)); growPrev = stepIdx === 0 ? 1 : 1.06;
       box = cardBox(active.r); fullXf = false;
       applyStep(stepIdx); ch.lastWithin = f; paintDesc(f);
       ch.dots.forEach((d, i) => d.style.transform = `scaleX(${i < stepIdx ? 1 : i === stepIdx ? clamp(f) : 0})`); { const pr = clamp((stepIdx + clamp(f)) / 6); dialProg.style.strokeDashoffset = (169.65 * (1 - pr)).toFixed(2); dialHand.style.transform = `rotate(${(pr * 360).toFixed(1)}deg)`; }
