@@ -140,8 +140,8 @@ main>section,main>div{position:relative;z-index:3}
 .split-line{display:block}
 .split-line>span{display:block}
 .wd{display:inline-block;white-space:nowrap}
-.split-line .ch{display:inline-block;opacity:0;filter:blur(12px);transform:translateY(.3em);transition:opacity .9s var(--ease-out),filter 1.1s var(--ease-out),transform 1.3s var(--ease-out);transition-delay:calc(min(var(--i), 48) * 22ms)}
-.is-in .split-line .ch{opacity:1;filter:blur(0px);transform:none}
+.split-line .ch{display:inline-block;padding:.08em 0 .26em;margin:-.08em 0 -.26em;opacity:0;filter:blur(12px);transform:translateY(.3em);transition:opacity .9s var(--ease-out),filter 1.1s var(--ease-out),transform 1.3s var(--ease-out);transition-delay:calc(min(var(--i), 48) * 22ms)}
+.is-in .split-line .ch{opacity:1;filter:none;transform:none}
 .pill{display:inline-flex;align-items:center;gap:10px;padding:13px 20px;border-radius:999px;border:1px solid currentColor;transition:background .3s,color .3s,border-color .3s,scale .15s}
 .hl{background-repeat:no-repeat;background-size:200% 100%;background-position:100% 0;transition:background-position 1.1s var(--ease-swift);padding:0 .12em;border-radius:.18em}
 .hl--gold{background-image:linear-gradient(90deg,var(--pill-gold) 50%,transparent 50%)}
