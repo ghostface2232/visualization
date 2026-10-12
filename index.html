@@ -333,8 +333,8 @@ main>section,main>div{position:relative;z-index:3}
 .pin b{font-family:var(--f-display);font-weight:400;font-size:17px;letter-spacing:-.01em;line-height:1.1}
 .pin em{font-style:normal;font-family:var(--f-mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:rgba(241,230,200,.72);line-height:1.35}
 @media (prefers-reduced-motion:reduce){.pin.on i::after{animation:none}}
-.anno.grp{flex-direction:column;align-items:center;gap:5px;text-align:center}
-.anno.grp .nm{font-size:10px;letter-spacing:.12em;color:rgba(241,230,200,.6)}
+.anno.grp{flex-direction:column;align-items:center;gap:6px;text-align:center}
+.anno.grp .nm{font-size:9px;letter-spacing:.14em;color:rgba(241,230,200,.6)}
 .anno.grp .sh{display:none}
 .anno.grp .ct{font-family:var(--f-display);font-size:19px;letter-spacing:-.01em;text-transform:none;color:var(--straw)}
 .gauge{position:absolute;left:0;top:0;pointer-events:none;opacity:0;transition:opacity .4s var(--ease-out)}
@@ -342,7 +342,7 @@ main>section,main>div{position:relative;z-index:3}
 .gauge circle{fill:none;vector-effect:non-scaling-stroke;transform:rotate(-90deg);transform-origin:50% 50%}
 .gauge .trk{stroke:rgba(241,230,200,.1);stroke-width:2}
 .gauge .arc{stroke:var(--ember);stroke-width:2.5;stroke-linecap:round;transition:stroke-dasharray .35s var(--ease-out)}
-@media (max-width:560px){.anno.grp .ct{font-size:15px}.anno.grp .nm{font-size:9px}.anno.grp .lg{display:none}.anno.grp .sh{display:inline}}
+@media (max-width:560px){.anno.grp .ct{font-size:15px}.anno.grp .nm{font-size:8px}.anno.grp .lg{display:none}.anno.grp .sh{display:inline}}
 /* ---------- CHAPTER III: the record, one object at a time ---------- */
 .trace__pin{position:relative;height:100svh;overflow:hidden;color:var(--ink);transition:color .9s var(--ease-out)}
 html.theme-dark .trace__pin,html.theme-dark .coda,html.theme-dark .trace__head .meta{color:var(--straw)}
@@ -1227,9 +1227,9 @@ function buildFormations(vertical) {
     ANCH.diet = { species: species.slice(0, 14).map(s => s.at), groups: groups.slice(0, 3).map(g => [g.at[0], g.at[1] + g.r + .14, 0]), others: [0, -1.12, 0], rest: [2.2, -1.86, 0] }; }
   // class
   { const rows = [1, 3, 6, 10, 16, 27], per = Math.floor(N / 64), tilt = p => rotX(p, .34), people = []; rows.forEach((n, k) => { for (let j = 0; j < n; j++) people.push({ k, j, n }); });
-    const tierY = k => 1.85 - k * .62, half = k => .18 + k * .42, cols = [[2.0, 1.35, .55], [1.35, 1.0, .55], [1.1, .9, .6], [.9, .78, .6], [.72, .64, .52], [.52, .47, .4]];
+    const tierY = k => 1.85 - k * .62, half = k => .18 + k * .35, cols = [[2.0, 1.35, .55], [1.35, 1.0, .55], [1.1, .9, .6], [.9, .78, .6], [.72, .64, .52], [.52, .47, .4]];
     const A = newF(), B = newF(); let i = 0; seed = 51;
-    people.forEach((pp, idx) => { const ang = idx / 63 * Math.PI * 2, ra = [Math.cos(ang) * 1.9, -.55, Math.sin(ang) * 1.9], zb = half(pp.k), xb = pp.n === 1 ? 0 : -zb + (pp.j / (pp.n - 1)) * zb * 2, rb = [xb, tierY(pp.k) + .08, zb * .9], king = pp.k === 0, sz = king ? 1.7 : 1;
+    people.forEach((pp, idx) => { const ang = idx / 63 * Math.PI * 2, ra = [Math.cos(ang) * 1.9, -.55, Math.sin(ang) * 1.9], zb = half(pp.k), xb = pp.n === 1 ? 0 : -zb + (pp.j / (pp.n - 1)) * zb * 2, rb = [xb, tierY(pp.k) + .08, zb * .5], king = pp.k === 0, sz = king ? 1.7 : 1;
       for (let q = 0; q < per; q++, i++) { const head = R() < .25, v = [gauss(), gauss(), gauss()], L = Math.hypot(...v); let lx, ly, lz;
         if (head) { lx = v[0] / L * .045; ly = .17 + v[1] / L * .045; lz = v[2] / L * .045; } else { const u = Math.cbrt(R()); lx = v[0] / L * u * .05; ly = .02 + v[1] / L * u * .11; lz = v[2] / L * u * .05; }
         const a = tilt([ra[0] + lx, ra[1] + ly, ra[2] + lz]); sp(A, i, a[0], a[1], a[2], .75); sc(A, i, 1.0, .9, .7, .12);
@@ -1238,7 +1238,7 @@ function buildFormations(vertical) {
       let b, gran = false; if (R() < .78) { const k = (R() * 6) | 0, hs = half(k) + .12, e = (R() * 4) | 0, t = R() * 2 - 1, yy = tierY(k) - .06; b = e === 0 ? [t * hs, yy, hs] : e === 1 ? [t * hs, yy, -hs] : e === 2 ? [hs, yy, t * hs] : [-hs, yy, t * hs]; if (R() < .3) b[1] -= R() * .58; }
       else { gran = true; b = [.34 + (R() * 6 | 0) * .06 + R() * .03, tierY(0) + (R() * 5 | 0) * .06 + R() * .03, (R() * 4 | 0) * .06 - .09]; }
       const bb = tilt(b); sp(B, i, bb[0], bb[1], bb[2], .7); if (gran) sc(B, i, 1.9, 1.3, .5, .14); else sc(B, i, .9, .72, .44, .1); }
-    commit('CLASS_A', A); commit('CLASS_B', B); ANCH.cls = { tier: k => tilt([-half(k) - .22, tierY(k) + .1, half(k) * .9]), granary: tilt([.5, tierY(0) + .3, 0]), fire: tilt([0, -.1, 0]) }; }
+    commit('CLASS_A', A); commit('CLASS_B', B); ANCH.cls = { tier: k => tilt([-half(k) - .2, tierY(k) + .1, half(k) * .5]), granary: tilt([.5, tierY(0) + .3, 0]), fire: tilt([0, -.1, 0]) }; }
   // population globe (ASCII glyphs)
   { const f = newF(), R0 = 1.95, sd = [.42, .5, .76], L0 = Math.hypot(...sd); sd.forEach((v, k) => sd[k] = v / L0); const pts = [], ga = Math.PI * (3 - Math.sqrt(5));
     for (let i = 0; i < N; i++) { const y = 1 - (i + .5) / N * 2, r = Math.sqrt(1 - y * y), th = ga * i, p = [Math.cos(th) * r, y, Math.sin(th) * r];
@@ -1357,7 +1357,7 @@ const STEPS = [
   { A: 'BODY_A', B: 'BODY_B', shape: 5, den: .3, title: 'Smaller bodies', cap: 'Stature from skeletons', year: () => '3,000 BC', stat: l => `${Math.round(lerp(175, 160, easeIO(l)))} cm`, statU: () => 'average adult man', desc: 'Ice Age hunter-gatherers in Greece and Turkey stood about 175 cm (men) and 165 cm (women). By 3000 BC their farming descendants averaged 160 and 152.', src: 'Jared Diamond, “The Worst Mistake in the History of the Human Race”, Discover (1987)' },
   { A: 'ARENA', B: 'ARENA', shape: 1, den: .7, title: 'Crowd diseases', cap: 'Outbreak, band vs village', year: () => '5,000 BC', stat: () => `${AG.counts()[1]} / 360`, statU: () => 'villagers infected', desc: 'Measles, smallpox and flu reached people through livestock and packed settlements. It starts here with one sick forager and one sick cow. Select anyone in either group to infect them, and watch which group burns through.', src: 'Jared Diamond, Guns, Germs, and Steel (1997)', interactive: true },
   { A: 'DIET_A', B: 'DIET_B', shape: 5, den: .38, rot: 'sway', title: 'Three grains', cap: 'The collapsing menu', year: () => 'AD 2026', stat: l => l > .62 ? '3' : '50,000', statU: () => 'plant species on the menu', desc: 'People can eat about 50,000 plant species. Today 90% of our calories come from 15 of them, and two thirds of that from just three: rice, wheat and maize.', src: 'FAO, Dimensions of Need (1995)' },
-  { A: 'CLASS_A', B: 'CLASS_B', shape: 5, den: .45, rot: 'sway', title: 'Someone is king', cap: 'A ziggurat of 63', year: () => '3,200 BC', stat: () => '29,086', statU: () => 'measures of barley, signed Kushim', desc: 'Grain keeps, and stored grain needs guards, counters and collectors. The first person in history we know by name, Kushim, was an accountant tallying barley in Uruk.', src: 'Yuval Noah Harari, Sapiens (2011)' },
+  { A: 'CLASS_A', B: 'CLASS_B', shape: 5, den: .45, title: 'Someone is king', cap: 'A ziggurat of 63', year: () => '3,200 BC', stat: () => '29,086', statU: () => 'measures of barley, signed Kushim', desc: 'Grain keeps, and stored grain needs guards, counters and collectors. The first person in history we know by name, Kushim, was an accountant tallying barley in Uruk.', src: 'Yuval Noah Harari, Sapiens (2011)' },
   { A: 'POP', B: 'POP', shape: 4, den: .55, rot: 'spin', count: true, title: 'No way back', cap: '1 glyph ≈ 125,000 people', year: l => yearStr(popAt(l).year), stat: l => popWord(popAt(l).n), statU: l => `world population · ${yearStr(popAt(l).year)}`, desc: 'The same land feeds far more farmers than foragers. Once the population grew, there was no returning to the old life. Harari calls it the luxury trap.', src: 'UN World Population Prospects · historical estimates' }
 ];
 const PRE = { A: 'MARK', B: 'MARK', shape: 5, den: .5 };
@@ -1374,9 +1374,9 @@ function buildLabels() {
     ...[140, 160, 180].map(t => ({ el: anno(String(t), 'l'), pos: () => B.tick(t), a: () => .7 })), { el: anno('Men'), pos: () => [B.mX, B.G - .2, 0], a: () => .8 }, { el: anno('Women'), pos: () => [B.wX, B.G - .2, 0], a: () => .8 },
     { el: anno('Ice Age outline', 'hi'), pos: () => B.top(B.mX - .62, 175), a: l => map(l, .5, .7) }];
   { const grp = (name, short) => { const el = document.createElement('div'); el.className = 'anno grp'; el.innerHTML = '<span class="nm"><span class="lg"></span><span class="sh"></span></span><span class="ct"></span>'; el.querySelector('.lg').textContent = name; el.querySelector('.sh').textContent = short; annoRoot.appendChild(el); return el; };
-    const below = (c, r) => () => [c()[0], c()[1] - r() - .16, 0];
-    LBL[2] = [{ el: grp('Forager band · 30', 'Band · 30'), pos: below(() => arenaLayout.band, () => arenaLayout.rb), a: () => 1, center: true, text: () => `${AG.counts()[0]} / 30 infected` },
-      { el: grp('Farming village · 360 + livestock', 'Village · 360'), pos: below(() => arenaLayout.vil, () => arenaLayout.rv), a: () => 1, center: true, text: () => `${AG.counts()[1]} / 360 infected` }];
+    const below = (c, r) => () => [c()[0], c()[1] - r() - .08, 0];
+    LBL[2] = [{ el: grp('Forager band · 30', 'Band · 30'), pos: below(() => arenaLayout.band, () => arenaLayout.rb), a: () => 1, center: true, dy: 18, text: () => `${AG.counts()[0]} / 30 infected` },
+      { el: grp('Farming village · 360 + livestock', 'Village · 360'), pos: below(() => arenaLayout.vil, () => arenaLayout.rv), a: () => 1, center: true, dy: 18, text: () => `${AG.counts()[1]} / 360 infected` }];
     const gauge = (c, r, total, k) => { const el = document.createElement('div'); el.className = 'gauge'; el.innerHTML = '<svg viewBox="0 0 100 100"><circle class="trk" cx="50" cy="50" r="50" pathLength="100"/><circle class="arc" cx="50" cy="50" r="50" pathLength="100" stroke-dasharray="0 100"/></svg>'; annoRoot.appendChild(el); return { el, arc: el.querySelector('.arc'), c, r, total, k, d: '' }; };
     GAUGES.push(gauge(() => arenaLayout.band, () => arenaLayout.rb + .08, 30, 0), gauge(() => arenaLayout.vil, () => arenaLayout.rv + .08, 360, 1)); }
   const foods = ['Acorns', 'Wild barley', 'Pistachios', 'Gazelle', 'Figs', 'Lentils', 'River fish', 'Mushrooms', 'Wild honey', 'Tubers', 'Shellfish', 'Almonds', 'Locusts', 'Grass seed'];
@@ -1661,7 +1661,7 @@ let cardRad = parseFloat(getComputedStyle(heroCard).borderRadius) || 20;
 const setText = (el, v) => { if (el._t !== v) { el._t = v; el.textContent = v; } };
 let curKey = '', simStarted = false, vertical = innerWidth < 900;
 // the outbreak arena stacks vertically on phones and can use more of the card's width there
-const chScale = (st, box) => vertical && st && st.A === 'ARENA' ? Math.min(box.w / 5.5, box.h / 4.6) : Math.min(box.w / 5.8, box.h / 4.8);
+const chScale = (st, box) => vertical && st && st.A === 'ARENA' ? Math.min(box.w / 5.5, box.h / 4.6) : st && st.A === 'CLASS_A' ? Math.min(box.w / 6.4, box.h / 5.5) : Math.min(box.w / 5.8, box.h / 4.8);
 function cardBox(r) { const vis = 2 * pCam.position.z * Math.tan(pCam.fov * Math.PI / 360), visW = vis * pCam.aspect; return { cx: ((r.left + r.width / 2) / innerWidth - .5) * visW, cy: (.5 - (r.top + r.height / 2) / VH) * vis, w: r.width / innerWidth * visW, h: r.height / innerHeight * vis }; }
 function setAttrs(prev, cur) { const key = prev.B + '|' + cur.A + '|' + cur.B; if (key === curKey) return; curKey = key; pGeo.setAttribute('pPrev', F[prev.B].p); pGeo.setAttribute('cPrev', F[prev.B].c); pGeo.setAttribute('pA', F[cur.A].p); pGeo.setAttribute('cA', F[cur.A].c); pGeo.setAttribute('pB', F[cur.B].p); pGeo.setAttribute('cB', F[cur.B].c); }
 const rotFor = (s, t, l) => s.rot === 'sway' ? Math.sin(t * .22) * .32 : s.rot === 'spin' ? t * .1 + l * 2.2 : 0;
