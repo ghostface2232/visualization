@@ -1604,7 +1604,7 @@ function traceShow(k) {
 }
 function traceFrame(p) {
   const K = TRACE.length, u = clamp(p) * (K + .9) - 1, i = clamp(Math.floor(u), -1, K - 1), f = u - i;
-  T.a = i; T.b = i + 1; T.e = i < K - 1 ? easeIO(map(f, .42, 1)) : 0; T.out = i === K - 1 ? 1 - easeIO(map(f, .42, .86)) : 1;
+  T.a = i; T.b = i + 1; T.e = i < K - 1 ? easeIO(map(f, .21, 1)) : 0; T.out = i === K - 1 ? 1 - easeIO(map(f, .3, .86)) : 1;
   traceText.style.opacity = traceHead.style.opacity = traceRail.style.opacity = T.out < 1 ? T.out.toFixed(3) : ''; traceObj.style.visibility = i < 0 || T.out < .3 ? 'hidden' : 'visible';
   traceTitle.style.opacity = i < 0 ? (1 - T.e).toFixed(3) : 0; traceTitle.style.transform = `translate(-50%,calc(-50% - ${(i < 0 ? T.e * 40 : 40).toFixed(1)}px))`;
   traceRender(); traceShow(T.e > .5 ? T.b : T.a); traceRail.style.setProperty('--p', clamp((i + T.e) / (K - 1)).toFixed(4));
@@ -1709,7 +1709,7 @@ let thesisST, chapterST, revealST, traceST;
 function buildScroll() {
   thesisST = ScrollTrigger.create({ trigger: '#thesisStage', start: 'top top', end: () => '+=' + innerHeight * 1.7, pin: true });
   chapterST = ScrollTrigger.create({ trigger: '#chapterStage', start: 'top top', end: () => '+=' + innerHeight * 17.8, pin: true, onEnter: () => $('#chKeeper').classList.add('is-lit') });
-  traceST = ScrollTrigger.create({ trigger: '#tracePin', start: 'top top', end: () => '+=' + innerHeight * 7, pin: true });
+  traceST = ScrollTrigger.create({ trigger: '#tracePin', start: 'top top', end: () => '+=' + innerHeight * 14.2, pin: true });
   revealST = ScrollTrigger.create({ trigger: '#revealStage', start: 'top top', end: () => '+=' + innerHeight * 5.4, pin: true });
   ScrollTrigger.create({ trigger: '#verdict', start: 'top 70%', onEnter: () => { if (!signed) { signed = true; $('#finalSig').alt = 'Signature added for you'; autoScribble(() => stamp('Your ancestors already signed.'), true); } } });
   ScrollTrigger.refresh();
