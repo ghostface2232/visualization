@@ -109,8 +109,8 @@ a{color:inherit}
 .cursor__dot{display:block;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:var(--ember);transition:transform .35s var(--ease-out)}
 .cursor.is-hover .cursor__dot{transform:scale(2.6)}
 .cursor.is-down .cursor__dot{transform:scale(.7)}
-.cursor-tag{position:fixed;left:0;top:0;z-index:261;pointer-events:none;padding:7px 10px;border-radius:999px;background:var(--ink);color:var(--paper-hi);opacity:0;scale:.6;transform-origin:0 0;transition:opacity .25s,scale .4s cubic-bezier(.34,1.56,.64,1);white-space:nowrap}
-.cursor-tag.is-on{opacity:1;scale:1}
+.cursor-tag{position:fixed;left:0;top:0;z-index:261;pointer-events:none;padding:7px 10px;border-radius:999px;background:var(--ink);color:var(--paper-hi);opacity:0;filter:blur(8px);transition:opacity .3s var(--ease-out),filter .35s var(--ease-out);white-space:nowrap}
+.cursor-tag.is-on{opacity:1;filter:blur(0px)}
 
 /* loader */
 .loader{position:fixed;inset:0;z-index:10000;color:var(--paper-hi);pointer-events:none;background:var(--coal)}
@@ -924,7 +924,7 @@ if (!coarse) {
   addEventListener('pointermove', e => { if (e.pointerType !== 'mouse') return; if (!H.classList.contains('cursor-live')) { cx = e.clientX; cy = e.clientY; H.classList.add('cursor-live'); } }, { passive: true });
   document.addEventListener('mouseleave', () => H.classList.remove('cursor-live')); addEventListener('blur', () => H.classList.remove('cursor-live'));
   addEventListener('mousedown', () => cursor.classList.add('is-down')); addEventListener('mouseup', () => cursor.classList.remove('is-down'));
-  gsap.ticker.add(() => { cx = lerp(cx, S.px, .22); cy = lerp(cy, S.py, .22); cursor.style.transform = `translate3d(${cx}px,${cy}px,0)`; cursorTag.style.transform = `translate3d(${cx + 18}px,${cy + 20}px,0)`; });
+  gsap.ticker.add(() => { cx = lerp(cx, S.px, .22); cy = lerp(cy, S.py, .22); cursor.style.transform = `translate3d(${cx}px,${cy}px,0)`; cursorTag.style.transform = `translate3d(${S.px + 18}px,${S.py + 20}px,0)`; });
   document.addEventListener('mouseover', e => {
     cursor.classList.toggle('is-hover', !!e.target.closest('[data-hover],a,button'));
     const t = e.target.closest('[data-cursor]'); if (t && !e.target.closest('button')) { cursorTag.textContent = t.dataset.cursor; cursorTag.classList.add('is-on'); } else cursorTag.classList.remove('is-on');
