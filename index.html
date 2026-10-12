@@ -385,16 +385,17 @@ html.theme-dark .trace__float{opacity:1}
 .rv-sig .mono{color:var(--ember)}
 .rv-sig .latin{font-size:clamp(36px,5vw,64px);line-height:1;color:var(--straw)}
 .rv-origin{bottom:11vh;display:flex;flex-direction:column;gap:12px;align-items:center}
-.rv-origin .mono{color:var(--pill-gold)}
+.rv-origin .mono{color:rgba(255,248,236,.9)}
+.rv-origin b,.rv-area,.rv-quote p,.rv-quote cite{color:#fffaf0}
 .rv-origin b{font-family:var(--f-display);font-weight:400;font-size:clamp(24px,2.6vw,38px);letter-spacing:-.03em}
-.rv-area{top:12vh;display:flex;flex-direction:column;align-items:center;gap:14px;text-shadow:0 1px 2px rgba(0,0,0,.6),0 0 28px rgba(0,0,0,.75)}
+.rv-area{top:12vh;display:flex;flex-direction:column;align-items:center;gap:14px}
 .area-num{font-family:var(--f-display);font-size:clamp(60px,10vw,160px);line-height:.88;letter-spacing:-.055em;font-variant-numeric:tabular-nums}
-.area-num small{font-size:.3em;margin-left:.12em;color:var(--pill-gold);letter-spacing:0}
+.area-num small{font-size:.3em;margin-left:.12em;color:#fffaf0;letter-spacing:0}
 .rv-area p{font-family:var(--f-display);font-size:clamp(20px,2vw,28px);letter-spacing:-.02em}
-.rv-area .mono{color:var(--pill-gold)}
-.rv-quote{top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:26px;text-shadow:0 4px 60px rgba(0,0,0,.85)}
+.rv-area .mono{color:rgba(255,248,236,.92)}
+.rv-quote{top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:26px}
 .rv-quote p{font-family:var(--f-display);font-size:clamp(40px,5.8vw,92px);line-height:1.08;letter-spacing:-.05em;max-width:14ch;text-indent:-.4em}
-.rv-quote em{font-style:normal;color:#ffd88a}
+.rv-quote em{font-style:normal;color:#ffe3a6}
 
 /* ---------- VERDICT ---------- */
 .live{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gutter);margin-top:clamp(30px,5vh,60px)}
@@ -744,7 +745,7 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
       <div class="rv rv-q"><p class="mono">One last question</p><h2>So who was<br>Party A?</h2></div>
       <div class="rv rv-sig"><span class="mono">Party A · signature on file</span><span class="latin">Triticum aestivum</span><span class="mono" style="color:var(--straw-3)">Bread wheat · an annual grass</span></div>
       <div class="rv rv-origin"><span class="mono">c. 9000 BC · Karacadağ, south-east Turkey</span><b>A single wild wheat plant</b></div>
-      <div class="rv rv-area"><span class="mono">Today, the world’s wheat harvest covers</span><span class="area-num" id="areaNum">0<small>km²</small></span><p>About the size of Greenland</p><span class="mono" style="color:rgba(241,230,200,.82);letter-spacing:.06em;text-transform:none">FAOSTAT 2022 · about 219 million hectares</span></div>
+      <div class="rv rv-area"><span class="mono">Today, the world’s wheat harvest covers</span><span class="area-num" id="areaNum">0<small>km²</small></span><p>About the size of Greenland</p><span class="mono" style="color:rgba(255,248,236,.85);letter-spacing:.06em;text-transform:none">FAOSTAT 2022 · about 219 million hectares</span></div>
       <blockquote class="rv rv-quote"><p>“We did not domesticate wheat. <em>It domesticated us.</em>”</p><cite class="mono">Yuval Noah Harari, Sapiens</cite></blockquote>
     </div>
   </div>
@@ -945,19 +946,24 @@ composer.addPass(new StagePass());
 const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth / 2, VH / 2), .7, .6, .8); composer.addPass(bloom);
 const RAYS = small ? 22 : 44;
 const finalPass = new ShaderPass({
-  uniforms: { tDiffuse: { value: null }, uSun: { value: new THREE.Vector2(.5, .6) }, uRays: { value: 0 }, uTime: { value: 0 }, uCA: { value: .35 }, uGrain: { value: .032 }, uCard: { value: new THREE.Vector4(0, 0, 1, 1) }, uRes: { value: new THREE.Vector2(innerWidth, VH) }, uFade: { value: 1 }, uVig: { value: 1 }, uDot: { value: 0 }, uCell: { value: 5 } },
+  uniforms: { tDiffuse: { value: null }, uSun: { value: new THREE.Vector2(.5, .6) }, uRays: { value: 0 }, uTime: { value: 0 }, uCA: { value: .35 }, uGrain: { value: .032 }, uCard: { value: new THREE.Vector4(0, 0, 1, 1) }, uRes: { value: new THREE.Vector2(innerWidth, VH) }, uFade: { value: 1 }, uVig: { value: 1 }, uDot: { value: 0 }, uCell: { value: 5 }, uLift: { value: 0 } },
   vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
-  fragmentShader: `uniform sampler2D tDiffuse; uniform vec2 uSun,uRes; uniform vec4 uCard; uniform float uRays,uTime,uCA,uGrain,uFade,uVig,uDot,uCell; varying vec2 vUv;
+  fragmentShader: `uniform sampler2D tDiffuse; uniform vec2 uSun,uRes; uniform vec4 uCard; uniform float uRays,uTime,uCA,uGrain,uFade,uVig,uDot,uCell,uLift; varying vec2 vUv;
     float hash(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
     vec3 soft(vec3 c){ vec3 k = max(c - 0.8, 0.0); return min(c, 0.8) + 0.2 * (1.0 - exp(-k / 0.2)); }
     void main(){
       vec2 cuv = (vUv - uCard.xy) / max(uCard.zw, vec2(1e-3)); if (cuv.x < -0.02 || cuv.x > 1.02 || cuv.y < -0.02 || cuv.y > 1.02) { gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0); return; } vec2 dc = cuv - 0.5; float r2 = dot(dc, dc); vec2 off = dc * r2 * uCA * 0.02 * uCard.zw;
       vec3 col = vec3(texture2D(tDiffuse, vUv + off).r, texture2D(tDiffuse, vUv).g, texture2D(tDiffuse, vUv - off).b);
       // halftone: each cell becomes one dot in the cell's colour, sized by its brightness (same language as the record's dot objects)
-      if (uDot > 0.001) { vec2 px = vUv * uRes, cc = (floor(px / uCell) + 0.5) * uCell, cu = cc / uRes, o = vec2(uCell * 0.3) / uRes;
-        vec3 sc = texture2D(tDiffuse, cu).rgb * 0.4 + (texture2D(tDiffuse, cu + vec2(o.x, 0.0)).rgb + texture2D(tDiffuse, cu - vec2(o.x, 0.0)).rgb + texture2D(tDiffuse, cu + vec2(0.0, o.y)).rgb + texture2D(tDiffuse, cu - vec2(0.0, o.y)).rgb) * 0.15;
-        float L = dot(soft(sc), vec3(0.3, 0.59, 0.11)), rr = uCell * 0.56 * clamp(sqrt(L) * 1.15, 0.0, 1.0), d = length(px - cc), m = 1.0 - smoothstep(rr - 0.75, rr + 0.45, d);
-        col = mix(col, mix(vec3(0.055, 0.047, 0.036), sc * 1.12, m), uDot); }
+      // amplitude-modulated screen: the dot grid is fixed, each pixel lights if it falls inside a dot sized by its own brightness,
+      // so dots follow the image's edges and type keeps its true shape
+      // reveal: map the whole field world onto a bright orange-to-yellow ramp, like the hero's sky
+      if (uLift > 0.001) { float Lr = clamp(dot(soft(col), vec3(0.3, 0.59, 0.11)), 0.0, 1.0); vec3 ramp = mix(vec3(0.62, 0.22, 0.05), vec3(0.98, 0.66, 0.26), smoothstep(0.03, 0.7, Lr)); col = mix(col, ramp, uLift * 0.92); }
+      // sunset grade for the field world: highlights (sun, bright sky, lit field) resolve to orange instead of white
+      if (uDot > 0.001) { float Lg = dot(soft(col), vec3(0.3, 0.59, 0.11)); col = mix(col, vec3(1.0, 0.46, 0.14) * (0.16 + Lg * 0.98), smoothstep(0.22, 0.9, Lg) * 0.9 * uDot); }
+      if (uDot > 0.001) { vec2 px = vUv * uRes, cc = (floor(px / uCell) + 0.5) * uCell;
+        float L = dot(soft(col), vec3(0.3, 0.59, 0.11)), rr = uCell * 0.56 * clamp(sqrt(L) * 1.15, 0.0, 1.0), d = length(px - cc), m = 1.0 - smoothstep(rr - 0.7, rr + 0.4, d);
+        col = mix(col, mix(mix(vec3(0.055, 0.047, 0.036), col * 0.52, uLift), col * 1.08, m), uDot); }
       if (uRays > 0.001) { vec2 dl = (vUv - uSun) * (0.92 / float(${RAYS})); vec2 p = vUv; float ill = 1.0; vec3 acc = vec3(0.0);
         for (int i = 0; i < ${RAYS}; i++) { p -= dl; vec3 s = texture2D(tDiffuse, p).rgb; float l = max(dot(s, vec3(0.3, 0.59, 0.11)) - 0.85, 0.0); acc += s * l * ill; ill *= 0.955; }
         col += acc / float(${RAYS}) * uRays * 4.5; }
@@ -1132,7 +1138,8 @@ function layoutTitle() {
   if (cv >= 700) { lines.length = 0; lines.push('The greatest con', 'in human history'); }
   const lh = F * .94, padT = F * .12, padB = F * .34, track = -.045 * F; if ('letterSpacing' in ctx) ctx.letterSpacing = `${track}px`; let wMax = 0; lines.forEach(l => wMax = Math.max(wMax, ctx.measureText(l).width + ('letterSpacing' in ctx ? 0 : track * l.length)));
   let fsx = fs; if (wMax / F * fsx > cv - gut * 2) fsx = (cv - gut * 2) / wMax * F;
-  const cw = Math.ceil(wMax + F * .2), ch = Math.ceil(padT + lh * lines.length + padB); title.cvs.width = cw; title.cvs.height = ch;
+  const cw = Math.ceil(wMax + F * .2), ch = Math.ceil(padT + lh * lines.length + padB); if (title.cvs.width !== cw || title.cvs.height !== ch) title.tex.dispose(); // GPU storage is fixed-size: reallocate when the canvas changes
+  title.cvs.width = cw; title.cvs.height = ch;
   ctx.font = `400 ${F}px "Anthropic Serif W", Georgia, serif`; ctx.fillStyle = '#fff'; ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'center'; if ('letterSpacing' in ctx) ctx.letterSpacing = `${track}px`;
   const asc = F * .74, tx = cw / 2 - ('letterSpacing' in ctx ? track / 2 : 0);
     lines.forEach((l, i) => ctx.fillText(l, tx, padT + asc + i * lh)); title.tex.needsUpdate = true; title.mat.uniforms.uLines.value = lines.length;
@@ -1792,7 +1799,7 @@ function frame() {
   finalPass.uniforms.uRays.value = (tV.z < 1 && Math.abs(tV.x) < 1.6 && Math.abs(tV.y) < 1.6) ? W.field * .28 : 0; finalPass.uniforms.uTime.value = t;
   const pm = W.particles * (1 - W.field); bloom.strength = lerp(.22, .5, pm); bloom.radius = lerp(.3, .45, pm); bloom.threshold = lerp(.96, .82, pm);
   finalPass.uniforms.uVig.value = active && (active.type === 'chapter' || active.type === 'painting') ? .45 : 1;
-  finalPass.uniforms.uDot.value = !active ? 0 : active.type === 'hero' ? 1 : active.type === 'reveal' ? W.field : 0; finalPass.uniforms.uCell.value = vw < 700 ? 3.1 : 4.2;
+  finalPass.uniforms.uDot.value = !active ? 0 : active.type === 'hero' ? 1 : active.type === 'reveal' ? W.field : 0; finalPass.uniforms.uCell.value = vw < 700 ? 3.1 : 4.2; finalPass.uniforms.uLift.value = active && active.type === 'reveal' ? W.field : 0;
 
   // editorial motion: chapter media grow-in, cards grow, interlude
   if (!reduce) windows.forEach(g => { const r = g.getBoundingClientRect(); if (r.top > vh || r.bottom < 0) return; const e = easeIO(clamp((vh - r.top) / (vh * .9))), iy = (1 - e) * 8, ix = (1 - e) * (vw < 900 ? 10 : 22), rr = lerp(40, parseFloat(getComputedStyle(g).borderRadius) || 24, e); g.style.clipPath = e >= 1 ? '' : `inset(${iy.toFixed(2)}% ${ix.toFixed(2)}% ${iy.toFixed(2)}% ${ix.toFixed(2)}% round ${rr.toFixed(1)}px)`; });
