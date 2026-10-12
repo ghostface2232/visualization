@@ -1463,7 +1463,7 @@ function traceRect(k) {
 }
 function traceSample(k) {
   const im = T.imgs[k], r = T.rects[k]; if (!im.naturalWidth || !r) return;
-  const c = clamp(r.h / 128, 3.3, 5), cols = Math.max(8, Math.round(r.w / c)), rows = Math.max(8, Math.round(r.h / c));
+  const c = clamp(r.h / 150, 2.9, 4.4), cols = Math.max(8, Math.round(r.w / c)), rows = Math.max(8, Math.round(r.h / c));
   const off = document.createElement('canvas'); off.width = cols; off.height = rows; const o = off.getContext('2d', { willReadFrequently: true }); o.drawImage(im, 0, 0, cols, rows);
   const d = o.getImageData(0, 0, cols, rows).data, buckets = [[], [], [], []], rad = new Float32Array(cols * rows), hash = new Float32Array(cols * rows);
   for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) { const n = j * cols + i, L = lum(d, n * 4); rad[n] = Math.min(.62, Math.pow(L, .8) * .58); hash[n] = (((i * 73856093) ^ (j * 19349663)) >>> 0) % 1000 / 1000; if (rad[n] > .07) buckets[L > .72 ? 3 : L > .5 ? 2 : L > .28 ? 1 : 0].push(n); }
@@ -1513,7 +1513,7 @@ function traceFrame(p) {
 // archive specks drifting past at the edges, dots only
 FLOATS.forEach(([src, fx, fy, fw, sp]) => {
   const cv = document.createElement('canvas'), im = new Image(); $('#traceFloat').appendChild(cv); im.src = src;
-  const fl = { cv, layout() { if (!im.naturalWidth) return; const sc = T.W < 700 ? .7 : 1, w = fw * sc, h = w * im.naturalHeight / im.naturalWidth, c = 3.2, cols = Math.round(w / c), rows = Math.round(h / c), dpr = T.dpr || 1;
+  const fl = { cv, layout() { if (!im.naturalWidth) return; const sc = T.W < 700 ? .7 : 1, w = fw * sc, h = w * im.naturalHeight / im.naturalWidth, c = 2.7, cols = Math.round(w / c), rows = Math.round(h / c), dpr = T.dpr || 1;
       cv.width = w * dpr; cv.height = h * dpr; cv.style.width = w + 'px'; cv.style.height = h + 'px'; const x = cv.getContext('2d'); x.setTransform(dpr, 0, 0, dpr, 0, 0);
       const off = document.createElement('canvas'); off.width = cols; off.height = rows; const o = off.getContext('2d', { willReadFrequently: true }); o.drawImage(im, 0, 0, cols, rows); const d = o.getImageData(0, 0, cols, rows).data;
       for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) { const L = lum(d, (j * cols + i) * 4), r = Math.min(.6, Math.pow(L, .8) * .56) * c; if (r < .4) continue; x.fillStyle = DOT_PAL[L > .72 ? 3 : L > .5 ? 2 : L > .28 ? 1 : 0]; x.beginPath(); x.arc((i + .5) * c, (j + .5) * c, r, 0, 6.2832); x.fill(); }
