@@ -7,13 +7,12 @@
 <style>html{background:#0f0d0a}body{margin:0}#loader{position:fixed;inset:0;z-index:10000;background:#0f0d0a}#loader.is-done{background:transparent}</style>
 <title>The Wheat Contract</title>
 <meta name="description" content="The greatest con in human history: the Agricultural Revolution, as a 12,000-year contract you sign yourself.">
-<link rel="preload" href="fonts/anthropic-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/butler-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/butler-light.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/anthropic-sans.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap">
 <style>
-@font-face{font-family:"Anthropic Serif W";src:local("Anthropic Serif Variable Text"),url(fonts/anthropic-serif.woff2) format("woff2");font-weight:100 900;font-display:swap}
+@font-face{font-family:"Butler";src:url(fonts/butler-light.woff2) format("woff2");font-weight:100 300;font-style:normal;font-display:swap}
+@font-face{font-family:"Butler";src:url(fonts/butler-regular.woff2) format("woff2");font-weight:400 900;font-style:normal;font-display:swap}
 @font-face{font-family:"Anthropic Sans W";src:local("Anthropic Sans Variable Text"),url(fonts/anthropic-sans.woff2) format("woff2");font-weight:100 900;font-display:swap}
 /* Layout: an editorial essay on warm paper; dark rounded "stage" cards are windows onto one shared WebGL world (field / grain particles); chapters pin and step. */
 :root{
@@ -32,10 +31,10 @@
   --straw:#f1e6c8;
   --straw-3:rgba(241,230,200,.5);
   --line-d:rgba(241,230,200,.16);
-  --f-display:"Anthropic Serif W","Anthropic Serif",Georgia,"Times New Roman",serif;
+  --f-display:"Butler",Georgia,"Times New Roman",serif;
   --f-body:"Anthropic Sans W","Anthropic Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --f-mono:"IBM Plex Mono",ui-monospace,"SF Mono",Consolas,monospace;
-  --f-latin:"Instrument Serif",Georgia,serif;
+  --f-mono:-apple-system,"SF Pro Text","SF Pro",BlinkMacSystemFont,system-ui,"Segoe UI",sans-serif;
+  --f-latin:"Butler",Georgia,serif;
   --ember-ink:#a4380f;
   --fs-d1:clamp(52px,8vw,128px);
   --fs-d2:clamp(46px,5.8vw,96px);
@@ -67,7 +66,7 @@ img{display:block;max-width:100%}
 button{font:inherit;color:inherit;cursor:pointer;background:none;border:0;padding:0}
 a{color:inherit}
 .mono{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:500}
-.latin{font-family:var(--f-latin);font-style:italic}
+.latin{font-family:var(--f-latin);font-weight:300}
 .sr-only{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
 :focus-visible{outline:2px solid var(--ember);outline-offset:3px}
 
@@ -320,7 +319,7 @@ main>section,main>div{position:relative;z-index:3}
 .interlude__card::after{content:"";position:absolute;inset:0;z-index:2;border-radius:inherit;background:linear-gradient(180deg,rgba(15,12,9,.45),rgba(15,12,9,0) 40%,rgba(15,12,9,.6));box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)}
 .interlude__words{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;justify-content:center;gap:.04em;padding:0 var(--inset);pointer-events:none}
 .iw{display:block;font-family:var(--f-display);font-size:clamp(56px,10.5vw,176px);line-height:1;letter-spacing:-.055em;color:var(--paper-hi);text-shadow:0 12px 60px rgba(0,0,0,.5);opacity:0;will-change:transform,opacity,filter}
-.iw em{font-family:var(--f-latin);font-style:italic;letter-spacing:-.02em;color:var(--pill-gold)}
+.iw em{font-family:var(--f-latin);font-style:normal;font-weight:300;letter-spacing:-.02em;color:var(--pill-gold)}
 .iw:nth-child(1){align-self:flex-start}.iw:nth-child(2){align-self:center}.iw:nth-child(3){align-self:flex-end}
 .interlude__tag{z-index:3}
 .interlude__tag.tr{top:auto;bottom:var(--inset)}
@@ -655,9 +654,9 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
             <g filter="url(#inkf)" mask="url(#speck)" fill="#c2401a">
               <circle cx="60" cy="60" r="56" fill="none" stroke="#c2401a" stroke-width="3.6"/>
               <circle cx="60" cy="60" r="33" fill="none" stroke="#c2401a" stroke-width="1.2"/>
-              <text font-family="SF Mono, IBM Plex Mono, monospace" font-size="8.6" letter-spacing="2.6"><textPath href="#sealArc">SETTLED · FERTILE CRESCENT · 9500 BC ·</textPath></text>
+              <text font-family="-apple-system, SF Pro Text, system-ui, Segoe UI, sans-serif" font-size="8.6" letter-spacing="2.6"><textPath href="#sealArc">SETTLED · FERTILE CRESCENT · 9500 BC ·</textPath></text>
               <path id="sealWheat" d="" fill="none" stroke="#c2401a" stroke-width="16" stroke-linecap="round" transform="translate(44 30) scale(.1)"/>
-              <text x="60" y="78" text-anchor="middle" font-family="Anthropic Serif W, Georgia, serif" font-size="10" letter-spacing="1.5">SEALED</text>
+              <text x="60" y="78" text-anchor="middle" font-family="Butler, Georgia, serif" font-size="10" letter-spacing="1.5">SEALED</text>
             </g>
           </svg>
         </div>
@@ -817,7 +816,7 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
         <p>The Metropolitan Museum of Art, Open Access (CC0): Bruegel, The Harvesters (1565); Van Gogh, Wheat Field with Cypresses (1889); Model of a Granary with Scribes; Proto-cuneiform barley tablet; Servant Grinding Grain; Harvest Scenes, Tomb of Menna (facsimile). Unsplash: Marek Studzinski, Sandy Ravaloniaina, Lu, Andrey Soldatov.</p></div>
       <div class="footer__col"><span class="footer__colTitle mono">Colophon</span>
         <p>All figures are estimates. This page argues one reading of the Agricultural Revolution: that it was a con. Archaeologists still disagree about why people settled and what it cost them.</p>
-        <p>Type: Anthropic Serif &amp; Sans, SF Mono. Field, grain and globe rendered live in WebGL.</p></div>
+        <p>Type: Butler, Anthropic Sans, SF Pro. Field, grain and globe rendered live in WebGL.</p></div>
     </div>
     <div class="footer__word" aria-hidden="true">The Wheat Contract</div>
     <div class="footer__bar mono"><span>© 2026 · A study in one grass</span><span>9500 BC → present</span><button type="button" id="restart" data-hover data-magnet>Back to top <span aria-hidden="true">↑</span></button></div>
@@ -1145,7 +1144,7 @@ function layoutTitle() {
   // vw spans the GL canvas (under the scrollbar too); cv is the visible layout width the title must fit and centre in
   const vw = innerWidth, vh = VH, cv = document.documentElement.clientWidth || vw, gut = Math.max(16, Math.min(44, cv * .03)) + 10;
   const fs = Math.max(46, Math.min(176, cv * .108)), F = 220, ctx = title.ctx;
-  ctx.font = `400 ${F}px "Anthropic Serif W", Georgia, serif`;
+  ctx.font = `400 ${F}px "Butler", Georgia, serif`;
   const words = 'The greatest con in human history'.split(' '), maxW = (cv - gut * 2) / fs * F, lines = []; let cur = '';
   for (const w of words) { const t = cur ? cur + ' ' + w : w; if (ctx.measureText(t).width > maxW && cur) { lines.push(cur); cur = w; } else cur = t; } lines.push(cur);
   if (cv >= 700) { lines.length = 0; lines.push('The greatest con', 'in human history'); }
@@ -1153,7 +1152,7 @@ function layoutTitle() {
   let fsx = fs; if (wMax / F * fsx > cv - gut * 2) fsx = (cv - gut * 2) / wMax * F;
   const cw = Math.ceil(wMax + F * .2), ch = Math.ceil(padT + lh * lines.length + padB); if (title.cvs.width !== cw || title.cvs.height !== ch) title.tex.dispose(); // GPU storage is fixed-size: reallocate when the canvas changes
   title.cvs.width = cw; title.cvs.height = ch;
-  ctx.font = `400 ${F}px "Anthropic Serif W", Georgia, serif`; ctx.fillStyle = '#fff'; ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'center'; if ('letterSpacing' in ctx) ctx.letterSpacing = `${track}px`;
+  ctx.font = `400 ${F}px "Butler", Georgia, serif`; ctx.fillStyle = '#fff'; ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'center'; if ('letterSpacing' in ctx) ctx.letterSpacing = `${track}px`;
   const asc = F * .74, tx = cw / 2 - ('letterSpacing' in ctx ? track / 2 : 0);
     lines.forEach((l, i) => ctx.fillText(l, tx, padT + asc + i * lh)); title.tex.needsUpdate = true; title.mat.uniforms.uLines.value = lines.length;
   const k = fsx / F, sw = cw * k, sh = ch * k, pitch = Math.atan2(HERO.py - HERO.ty, HERO.pz - HERO.tz);
@@ -1339,7 +1338,7 @@ const pGeo = new THREE.BufferGeometry();
 pGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(N * 3), 3));
 { const idx = new Float32Array(N), rnd = new Float32Array(N * 2); for (let i = 0; i < N; i++) { idx[i] = i / N; rnd[i * 2] = Math.random(); rnd[i * 2 + 1] = Math.random(); } pGeo.setAttribute('aIdx', new THREE.BufferAttribute(idx, 1)); pGeo.setAttribute('aRnd', new THREE.BufferAttribute(rnd, 2)); }
 // glyph atlas for ASCII rendering
-const glyphTex = (function () { const g = ' .->x*$#', c = document.createElement('canvas'); c.width = 64 * 8; c.height = 64; const x = c.getContext('2d'); x.fillStyle = '#fff'; x.font = '500 50px "SF Mono","IBM Plex Mono",monospace'; x.textAlign = 'center'; x.textBaseline = 'middle'; [...g].forEach((ch, i) => x.fillText(ch, i * 64 + 32, 34)); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.NoColorSpace; return t; })();
+const glyphTex = (function () { const g = ' .->x*$#', c = document.createElement('canvas'); c.width = 64 * 8; c.height = 64; const x = c.getContext('2d'); x.fillStyle = '#fff'; x.font = '500 50px "SF Mono","Menlo Mono",monospace'; x.textAlign = 'center'; x.textBaseline = 'middle'; [...g].forEach((ch, i) => x.fillText(ch, i * 64 + 32, 34)); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.NoColorSpace; return t; })();
 const PU = {
   uTime: { value: 0 }, uMorph: { value: 0 }, uLocal: { value: 0 }, uXfPrev: { value: new THREE.Vector4(0, 0, 1, 0) }, uXfCur: { value: new THREE.Vector4(0, 0, 1, 0) },
   uAlpha: { value: 0 }, uPR: { value: PR }, uSize: { value: small ? 30 : 24 }, uCount: { value: 1 }, uMouse: { value: new THREE.Vector3(99, 99, 0) }, uMouseOn: { value: 0 }, uVel: { value: 0 },
@@ -1938,8 +1937,7 @@ gsap.ticker.add(ldTick);
 const nextFrame = () => new Promise(r => setTimeout(r, 16));
 // every font face and every image the page will use, fetched and decoded behind the loader
 function preloadAll(onProgress) {
-  const fonts = ['400 100px "Anthropic Serif W"', 'italic 400 100px "Anthropic Serif W"', '400 16px "Anthropic Sans W"', '500 16px "Anthropic Sans W"',
-    '400 12px "IBM Plex Mono"', '500 12px "IBM Plex Mono"', '400 40px "Instrument Serif"', 'italic 400 40px "Instrument Serif"'];
+  const fonts = ['400 100px "Butler"', '300 100px "Butler"', '400 16px "Anthropic Sans W"', '500 16px "Anthropic Sans W"'];
   const urls = [...new Set([...document.images].map(i => i.getAttribute('src')).concat(TRACE.map(o => o.src), FLOATS.map(f => f[0]), ['img/wheat-ear.jpg', 'img/cypresses.jpg']).filter(Boolean))];
   const jobs = [...fonts.map(f => document.fonts.load(f).catch(() => {})),
     ...urls.map(u => new Promise(res => { const im = new Image(); im.decoding = 'async'; im.onload = () => (im.decode ? im.decode() : Promise.resolve()).catch(() => {}).then(res); im.onerror = res; im.src = u; }))];
