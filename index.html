@@ -1163,7 +1163,7 @@ function layoutTitle() {
   const hh = D * Math.tan(cam.fov * Math.PI / 360), hw = hh * cam.aspect, cxN = ((left + sw / 2) / vw) * 2 - 1, cyN = 1 - ((top + sh / 2) / vh) * 2;
   title.local = new THREE.Vector3(cxN * hw, cyN * hh, -D); title.mesh.position.copy(title.local.clone().applyMatrix4(cam.matrixWorld)); title.mesh.quaternion.copy(cam.quaternion); title.mesh.scale.set(sw / vw * 2 * hw, sh / vh * 2 * hh, 1);
 }
-const CLOSE = { px: .32, py: .95, pz: 1.5, tx: 0, ty: .95, tz: 0 }, HIGH = { px: 0, py: 24, pz: 42, tx: 0, ty: 0, tz: -30 };
+const CLOSE = { px: 0, py: 3.3, pz: 11, tx: 0, ty: .9, tz: 0 }, HIGH = { px: 0, py: 24, pz: 42, tx: 0, ty: 0, tz: -30 };
 const fcam = { ...HERO }, look = new THREE.Vector3(), par = { x: 0, y: 0 };
 const setCam = (a, b, t) => { for (const k in fcam) fcam[k] = lerp(a[k], b[k], t); };
 const ray = new THREE.Raycaster(), ndc = new THREE.Vector2(), groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -.7), zPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0), hit = new THREE.Vector3();
@@ -1175,7 +1175,7 @@ const newF = () => ({ p: new Float32Array(N * 4), c: new Float32Array(N * 4) });
 const sp = (f, i, x, y, z, s = 1) => { const k = i * 4; f.p[k] = x; f.p[k + 1] = y; f.p[k + 2] = z; f.p[k + 3] = s; };
 const sc = (f, i, r, g, b, a) => { const k = i * 4; f.c[k] = r; f.c[k + 1] = g; f.c[k + 2] = b; f.c[k + 3] = a; };
 // the landing shape is drawn in the field sprite's pixel frame; x is squeezed like the sprite's quad (.24 wide for 1.22 tall)
-const LAND_K = 7.2 / 620, LAND_Y0 = 310, LAND_SX = (.24 / 256) / (1.22 / 1024), EAR_TOPM = (LAND_Y0 - 48) * LAND_K, EAR_BOTM = (LAND_Y0 - 380) * LAND_K;
+let SEEDS = null;
 const commit = (name, f) => F[name] = { p: new THREE.BufferAttribute(f.p, 4), c: new THREE.BufferAttribute(f.c, 4) };
 const rotX = (p, a) => { const c = Math.cos(a), s = Math.sin(a); return [p[0], c * p[1] - s * p[2], s * p[1] + c * p[2]]; };
 const rotY3 = (p, a) => { const c = Math.cos(a), s = Math.sin(a); return [c * p[0] + s * p[2], p[1], -s * p[0] + c * p[2]]; };
@@ -1292,17 +1292,25 @@ function buildEarPhoto(img) {
   const step = Math.max(.5, Math.sqrt(n / (N * .94))), Hm = 6.7, k = Hm / (y1 - y0), cxm = (x0 + x1) / 2, cym = (y0 + y1) / 2, size = 1.5 * step * k / .0209, pts = [];
   for (let gy = y0; gy <= y1 && pts.length < N; gy += step) for (let gx = x0; gx <= x1 && pts.length < N; gx += step) {
     const q = (Math.round(gy) * RW + Math.round(gx)) * 4, L = lum(q); if (L > .07) pts.push([(gx - cxm) * k, (cym - gy) * k + .3, (L - .4) * .3, d[q] / 255, d[q + 1] / 255, d[q + 2] / 255, L]); }
-  // landing targets: the centre stalk's ear, awns and upper stem, from the same sprite the field draws
-  const lc = document.createElement('canvas'); lc.width = 256; lc.height = 620; lc.getContext('2d').drawImage(ATLAS.canvas, 0, 0, 256, 620, 0, 0, 256, 620);
-  const land = sampleCanvas(lc, pts.length, 60).map(p => [(p[0] - 128) * LAND_K * LAND_SX, (LAND_Y0 - p[1]) * LAND_K, (R() - .5) * .06]);
-  pts.sort((a, b) => b[1] - a[1]); land.sort((a, b) => b[1] - a[1]);
+  // landing targets: seeds sown on the ground around the field's centre (far seeds take the top of the photo)
+  const seeds = pts.map(() => { const r = Math.min(3.4, 1.05 * Math.sqrt(-2 * Math.log(1 - R() * .999))), a = R() * 6.2832; return [Math.cos(a) * r, Math.sin(a) * r]; }).sort((a, b) => a[1] - b[1]);
+  pts.sort((a, b) => b[1] - a[1]);
   const A = newF(), B = newF(), b = 1.18;
   pts.forEach((p, i) => { const r = Math.min(1.4, p[3] * b), g = Math.min(1.3, p[4] * b), bl = p[5] * b, al = Math.min(1, p[6] * 1.9) * .5;
     let fd = clamp((p[1] - .3 + Hm / 2) / (Hm * .34)); fd = fd * fd * (3 - 2 * fd); // stems fade into the dark instead of stopping short
-    sp(A, i, p[0], p[1], p[2], size * (.6 + .4 * fd)); sc(A, i, r * (.4 + .6 * fd), g * (.4 + .6 * fd), bl * (.4 + .6 * fd), al * fd); const l = land[i]; sp(B, i, l[0], l[1], l[2], size * .8); sc(B, i, r, g, bl, Math.max(al, .3)); });
+    sp(A, i, p[0], p[1], p[2], size * (.6 + .4 * fd)); sc(A, i, r * (.4 + .6 * fd), g * (.4 + .6 * fd), bl * (.4 + .6 * fd), al * fd);
+    sp(B, i, 0, 0, 0, size * .55); sc(B, i, Math.min(1.5, r * 1.15), Math.min(1.35, g * 1.1), bl, .34); });
   for (let i = pts.length; i < N; i++) { sp(A, i, 0, 0, -9, 0); sc(A, i, 0, 0, 0, 0); sp(B, i, 0, 0, -9, 0); sc(B, i, 0, 0, 0, 0); }
-  commit('EAR', A); commit('EAR_LAND', B); curKey = '';
+  SEEDS = seeds;
+  commit('EAR', A); commit('EAR_LAND', B); curKey = ''; layoutSeeds();
 }
+// project each seed through the opening camera into the particle plane (redone on resize)
+function layoutSeeds() { if (!SEEDS || !F.EAR_LAND) return;
+  const cam = fieldCam.clone(); cam.position.set(CLOSE.px, CLOSE.py, CLOSE.pz); cam.lookAt(CLOSE.tx, CLOSE.ty, CLOSE.tz); cam.updateMatrixWorld();
+  const vis = 2 * pCam.position.z * Math.tan(pCam.fov * Math.PI / 360), visW = vis * pCam.aspect, v = new THREE.Vector3(), P = F.EAR_LAND.p.array;
+  const ks = Math.min(1, Math.max(.45, pCam.aspect / 1.3)); // narrow screens sow a tighter patch
+  SEEDS.forEach((sd, i) => { v.set(sd[0] * ks, .03, sd[1] * ks).project(cam); P[i * 4] = v.x * visW / 2; P[i * 4 + 1] = v.y * vis / 2; P[i * 4 + 2] = 0; });
+  F.EAR_LAND.p.needsUpdate = true; }
 let PAINT_ASPECT = 1.356;
 function buildPaint(img) {
   const aspect = img.naturalWidth / img.naturalHeight; PAINT_ASPECT = aspect;
@@ -1752,7 +1760,7 @@ function frame() {
   W.field = 0; W.particles = 0;
   if (active && active.type === 'hero') W.field = 1 - cover * .6;
   if (active && active.type === 'chapter') W.particles = chFade;
-  if (active && active.type === 'reveal') { W.field = map(rP, .34, .42); W.particles = 1 - map(rP, .41, .48); }
+  if (active && active.type === 'reveal') { W.field = map(rP, .34, .42); W.particles = 1 - map(rP, .44, .53); }
   if (active && active.type === 'painting') W.particles = map(interPr, .36, .44);
   interImg.style.opacity = (active && active.type === 'painting') ? (1 - map(interPr, .4, .48)).toFixed(3) : 1;
   FU.uExposure.value = W.field; PU.uAlpha.value = W.particles;
@@ -1760,7 +1768,7 @@ function frame() {
   // field camera
   if (!active || active.type !== 'reveal') { setCam(HERO, { ...HERO, pz: 5.6, py: 1.6, ty: 1.22 }, easeIO(cover)); FU.uHide.value = 1; FU.uRadius.value = 95; FU.uHero0.value = 0; FU.uFogNear.value = 7; FU.uFogFar.value = 64; title.mat.uniforms.uAlpha.value = 1; }
   else { const m = map(rP, .47, .82), k = easeIO(m), kb = easeO(m); setCam(CLOSE, HIGH, k); fcam.pz = lerp(CLOSE.pz, HIGH.pz, kb); fcam.px = lerp(CLOSE.px, HIGH.px, kb);
-    FU.uHide.value = 0; FU.uRadius.value = 262 * Math.pow(map(rP, .49, .82), 2.2); FU.uHero0.value = 1 - map(rP, .46, .54); FU.uFogNear.value = lerp(6, 26, k); FU.uFogFar.value = lerp(42, 170, k); title.mat.uniforms.uAlpha.value = 0; }
+    FU.uHide.value = 0; FU.uRadius.value = -.6 + 262.6 * Math.pow(map(rP, .43, .82), 2.2); FU.uHero0.value = 0; FU.uFogNear.value = lerp(6, 26, k); FU.uFogFar.value = lerp(42, 170, k); title.mat.uniforms.uAlpha.value = 0; }
   par.x = lerp(par.x, S.mx, .035); par.y = lerp(par.y, S.my, .035); const hi = clamp(fcam.py / 6);
   fieldCam.position.set(fcam.px + par.x * (.5 + hi * 3), fcam.py - par.y * (.16 + hi * 2), fcam.pz); look.set(fcam.tx + par.x * .6, fcam.ty, fcam.tz); fieldCam.lookAt(look); fieldCam.updateMatrixWorld();
   if (title.local && title.mat.uniforms.uAlpha.value > 0) { title.mesh.position.copy(title.local).applyMatrix4(fieldCam.matrixWorld); title.mesh.quaternion.copy(fieldCam.quaternion); }
@@ -1785,19 +1793,16 @@ function frame() {
     } else if (active.type === 'painting') {
       prev = PAINT; cur = PAINT; morph = 1; local = map(interPr, .48, .92); box = cardBox(active.r); box.cx += interPanPx / active.r.width * box.w; fullXf = 'paint';
     } else {
-      prev = { B: 'DUST', den: .4 }; cur = EARS; morph = easeIO(map(rP, .02, .2)); local = map(rP, .29, .41); box = cardBox(active.r); fullXf = true;
+      prev = { B: 'DUST', den: .4 }; cur = EARS; morph = easeIO(map(rP, .02, .2)); local = map(rP, .27, .43); box = cardBox(active.r); fullXf = true;
     }
     setAttrs(prev, cur);
     const scale = fullXf === 'paint' ? Math.max(box.w / (4.6 * PAINT_ASPECT), box.h / 4.6) * 1.06 : fullXf ? box.h / 8.6 : chScale(cur, box);
     const sc_ = scale * grow, cyOff = fullXf === true ? box.h * .04 : 0;
     PU.uXfCur.value.set(box.cx, box.cy + cyOff, sc_, rotFor(cur, t, local));
     if (cur === EARS) {
-      // where the field's centre stalk sits on screen right now (the field camera is parked on it until the pull-back)
-      const vis = 2 * pCam.position.z * Math.tan(pCam.fov * Math.PI / 360), visW = vis * pCam.aspect, wy = py => (1 - py / 1024) * 1.22;
-      tV.set(0, wy(380), 0).project(fieldCam); const bx = tV.x * visW / 2, by = tV.y * vis / 2; tV.set(0, wy(48), 0).project(fieldCam); const ty = tV.y * vis / 2;
-      const ts = (ty - by) / (EAR_TOPM - EAR_BOTM), tcy = by - EAR_BOTM * ts, e = reduce ? map(rP, .3, .31) : easeIO(map(rP, .28, .41));
+      const e = reduce ? map(rP, .3, .31) : easeIO(map(rP, .28, .42));
       const sway = 0;
-      PU.uXfCur.value.set(lerp(box.cx, bx, e), lerp(box.cy + cyOff, tcy, e), lerp(sc_, ts, e), sway);
+      PU.uXfCur.value.set(lerp(box.cx, 0, e), lerp(box.cy + cyOff, 0, e), lerp(sc_, 1, e), sway);
     }
     const prevScale = prev === PRE ? Math.min(box.w, box.h) / 6.4 : (active.type === 'chapter' ? chScale(prev, box) : scale) * growPrev;
     PU.uXfPrev.value.set(box.cx, box.cy + cyOff, prevScale, prev.rot ? rotFor(prev, t, 1) : 0);
@@ -1906,7 +1911,7 @@ addEventListener('keydown', e => { if (!chapterST || e.target.closest('input,tex
   if (e.key === 'ArrowRight') { e.preventDefault(); goStep(ch.idx + 1); } else if (e.key === 'ArrowLeft') { e.preventDefault(); goStep(ch.idx - 1); } });
 chapterCard.addEventListener('click', e => { if (!coarse || ch.idx === 2 || e.target.closest('button')) return; const r = chapterCard.getBoundingClientRect(), x = (e.clientX - r.left) / r.width; if (x < .3) goStep(ch.idx - 1); else if (x > .7) goStep(ch.idx + 1); });
 let resizeT = 0;
-function onResize() { VH = glH(); LBL.forEach(l => l.forEach(L => L.w = 0)); cardRad = parseFloat(getComputedStyle(heroCard).borderRadius) || 20; const w = innerWidth, h = VH; renderer.setSize(w, h, false); composer.setSize(w, h); bloom.setSize(w / 2, h / 2); finalPass.uniforms.uRes.value.set(w, h); fieldCam.aspect = pCam.aspect = w / h; fieldCam.updateProjectionMatrix(); pCam.updateProjectionMatrix();
+function onResize() { VH = glH(); LBL.forEach(l => l.forEach(L => L.w = 0)); cardRad = parseFloat(getComputedStyle(heroCard).borderRadius) || 20; const w = innerWidth, h = VH; renderer.setSize(w, h, false); composer.setSize(w, h); bloom.setSize(w / 2, h / 2); finalPass.uniforms.uRes.value.set(w, h); fieldCam.aspect = pCam.aspect = w / h; fieldCam.updateProjectionMatrix(); pCam.updateProjectionMatrix(); layoutSeeds();
   const v = w < 900; if (v !== vertical) { vertical = v; buildArena(v); curKey = ''; if (simStarted) AG.seed(); } FU.uHideR.value = w < h ? 4.6 : 3.2; layoutTitle(); ScrollTrigger.refresh(); }
 // the GL buffer, cameras and title follow the window every frame; the heavier rebuild waits for the resize to settle
 let resizeRaf = 0;
