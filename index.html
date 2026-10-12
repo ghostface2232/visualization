@@ -110,8 +110,6 @@ a{color:inherit}
 .cursor__dot{display:block;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:var(--ember);transition:transform .35s var(--ease-out)}
 .cursor.is-hover .cursor__dot{transform:scale(2.6)}
 .cursor.is-down .cursor__dot{transform:scale(.7)}
-.cursor-tag{position:fixed;left:0;top:0;z-index:261;pointer-events:none;padding:7px 10px;border-radius:999px;background:var(--ink);color:var(--paper-hi);opacity:0;filter:blur(8px);transition:opacity .3s var(--ease-out),filter .35s var(--ease-out);white-space:nowrap}
-.cursor-tag.is-on{opacity:1;filter:blur(0px)}
 
 /* loader */
 .loader{position:fixed;inset:0;z-index:10000;color:var(--paper-hi);pointer-events:none;background:var(--coal)}
@@ -199,12 +197,13 @@ main>section,main>div{position:relative;z-index:3}
 
 
 /* ---------- THESIS ---------- */
-.thesis{position:relative;z-index:3;background:var(--paper)}
-.torn{position:absolute;left:0;top:calc(1px - var(--torn-h));display:block;width:100%;height:var(--torn-h);pointer-events:none;--torn-h:400px}
-@media (max-width:700px){.torn{--torn-h:260px}}
+/* the paper's own top band is left clear: the grunge canvas paints it, so the edge is ragged from the first pixel of scroll */
+.thesis{position:relative;z-index:3;--torn-h:400px;--torn-b:256px;background:linear-gradient(transparent var(--torn-b),var(--paper) 0)}
+.torn{position:absolute;left:0;top:calc(1px - var(--torn-h));display:block;width:100%;height:calc(var(--torn-h) + var(--torn-b));pointer-events:none}
+@media (max-width:700px){.thesis{--torn-h:260px;--torn-b:168px}}
 .thesis__stage{height:100svh;display:flex;flex-direction:column;justify-content:center;gap:clamp(40px,8vh,100px);padding:0 var(--gutter)}
 .fill{position:relative;font-family:var(--f-display);font-size:clamp(30px,4.4vw,74px);letter-spacing:-.035em;line-height:1.14;text-indent:.62em;max-width:min(1560px,94%)}
-.fill::before{content:"";position:absolute;left:0;top:.42em;width:.26em;height:.26em;border-radius:50%;background:var(--ember)}
+.fill::before{content:"";position:absolute;left:0;top:.42em;width:.26em;height:.26em;border-radius:50%;background:var(--dot,var(--ink-ghost))}
 .fill .w{color:var(--ink-ghost)}
 .facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--gutter);padding:0 var(--gutter) clamp(80px,12vh,160px)}
 .fact{border-top:1px solid var(--ink);padding-top:16px;min-width:0}
@@ -239,16 +238,9 @@ main>section,main>div{position:relative;z-index:3}
 .art-no{font-family:var(--f-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ember-ink);white-space:nowrap}
 .art-body{font-family:var(--f-display);font-size:clamp(1.25rem,2.5vw,1.8rem);line-height:1.3;letter-spacing:-.02em}
 .art-body b{font-weight:400;background:linear-gradient(transparent 64%,rgba(217,164,65,.5) 64%)}
-.fp-wrap{position:relative;overflow:hidden;margin-top:6px;border-top:1px dashed rgba(23,20,15,.3);padding-top:10px}
-.fp{transform-origin:0 0;transform:scale(var(--fps,.44));width:calc(100% / var(--fps,.44));font-family:var(--f-mono);font-size:13px;line-height:1.55;color:rgba(23,20,15,.8)}
-.fp-wrap.open .fp{transform:scale(1);width:100%}
-.lens{position:absolute;left:0;top:0;width:200px;height:200px;border-radius:50%;overflow:hidden;pointer-events:none;opacity:0;transition:opacity .25s;background:#efe6cf;box-shadow:0 0 0 1px rgba(23,20,15,.6),0 0 0 6px rgba(23,20,15,.08),0 22px 44px rgba(23,20,15,.35),inset 0 0 40px rgba(120,80,30,.25)}
-.lens::after{content:"";position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 30% 25%,rgba(255,255,255,.55),transparent 40%)}
-.fp-wrap.lensing .lens{opacity:1}
-.lens-inner{position:absolute;left:0;top:0;transform-origin:0 0;font-family:var(--f-mono);font-size:13px;line-height:1.55;color:var(--ink)}
+.fp-wrap{margin-top:6px;border-top:1px dashed rgba(23,20,15,.3);padding-top:12px}
+.fp{font-family:var(--f-mono);font-size:10.5px;line-height:1.6;letter-spacing:.01em;color:rgba(23,20,15,.72)}
 .hl-r{color:var(--ember-ink)}
-.fp-hint{margin-top:14px;color:var(--ink-soft);font-size:10.5px;text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(23,20,15,.3)}
-.fp-hint:hover{color:var(--ink)}
 .sign-area{margin-top:40px;display:flex;flex-direction:column;gap:18px}
 .sign-box{position:relative;height:150px}
 .sign-label{position:absolute;left:0;top:0;color:var(--ink-soft)}
@@ -332,19 +324,14 @@ main>section,main>div{position:relative;z-index:3}
 /* hotspots in the page's own language: a registration mark and a squared plate with a numbered tag chip */
 .pin{position:absolute;left:0;top:0;display:flex;align-items:center;gap:12px;transform:translate(-7px,-50%);color:var(--straw)}
 .pin.l{flex-direction:row-reverse;transform:translate(calc(-100% + 7px),-50%)}
-.pin i{position:relative;flex:none;width:14px;height:14px;border:1px solid var(--straw);opacity:0;scale:.6;filter:blur(3px);transition:opacity .35s var(--ease-out),scale .45s var(--ease-out),filter .35s var(--ease-out)}
+.pin i{position:relative;flex:none;width:14px;height:14px;border:1px solid var(--straw);opacity:var(--pa,0);scale:calc(.6 + var(--pa,0) * .4);filter:blur(calc((1 - var(--pa,0)) * 3px))}
 .pin i::after{content:"";position:absolute;left:50%;top:50%;width:4px;height:4px;margin:-2px 0 0 -2px;background:var(--ember)}
-.pin.on i{opacity:1;scale:1;filter:blur(0px)}
-.pin>span{display:flex;flex-direction:column;gap:5px;padding:10px 12px 11px;border-radius:2px;background:rgba(15,13,10,.86);box-shadow:inset 0 0 0 1px rgba(241,230,200,.14);max-width:min(250px,44vw);opacity:0;filter:blur(6px);transition:opacity .4s var(--ease-out),filter .45s var(--ease-out)}
-.pin>span::before{content:attr(data-n);align-self:flex-start;font-family:var(--f-mono);font-size:10px;font-weight:500;letter-spacing:.06em;color:var(--coal);background:var(--straw);padding:2px 5px;border-radius:2px;line-height:1.2}
+.pin>span{display:flex;flex-direction:column;gap:5px;padding:14px;border-radius:2px;background:rgba(15,13,10,.86);box-shadow:inset 0 0 0 1px rgba(241,230,200,.14);box-sizing:border-box;width:148px;justify-content:center;opacity:var(--pa,0);filter:blur(calc((1 - var(--pa,0)) * 6px))}
 .pin.up{align-items:flex-end;transform:translate(-7px,calc(-100% + 7px))}
 .pin.l.up{transform:translate(calc(-100% + 7px),calc(-100% + 7px))}
-.pin.l>span{text-align:right}.pin.l>span::before{align-self:flex-end}
-.pin.on>span{opacity:1;filter:blur(0px);transition-delay:.1s}
+.pin.l>span{text-align:right}
 .pin b{font-family:var(--f-display);font-weight:400;font-size:18px;letter-spacing:-.015em;line-height:1.1}
-.pin em{font-style:normal;font-family:var(--f-mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:rgba(241,230,200,.66);line-height:1.35}
-.pin.past i{opacity:.45;scale:.8}
-.pin.past>span{opacity:0;filter:blur(6px);transition-delay:0s}
+.pin em{font-style:normal;font-family:var(--f-mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:rgba(241,230,200,.66);line-height:1.4;white-space:nowrap}
 .anno.grp{flex-direction:column;align-items:center;gap:6px;text-align:center}
 .anno.grp .nm{font-size:9px;letter-spacing:.14em;color:rgba(241,230,200,.6)}
 .anno.grp .sh{display:none}
@@ -414,43 +401,27 @@ html.theme-dark .trace__float{opacity:1}
 .live .mono{color:var(--ink-soft)}
 .live b{font-family:var(--f-display);font-weight:400;font-size:var(--fs-d3);letter-spacing:-.045em;line-height:1;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
 .live b i{font-style:normal;font-family:var(--f-display);font-size:.36em;color:var(--ember);margin-left:.2em;letter-spacing:-.02em}
-.deed-final{display:flex;flex-direction:column;gap:30px}
-.deed-final .deed-title .big{font-size:clamp(2.1rem,5.4vw,3.8rem)}
-.final-parties{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px;border-top:1px solid rgba(23,20,15,.3);border-bottom:1px solid rgba(23,20,15,.3);padding:24px 0}
-.party{display:flex;flex-direction:column;gap:8px;min-width:0}
-.party .mono{color:var(--ember-ink)}
-.sigbox{height:110px;display:flex;align-items:flex-end;border-bottom:1px solid var(--ink)}
-.sigbox svg{height:100%;width:auto;max-width:100%}
-.sigbox svg path{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
-.sigbox img{max-height:100%;max-width:100%}
-.who{font-family:var(--f-display);font-size:1.06rem}
-.who .latin{font-size:1.3rem}
-.terms{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
-.terms div{display:flex;flex-direction:column;gap:4px}
-.terms dt{font-family:var(--f-mono);font-size:10px;letter-spacing:.12em;color:var(--ink-soft)}
-.terms dd{font-family:var(--f-display);font-size:clamp(1.2rem,2.2vw,1.6rem);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.verdict-end{display:flex;flex-direction:column;gap:30px;max-width:780px;margin-top:clamp(60px,10vh,120px)}
 .final-fair{font-family:var(--f-display);font-size:clamp(1.1rem,1.9vw,1.4rem);line-height:1.5;letter-spacing:-.015em;max-width:34rem}
 .verdict{display:flex;flex-direction:column;gap:16px;padding-top:14px;border-top:1px dashed rgba(23,20,15,.35)}
 .verdict h3{font-family:var(--f-display);font-size:clamp(1.8rem,3.6vw,2.6rem);letter-spacing:-.035em}
 .v-btns{display:flex;gap:12px;flex-wrap:wrap}
-.v-btns .btn.chosen{box-shadow:0 0 0 3px #e8dec6,0 0 0 4px var(--ink)}
+.v-btns .btn.chosen{box-shadow:0 0 0 3px var(--paper),0 0 0 4px var(--ink)}
 .v-note{font-family:var(--f-mono);font-size:10px;letter-spacing:.06em;color:var(--ink-soft);min-height:1.5em;opacity:0;transform:translateY(6px);transition:opacity .5s var(--ease-out),transform .6s var(--ease-out)}
 .v-note.on{opacity:1;transform:none}
 
 /* ---------- FOOTER ---------- */
 .footer{padding:10px}
-.footer__card{position:relative;border-radius:var(--radius);overflow:hidden;background:var(--coal);color:var(--paper-hi);padding:clamp(60px,10vh,120px) var(--inset) var(--inset);will-change:transform}
+.footer__card{position:relative;border-radius:var(--radius);overflow:hidden;background:var(--coal);color:var(--paper-hi);padding:var(--inset);will-change:transform}
 .footer__bg{position:absolute;inset:0;background-size:cover;background-position:center 60%;opacity:.28;filter:saturate(.8) contrast(1.05);mix-blend-mode:luminosity}
 .footer__card::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(18,16,13,.4),rgba(18,16,13,.92) 70%)}
 .footer__card>*{position:relative}
-.footer__display{font-family:var(--f-display);font-size:var(--fs-d1);letter-spacing:-.05em;line-height:1.02;margin:clamp(40px,8vh,100px) 0 clamp(40px,6vh,70px)}
-.footer__display em{font-style:normal;color:var(--pill-gold)}
-.footer__cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gutter);padding-bottom:clamp(40px,7vh,90px)}
+.footer__cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gutter);padding:clamp(36px,6vh,64px) 0 clamp(40px,7vh,90px)}
 .footer__col{display:flex;flex-direction:column;gap:12px;min-width:0}
 .footer__colTitle{color:var(--pill-gold)}
 .footer__col ol,.footer__col p{font-size:14px;line-height:1.55;color:rgba(245,241,232,.75)}
 .footer__col ol{padding-left:1.1em;display:flex;flex-direction:column;gap:6px}
-.footer__word{width:max-content;font-family:var(--f-display);font-size:12vw;letter-spacing:-.055em;line-height:.86;color:var(--ember);white-space:nowrap;padding-bottom:.06em}
+.footer__word{width:max-content;font-family:var(--f-display);font-size:12vw;letter-spacing:-.045em;line-height:.86;color:var(--ember);white-space:nowrap;padding-bottom:.06em}
 .footer__bar{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;border-top:1px solid rgba(245,241,232,.2);padding-top:16px;margin-top:20px;color:rgba(245,241,232,.7)}
 .footer__bar button:hover{color:var(--paper-hi)}
 
@@ -503,7 +474,6 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
   .dots{display:none}
   .facts{grid-template-columns:repeat(2,minmax(0,1fr))}
   .live{grid-template-columns:minmax(0,1fr)}
-  .final-parties{grid-template-columns:minmax(0,1fr)}
   .footer__cols{grid-template-columns:minmax(0,1fr)}
   .tag.tr,.tag.br{display:none}
   .live,.footer__cols{row-gap:clamp(40px,10vw,56px)}
@@ -543,7 +513,6 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
 
 <canvas id="webgl" aria-hidden="true"></canvas>
 <div class="cursor" id="cursor"><span class="cursor__dot"></span></div>
-<div class="cursor-tag mono" id="cursorTag"></div>
 <div class="progressbar" id="progressBar"></div>
 <div class="grain" aria-hidden="true"></div>
 <div id="lvhProbe" aria-hidden="true" style="position:fixed;left:0;top:0;width:0;height:100vh;height:100lvh;visibility:hidden;pointer-events:none"></div>
@@ -575,7 +544,7 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
 
 <div class="hero-wrap">
   <section class="hero" id="hero" data-year="AD 2026">
-    <div class="hero__card stage" id="heroCard" data-cursor="Wind">
+    <div class="hero__card stage" id="heroCard">
       <h1 class="sr-only">The greatest con in human history</h1>
       <p class="hero__fallback" aria-hidden="true">The greatest con<br>in human history</p>
       <div class="grid-ov" style="opacity:.25"></div>
@@ -629,7 +598,7 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
         <li><span class="art-no">Art. 2</span><span class="art-body">Party A provides Party B with <b>a roof against the weather</b>.</span></li>
         <li><span class="art-no">Art. 3</span><span class="art-body">Party A promises that Party B’s <b>descendants will multiply</b>.</span></li>
       </ol>
-      <div class="fp-wrap" id="fpWrap" data-cursor="Magnify">
+      <div class="fp-wrap" id="fpWrap">
         <div class="fp" id="fp">
           <p>※ The following provisos take precedence over Articles 1 to 3.</p>
           <p><span class="hl-r">Proviso ①</span> Party B’s working hours may increase. Party A accepts no liability for this.</p>
@@ -640,15 +609,13 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
           <p><span class="hl-r">Proviso ⑥</span> This contract cannot be terminated and is non-refundable.</p>
           <p>※ Party A’s identity will be disclosed after signing. This contract passes to all of Party B’s descendants.</p>
         </div>
-        <div class="lens" id="lens" aria-hidden="true"><div class="lens-inner" id="lensInner"></div></div>
       </div>
-      <button type="button" class="fp-hint mono" id="fpToggle" aria-expanded="false" aria-controls="fp" data-hover>↑ Read the fine print <span aria-hidden="true">· or hover with the lens</span></button>
       <div class="sign-area">
         <div class="sign-box" id="signBox">
           <span class="mono sign-label">Party B (you) · draw your signature, or press Sign</span>
           <span class="sign-x">✕</span>
           <span class="sign-line"></span>
-          <canvas id="sig" data-cursor="Sign" role="img" aria-label="Signature pad. Draw with a mouse or finger."></canvas>
+          <canvas id="sig" role="img" aria-label="Signature pad. Draw with a mouse or finger."></canvas>
           <svg class="seal" id="seal" viewBox="0 0 120 120" aria-hidden="true">
             <defs><filter id="inkf" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="1.2" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3"/></filter>
             <path id="sealArc" d="M 60 60 m -42 0 a 42 42 0 1 1 84 0 a 42 42 0 1 1 -84 0"/>
@@ -687,7 +654,7 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
   <div class="chapter__stage" id="chapterStage">
     <div class="chapter__grid">
       <figure class="chapter__media" id="chapterMedia" aria-hidden="true">
-        <div class="stage" id="chapterCard" data-cursor="Exhibit">
+        <div class="stage" id="chapterCard">
           <div class="grid-ov"></div>
           <div class="annos" id="annos"></div>
           <div class="tag tl"><b id="tagId">P01</b><span id="tagXY">00.0, 00.0</span></div>
@@ -715,7 +682,7 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
     <div class="trace__float" id="traceFloat" aria-hidden="true"></div>
     <canvas class="trace__cv" id="traceCv" aria-hidden="true"></canvas>
     <h2 class="trace__title" id="traceTitle">Twelve thousand years of paperwork, <em>in five objects.</em></h2>
-    <figure class="trace__obj" id="traceObj" data-cursor="Open" tabindex="0" role="button" aria-label="Open photograph"><img id="traceImg" alt=""></figure>
+    <figure class="trace__obj" id="traceObj" tabindex="0" role="button" aria-label="Open photograph"><img id="traceImg" alt=""></figure>
     <div class="trace__text" id="traceText" aria-live="polite"><p class="trace__cap mono" id="traceCap"></p><p class="trace__line" id="traceLine"></p></div>
     <ol class="trace__rail mono" id="traceRail" aria-hidden="true"></ol>
   </div>
@@ -726,11 +693,11 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
     <div class="interlude__card" id="interCard">
       <img src="img/harvesters.jpg" alt="Pieter Bruegel the Elder, The Harvesters, 1565: peasants cutting and binding wheat, others resting under a pear tree" id="interImg">
       <div class="interlude__pins" id="pins" aria-hidden="true">
-        <span class="pin" data-u=".215" data-v=".745"><i></i><span data-n="01"><b>The reapers</b><em>Dawn to dusk, by hand</em></span></span>
-        <span class="pin" data-u=".56" data-v=".8"><i></i><span data-n="02"><b>Asleep at noon</b><em>The August day is twelve hours long</em></span></span>
-        <span class="pin l" data-u=".725" data-v=".29"><i></i><span data-n="03"><b>The church</b><em>One tenth of every harvest</em></span></span>
-        <span class="pin l" data-u=".77" data-v=".8"><i></i><span data-n="04"><b>Lunch</b><em>Bread, porridge, a few pears</em></span></span>
-        <span class="pin l" data-u=".875" data-v=".63"><i></i><span data-n="05"><b>The sheaves</b><em>Stacked, counted, carted off</em></span></span>
+        <span class="pin" data-u=".215" data-v=".745" data-side="r"><i></i><span><b>The reapers</b><em>Dawn to dusk,<br>by hand</em></span></span>
+        <span class="pin" data-u=".56" data-v=".8" data-side="r"><i></i><span><b>Asleep at noon</b><em>The August day is<br>twelve hours long</em></span></span>
+        <span class="pin l" data-u=".725" data-v=".29" data-side="l"><i></i><span><b>The church</b><em>One tenth of<br>every harvest</em></span></span>
+        <span class="pin" data-u=".77" data-v=".8" data-side="r"><i></i><span><b>Lunch</b><em>Bread, porridge,<br>a few pears</em></span></span>
+        <span class="pin l" data-u=".875" data-v=".63" data-side="l"><i></i><span><b>The sheaves</b><em>Stacked, counted,<br>carted off</em></span></span>
       </div>
       <ul class="sr-only"><li>The reapers: dawn to dusk, by hand.</li><li>The sheaves: stacked, counted, carted off.</li><li>The church: one tenth of every harvest.</li><li>Lunch: bread, porridge, a few pears.</li><li>Asleep at noon: the August day is twelve hours long.</li></ul>
       <div class="interlude__words" role="img" aria-label="More grain, more toil, no way back."><span class="iw" aria-hidden="true">More <em>grain,</em></span><span class="iw" aria-hidden="true">more <em>toil,</em></span><span class="iw" aria-hidden="true">no way <em>back.</em></span></div>
@@ -749,7 +716,7 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
 
 <section id="reveal" data-year="AD 2026">
   <div class="reveal__stage" id="revealStage">
-    <div class="stage" id="revealCard" data-cursor="Wind">
+    <div class="stage" id="revealCard">
       <div class="grid-ov" style="opacity:.3"></div>
       <div class="tag bl"><b>A</b><span id="revTag">Identity: withheld</span></div><div class="tag br"><b>R01</b><span>Party A · file</span></div>
       <div class="rv rv-q"><p class="mono">One last question</p><h2>So who was<br>Party A?</h2></div>
@@ -769,34 +736,16 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
     <div><span class="mono">Wheat harvested since</span><b><span id="lvWheat">0</span><i>tonnes</i></b></div>
     <div><span class="mono">New signatories born since</span><b><span id="lvBirth">0</span><i>people</i></b></div>
   </div>
-  <div class="desk" data-window style="margin-top:clamp(60px,10vh,120px)">
-    <div class="tag tl"><b>D06</b><span>Certificate</span></div>
-    <article class="deed deed-final" id="deedFinal" aria-labelledby="finalTitle">
-      <div class="sheen" aria-hidden="true"></div>
-      <header class="deed-head" style="border-bottom:0;padding-bottom:0">
-        <p class="mono deed-no">Document No. S-0001 · Performance</p>
-        <h3 class="deed-title" id="finalTitle"><span class="big">Certificate of Performance</span><span class="sub">All terms in force</span></h3>
-      </header>
-      <div class="final-parties">
-        <div class="party"><span class="mono">Party A</span><div class="sigbox"><svg viewBox="0 0 320 260" aria-hidden="true"><path id="wsigSmall" d=""/></svg></div><span class="who"><span class="latin">Triticum aestivum</span> · bread wheat</span></div>
-        <div class="party"><span class="mono">Party B</span><div class="sigbox"><img id="finalSig" alt="Your signature" hidden></div><span class="who">Homo sapiens · you</span></div>
+  <div class="verdict-end">
+    <p class="final-fair">To be fair, the same contract gave us cities, writing and science. The screen you are reading this on is part of the deal.</p>
+    <div class="verdict">
+      <h3>Your verdict?</h3>
+      <div class="v-btns">
+        <button class="btn btn-ember" type="button" data-v="scam" aria-pressed="false" data-magnet>It was a con</button>
+        <button class="btn btn-ink" type="button" data-v="deal" aria-pressed="false" data-magnet>It was a fair deal</button>
       </div>
-      <dl class="terms">
-        <div><dt>TERM</dt><dd>Perpetual</dd></div>
-        <div><dt>TERMINATION</dt><dd>Not permitted</dd></div>
-        <div><dt>CURRENT MEMBERS</dt><dd>8.2 billion</dd></div>
-        <div><dt>PARTY A’S TERRITORY</dt><dd>2.19M km²</dd></div>
-      </dl>
-      <p class="final-fair">To be fair, the same contract gave us cities, writing and science. The screen you are reading this on is part of the deal.</p>
-      <div class="verdict">
-        <h3>Your verdict?</h3>
-        <div class="v-btns">
-          <button class="btn btn-ember" type="button" data-v="scam" aria-pressed="false" data-magnet>It was a con</button>
-          <button class="btn btn-ink" type="button" data-v="deal" aria-pressed="false" data-magnet>It was a fair deal</button>
-        </div>
-          <p class="v-note" id="vNote" aria-live="polite"></p>
-        </div>
-    </article>
+      <p class="v-note" id="vNote" aria-live="polite"></p>
+    </div>
   </div>
 </section>
 
@@ -804,7 +753,6 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
   <div class="footer__card" data-window>
     <div class="footer__bg" style="background-image:url(img/cypresses.jpg)"></div>
     <div class="meta meta--dark mono"><span>Colophon</span><span>Sources &amp; credits</span><span>2026</span></div>
-    <h2 class="footer__display" data-lines>Party A sends<br><em>its regards.</em></h2>
     <div class="footer__cols">
       <div class="footer__col"><span class="footer__colTitle mono">Sources</span>
         <ol>
@@ -915,18 +863,15 @@ function setYear(str) {
 setYear('AD 2026');
 
 /* ============================== cursor, tag, magnet ============================== */
-const cursor = $('#cursor'), cursorTag = $('#cursorTag');
+const cursor = $('#cursor');
 if (!coarse) {
   document.documentElement.classList.add('has-cursor');
   let cx = -100, cy = -100; const H = document.documentElement;
   addEventListener('pointermove', e => { if (e.pointerType !== 'mouse') return; if (!H.classList.contains('cursor-live')) { cx = e.clientX; cy = e.clientY; H.classList.add('cursor-live'); } }, { passive: true });
   document.addEventListener('mouseleave', () => H.classList.remove('cursor-live')); addEventListener('blur', () => H.classList.remove('cursor-live'));
   addEventListener('mousedown', () => cursor.classList.add('is-down')); addEventListener('mouseup', () => cursor.classList.remove('is-down'));
-  gsap.ticker.add(() => { cx = lerp(cx, S.px, .22); cy = lerp(cy, S.py, .22); cursor.style.transform = `translate3d(${cx}px,${cy}px,0)`; cursorTag.style.transform = `translate3d(${S.px + 18}px,${S.py + 20}px,0)`; });
-  document.addEventListener('mouseover', e => {
-    cursor.classList.toggle('is-hover', !!e.target.closest('[data-hover],a,button'));
-    const t = e.target.closest('[data-cursor]'); if (t && !e.target.closest('button')) { cursorTag.textContent = t.dataset.cursor; cursorTag.classList.add('is-on'); } else cursorTag.classList.remove('is-on');
-  });
+  gsap.ticker.add(() => { cx = lerp(cx, S.px, .22); cy = lerp(cy, S.py, .22); cursor.style.transform = `translate3d(${cx}px,${cy}px,0)`; });
+  document.addEventListener('mouseover', e => cursor.classList.toggle('is-hover', !!e.target.closest('[data-hover],a,button')));
   if (!reduce) $$('[data-magnet]').forEach(el => {
     el.addEventListener('mousemove', e => { const r = el.getBoundingClientRect(); el.style.transform = `translate3d(${clamp((e.clientX - r.left - r.width / 2) * .28, -14, 14)}px,${clamp((e.clientY - r.top - r.height / 2) * .34, -10, 10)}px,0)`; });
     el.addEventListener('mouseleave', () => el.style.transform = '');
@@ -1089,11 +1034,11 @@ const WN = small ? 34000 : 76000;
         float gust = 0.5 + 0.5 * sin(base.x * 0.04 - uTime * 0.21 + base.y * 0.03);
         float w = 0.08 + 0.2 * wave * gust + 0.05 * sin(uTime * 2.6 + aRand.y * 6.28);
         vec2 wind = uWindDir * w + (aRand.yz - 0.5) * 0.16;
-        vec2 dm = base - uMouse; float md = length(dm); vec2 push = dm / (md + 0.001) * (1.0 - smoothstep(0.0, 3.0, md)) * uMouseStr;
-        float ga = uTime - uGust.z; float gd = length(base - uGust.xy); float ring = exp(-pow((gd - ga * 9.0) * 0.6, 2.0)) * exp(-ga * 0.42) * step(0.0, ga);
-        vec2 gp = (base - uGust.xy) / (gd + 0.001) * ring * 1.6;
+        vec2 dm = base - uMouse; float md = length(dm); vec2 push = dm / (md + 0.001) * (1.0 - smoothstep(0.0, 3.0, md)) * uMouseStr * 0.55;
+        float ga = uTime - uGust.z; float gd = length(base - uGust.xy); float ring = exp(-pow((gd - ga * 5.5) * 0.6, 2.0)) * exp(-ga * 0.5) * smoothstep(0.0, 0.6, ga);
+        vec2 gp = (base - uGust.xy) / (gd + 0.001) * ring * 0.5;
         vec2 off = (wind + push + gp) * t * t * h * (1.0 - uHero0 * step(d, 0.4)); lp.xz += off; lp.y -= dot(off, off) * 0.42;
-        vec3 wp = vec3(base.x, 0.0, base.y) + lp; vSheen = smoothstep(0.15, 1.0, wave * gust) + ring * 0.8; vW = wp; vRand = aRand.y;
+        vec3 wp = vec3(base.x, 0.0, base.y) + lp; vSheen = smoothstep(0.15, 1.0, wave * gust) + ring * 0.3; vW = wp; vRand = aRand.y;
         vFog = smoothstep(uFogNear, uFogFar, length(wp - uCamPos)); gl_Position = projectionMatrix * viewMatrix * vec4(wp, 1.0); }`,
     fragmentShader: `uniform sampler2D uTex; uniform vec3 uSunDir,uSunCol,uHorizon,uRose,uCamPos,uCoal; uniform float uExposure,uFloor;
       vec3 fade(vec3 c){ return mix(c * uExposure, mix(uCoal, c, uExposure), uFloor); }
@@ -1208,11 +1153,11 @@ function buildFormations(vertical) {
     while (i < N) { const x = (R() * 2 - 1) * 2.3, y = (R() * 2 - 1) * 2.3, d = Math.min(seg(x, y, -1.3, -1.3, 1.3, 1.3), seg(x, y, -1.3, 1.3, 1.3, -1.3)), dd = Math.min(Math.hypot(x, y - 1.9), Math.hypot(x, y + 1.9), Math.hypot(x - 1.9, y), Math.hypot(x + 1.9, y));
       if (d < .16 || dd < .27) { sp(f, i, x, y, gauss() * .07, .9); sc(f, i, 1.3, 1.0, .7, .14); i++; } }
     commit('MARK', f); }
-  // week
-  { const fW = [3, 3, 3, 3, 3, 3, 2], aW = [5, 4, 4, 5, 4, 4, 4], tilt = p => p, per = Math.floor(N / 168), G = .205;
+  // week: only the working morning, 06:00 to 15:00, so the extra hours fill the frame
+  { const fW = [3, 3, 3, 3, 3, 3, 2], aW = [5, 4, 4, 5, 4, 4, 4], tilt = p => p, H0 = 6, H1 = 15, HC = (H0 + H1 - 1) / 2, per = Math.floor(N / (7 * (H1 - H0))), G = .42;
     const make = farm => { const f = newF(); seed = 21; let i = 0;
-      for (let d = 0; d < 7; d++) for (let h = 0; h < 24; h++) { const sleep = h < 6 || h >= 22, wf = h >= 8 && h < 8 + fW[d], wa = h >= 8 && h < 8 + aW[d], work = farm ? wa : wf, extra = farm && wa && !wf;
-        const x0 = (h - 11.5) * G, y0 = (3 - d) * G, sx = .082;
+      for (let d = 0; d < 7; d++) for (let h = H0; h < H1; h++) { const sleep = h < 6 || h >= 22, wf = h >= 8 && h < 8 + fW[d], wa = h >= 8 && h < 8 + aW[d], work = farm ? wa : wf, extra = farm && wa && !wf;
+        const x0 = (h - HC) * G, y0 = (3 - d) * G, sx = G * .4;
         for (let k = 0; k < per; k++, i++) { let lx, ly, lz = 0;
           if (work || R() < .3) { lx = (R() * 2 - 1) * sx; ly = (R() * 2 - 1) * sx; }
           else { const e = (R() * 4) | 0, t = R() * 2 - 1; if (e < 2) { lx = e === 0 ? sx : -sx; ly = t * sx; } else { ly = e === 2 ? sx : -sx; lx = t * sx; } }
@@ -1220,7 +1165,7 @@ function buildFormations(vertical) {
           if (sleep) sc(f, i, .42, .42, .5, .085); else if (extra) sc(f, i, 2.0, .62, .25, .22); else if (work) sc(f, i, 1.45, .98, .45, .16); else sc(f, i, .92, .8, .6, .1); } }
       dustFill(f, i, N, .5); return f; };
     commit('WEEK_A', make(false)); commit('WEEK_B', make(true));
-    ANCH.week = { day: d => [-12.3 * G, (3 - d) * G, 0], hour: h => [(h - 11.5) * G, 3.9 * G, 0], title: [-12.3 * G, 5.6 * G, 0] }; }
+    ANCH.week = { day: d => [(H0 - HC - .8) * G, (3 - d) * G, 0], hour: h => [(h - HC - .5) * G, 3 * G + .38, 0], title: [(H0 - HC - .8) * G, 3 * G + .78, 0] }; }
   // bodies
   { const draw = wide => { const c = document.createElement('canvas'); c.width = 160; c.height = 400; const x = c.getContext('2d'), H = 400, cx = 80; x.fillStyle = '#fff'; x.strokeStyle = '#fff'; x.lineCap = 'round';
       x.beginPath(); x.ellipse(cx, H * .065, H * .046, H * .058, 0, 0, Math.PI * 2); x.fill(); x.fillRect(cx - H * .018, H * .11, H * .036, H * .04);
@@ -1320,7 +1265,7 @@ function layoutSeeds() { if (!SEEDS || !F.EAR_LAND) return;
   F.EAR_LAND.p.needsUpdate = true; }
 let PAINT_ASPECT = 1.356;
 function buildPaint(img) {
-  const aspect = img.naturalWidth / img.naturalHeight; PAINT_ASPECT = aspect;
+  const aspect = img.naturalWidth / img.naturalHeight; PAINT_ASPECT = aspect; PU.uSweepW.value = 4.6 * aspect;
   const cols = Math.round(Math.sqrt(N * aspect)), rows = Math.floor(N / cols), H = 4.6, Wd = H * aspect;
   const c = document.createElement('canvas'); c.width = cols; c.height = rows; const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(img, 0, 0, cols, rows);
   const d = x.getImageData(0, 0, cols, rows).data, A = newF(), B = newF(); seed = 91;
@@ -1344,22 +1289,25 @@ const glyphTex = (function () { const g = ' .->x*$#', c = document.createElement
 const PU = {
   uTime: { value: 0 }, uMorph: { value: 0 }, uLocal: { value: 0 }, uXfPrev: { value: new THREE.Vector4(0, 0, 1, 0) }, uXfCur: { value: new THREE.Vector4(0, 0, 1, 0) },
   uAlpha: { value: 0 }, uPR: { value: PR }, uSize: { value: small ? 30 : 24 }, uCount: { value: 1 }, uMouse: { value: new THREE.Vector3(99, 99, 0) }, uMouseOn: { value: 0 }, uVel: { value: 0 },
-  uShapePrev: { value: 0 }, uShapeCur: { value: 0 }, uAtlas: { value: glyphTex }, uDenPrev: { value: 1 }, uDenCur: { value: 1 }
+  uShapePrev: { value: 0 }, uShapeCur: { value: 0 }, uAtlas: { value: glyphTex }, uDenPrev: { value: 1 }, uDenCur: { value: 1 }, uSweep: { value: 0 }, uSweepW: { value: 6 }
 };
 const pMat = new THREE.ShaderMaterial({ uniforms: PU, transparent: true, depthWrite: false, depthTest: false, blending: THREE.CustomBlending, blendSrc: THREE.OneFactor, blendDst: THREE.OneMinusSrcAlphaFactor,
   vertexShader: `attribute vec4 pPrev, cPrev, pA, cA, pB, cB; attribute float aIdx; attribute vec2 aRnd;
-    uniform float uTime,uMorph,uLocal,uAlpha,uPR,uSize,uCount,uMouseOn,uVel,uShapePrev,uShapeCur,uDenPrev,uDenCur; uniform vec4 uXfPrev,uXfCur; uniform vec3 uMouse;
+    uniform float uTime,uMorph,uLocal,uAlpha,uPR,uSize,uCount,uMouseOn,uVel,uShapePrev,uShapeCur,uDenPrev,uDenCur,uSweep,uSweepW; uniform vec4 uXfPrev,uXfCur; uniform vec3 uMouse;
     varying vec4 vCol; varying float vShape; varying float vGlyph;
     ${NOISE}
     vec3 rotY(vec3 p, float a){ float c = cos(a), s = sin(a); return vec3(c*p.x + s*p.z, p.y, -s*p.x + c*p.z); }
-    void main(){ float r = aRnd.x; float lt = clamp((uLocal - r * 0.3) / 0.7, 0.0, 1.0); lt = lt * lt * (3.0 - 2.0 * lt);
+    void main(){ float r = aRnd.x; float lt = clamp((uLocal - r * 0.3) / 0.7, 0.0, 1.0);
+      // the painting: a ragged front sweeps left to right with the wind; pixels behind it break away, pixels ahead stay put
+      if (uSweep > 0.5) { float key = clamp((pA.x / uSweepW + 0.5) * 0.84 + snoise(vec3(pA.xy * 0.7, 3.1)) * 0.07 + r * 0.12, 0.0, 1.0); lt = clamp((uLocal - key * 0.72) / 0.28, 0.0, 1.0); }
+      lt = lt * lt * (3.0 - 2.0 * lt);
       vec3 cur = mix(pA.xyz, pB.xyz, lt); vec4 cc = mix(cA, cB, lt); float cs = mix(pA.w, pB.w, lt);
       vec3 curR = rotY(cur, uXfCur.w); float depth = curR.z;
       cur = curR * uXfCur.z + vec3(uXfCur.xy, 0.0); vec3 prev = rotY(pPrev.xyz, uXfPrev.w) * uXfPrev.z + vec3(uXfPrev.xy, 0.0);
       float m = clamp((uMorph - r * 0.4) / 0.6, 0.0, 1.0); m = m * m * (3.0 - 2.0 * m);
       vec3 p = mix(prev, cur, m); vec4 col = mix(cPrev, cc, m); float sz = mix(pPrev.w, cs, m);
       float tb = sin(3.14159 * m); if (tb > 0.01) { vec3 q = p * 0.45 + vec3(0.0, 0.0, uTime * 0.15); p += vec3(snoise(q), snoise(q + 19.1), snoise(q + 37.7)) * tb * (0.5 + aRnd.y * 0.7) * uXfCur.z; }
-      p.xy += vec2(snoise(p * 0.9 + uTime * 0.12), snoise(p * 0.9 + 11.0 + uTime * 0.12)) * 0.01 * (1.0 - step(2.5, uShapeCur) * step(uShapeCur, 3.5) * (1.0 - uLocal));
+      p.xy += vec2(snoise(p * 0.9 + uTime * 0.12), snoise(p * 0.9 + 11.0 + uTime * 0.12)) * 0.01 * (1.0 - step(2.5, uShapeCur) * step(uShapeCur, 3.5) * (1.0 - (uSweep > 0.5 ? lt : uLocal)));
       vec2 dm = p.xy - uMouse.xy; float dl = length(dm); float rep = smoothstep(1.0 * uXfCur.z, 0.0, dl) * uMouseOn;
       p.xy += normalize(dm + 1e-4) * rep * 0.38 * uXfCur.z + vec2(-dm.y, dm.x) * rep * 0.2; p.z += rep * 0.4;
       p.x += snoise(p * 1.4 + uTime) * uVel * 0.04;
@@ -1419,7 +1367,7 @@ const popKF = [[-10000, 5e6], [-5000, 18e6], [-3000, 30e6], [-1000, 50e6], [1, 2
 const popAt = p => { const f = clamp(p) * (popKF.length - 1), i = Math.min(popKF.length - 2, Math.floor(f)), fr = f - i; return { year: lerp(popKF[i][0], popKF[i + 1][0], fr), n: Math.exp(lerp(Math.log(popKF[i][1]), Math.log(popKF[i + 1][1]), fr)) }; };
 const popWord = n => n >= 1e9 ? (n / 1e9).toFixed(1).replace(/\.0$/, '') + ' billion' : fmt(Math.round(n / 1e6)) + ' million';
 const STEPS = [
-  { A: 'WEEK_A', B: 'WEEK_B', shape: 3, den: .42, title: 'More work', cap: 'One week, 168 hours', year: () => '9,000 BC', stat: l => `${Math.round(20 + 10 * clamp(map(l, .2, .85)))} h`, statU: () => 'of work per week', desc: 'A study of the Agta of the Philippines found that people who farmed more had about ten fewer hours of leisure a week than neighbours who mostly foraged.', src: 'Dyble et al., Nature Human Behaviour (2019)' },
+  { A: 'WEEK_A', B: 'WEEK_B', shape: 3, den: .66, title: 'More work', cap: 'One week, 6 am to 3 pm', year: () => '9,000 BC', stat: l => `${Math.round(20 + 10 * clamp(map(l, .2, .85)))} h`, statU: () => 'of work per week', desc: 'A study of the Agta of the Philippines found that people who farmed more had about ten fewer hours of leisure a week than neighbours who mostly foraged.', src: 'Dyble et al., Nature Human Behaviour (2019)' },
   { A: 'BODY_A', B: 'BODY_B', shape: 5, den: .3, title: 'Smaller bodies', cap: 'Stature from skeletons', year: () => '3,000 BC', stat: l => `${Math.round(lerp(175, 160, easeIO(l)))} cm`, statU: () => 'average adult man', desc: 'Ice Age hunter-gatherers in Greece and Turkey stood about 175 cm (men) and 165 cm (women). By 3000 BC their farming descendants averaged 160 and 152.', src: 'Jared Diamond, “The Worst Mistake in the History of the Human Race”, Discover (1987)' },
   { A: 'ARENA', B: 'ARENA', shape: 1, den: .7, title: 'Crowd diseases', cap: 'Outbreak, band vs village', year: () => '5,000 BC', stat: () => `${AG.counts()[1]} / 360`, statU: () => 'villagers infected', desc: 'Measles, smallpox and flu reached people through livestock and packed settlements. It starts here with one sick forager and one sick cow. Select anyone in either group to infect them, and watch which group burns through.', src: 'Jared Diamond, Guns, Germs, and Steel (1997)', interactive: true },
   { A: 'DIET_A', B: 'DIET_B', shape: 5, den: .38, rot: 'sway', title: 'Three grains', cap: 'The collapsing menu', year: () => 'AD 2026', stat: l => l > .62 ? '3' : '50,000', statU: () => 'plant species on the menu', desc: 'People can eat about 50,000 plant species. Today 90% of our calories come from 15 of them, and two thirds of that from just three: rice, wheat and maize.', src: 'FAO, Dimensions of Need (1995)' },
@@ -1433,7 +1381,7 @@ const LBL = [];
 function buildLabels() {
   annoRoot.innerHTML = ''; LBL.length = 0;
   const days = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'], B = ANCH.body;
-  LBL[0] = [...days.map((d, k) => ({ el: anno(d, 'l'), pos: () => ANCH.week.day(k), a: () => 1 })), ...[0, 6, 12, 18].map(h => ({ el: anno(String(h).padStart(2, '0') + ':00'), pos: () => ANCH.week.hour(h), a: () => .8 })),
+  LBL[0] = [...days.map((d, k) => ({ el: anno(d, 'l'), pos: () => ANCH.week.day(k), a: () => 1 })), ...[6, 9, 12, 15].map(h => ({ el: anno(String(h).padStart(2, '0') + ':00'), pos: () => ANCH.week.hour(h), a: () => .8 })),
     { el: anno('Foraging week', 'big'), pos: () => ANCH.week.title, a: l => 1 - map(l, .2, .4) }, { el: anno('Farming week · +10 h of work', 'big hi'), pos: () => ANCH.week.title, a: l => map(l, .45, .65) }];
   LBL[1] = [{ el: anno('175 cm', 'big hi'), pos: l => B.top(B.mX + .35, lerp(175, 160, l)), a: () => 1, text: l => `${Math.round(lerp(175, 160, l))} cm` },
     { el: anno('165 cm', 'big hi'), pos: l => B.top(B.wX + .33, lerp(165, 152, l)), a: () => 1, text: l => `${Math.round(lerp(165, 152, l))} cm` },
@@ -1460,7 +1408,6 @@ function setDesc(s) { ch.desc.innerHTML = s.desc.split(/\s+/).map(w => `<span cl
 function applyStep(i) {
   if (i === ch.idx) return; const first = ch.idx === -1; ch.idx = i; const s = STEPS[i], tok = ch.tok = (ch.tok || 0) + 1;
   const fill = () => { ch.num.textContent = String(i + 1).padStart(2, '0'); ch.title.textContent = s.title; setDesc(s); ch.capN.textContent = `FIG. 0${i + 1}`; ch.capT.textContent = s.cap; ch.tagId.textContent = `P0${i + 1}`; ch.tagStep.textContent = `Proviso ${i + 1} of 6`; };
-  $('#chapterCard').dataset.cursor = s.interactive ? 'Infect' : 'Exhibit';
 
   if (first) { fill(); ch.tintStart = 0; return; }
   ch.tintStart = null; ch.swapping = true; [ch.num, ch.title, ch.stat, ch.statU].forEach(e => { e.classList.add('is-out'); }); ch.desc.classList.add('is-out');
@@ -1494,13 +1441,6 @@ $$('.deed').forEach(deed => {
   host.addEventListener('pointermove', e => { if (e.target.closest('#signBox,#fpWrap')) { rx(0); ry(0); return; } const r = deed.getBoundingClientRect(), nx = (e.clientX - r.left) / r.width - .5, ny = (e.clientY - r.top) / r.height - .5; rx(-ny * 4); ry(nx * 5); deed.style.setProperty('--lx', (nx + .5) * 100 + '%'); deed.style.setProperty('--ly', (ny + .5) * 100 + '%'); });
   host.addEventListener('pointerleave', () => { rx(0); ry(0); });
 });
-const fpWrap = $('#fpWrap'), fp = $('#fp'), lens = $('#lens'), lensInner = $('#lensInner'), FPS = .44, MAG = 3, LR = 100;
-lensInner.innerHTML = fp.innerHTML;
-function fitFp() { const full = fp.scrollHeight; fpWrap.style.height = (fpWrap.classList.contains('open') ? full : full * FPS) + 10 + 'px'; lensInner.style.width = fp.offsetWidth + 'px'; }
-let fpT = 0; new ResizeObserver(() => { const h0 = fpWrap.offsetHeight; fitFp(); if (fpWrap.offsetHeight !== h0) { clearTimeout(fpT); fpT = setTimeout(() => ScrollTrigger.refresh(), 220); } }).observe(fpWrap.parentElement);
-if (!coarse) { fpWrap.addEventListener('pointerenter', () => fpWrap.classList.add('lensing')); fpWrap.addEventListener('pointerleave', () => fpWrap.classList.remove('lensing'));
-  fpWrap.addEventListener('pointermove', e => { const r = fpWrap.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top - 10; lens.style.transform = `translate(${x - LR}px,${y + 10 - LR}px)`; lensInner.style.transform = `translate(${LR - x * MAG}px,${LR - y * MAG}px) scale(${FPS * MAG})`; }); }
-$('#fpToggle').addEventListener('click', () => { const o = fpWrap.classList.toggle('open'); const b = $('#fpToggle'); b.setAttribute('aria-expanded', o); b.innerHTML = o ? '↓ Shrink the fine print' : '↑ Read the fine print <span aria-hidden="true">· or hover with the lens</span>'; fitFp(); ScrollTrigger.refresh(); });
 function wheatPath() {
   const P = t => ({ x: 70 + 150 * t + 26 * Math.sin(t * 2.4), y: 236 - 214 * t }); let d = `M ${P(0).x - 50} ${P(0).y + 10} C ${P(0).x - 10} ${P(0).y - 4}, ${P(0).x - 2} ${P(0).y + 2}, ${P(0).x} ${P(0).y}`;
   for (let t = 0; t <= 1.0001; t += .04) { const p = P(t); d += ` L ${p.x.toFixed(1)} ${p.y.toFixed(1)}`; }
@@ -1509,7 +1449,7 @@ function wheatPath() {
       d += ` M ${p.x.toFixed(1)} ${p.y.toFixed(1)} Q ${c1.x.toFixed(1)} ${c1.y.toFixed(1)} ${tip.x.toFixed(1)} ${tip.y.toFixed(1)} Q ${c2.x.toFixed(1)} ${c2.y.toFixed(1)} ${p.x.toFixed(1)} ${p.y.toFixed(1)} M ${tip.x.toFixed(1)} ${tip.y.toFixed(1)} l ${((dx * .85 + nx * s * .45) * L * 1.1).toFixed(1)} ${((dy * .85 + ny * s * .45) * L * 1.1).toFixed(1)}`; } }
   const e = P(1); return d + ` M ${e.x} ${e.y} l 4 -26 M 20 248 C 90 232, 170 256, 240 238 S 300 236, 312 246`;
 }
-const WP = wheatPath(); $('#wsigSmall').setAttribute('d', WP); $('#sealWheat').setAttribute('d', WP);
+const WP = wheatPath(); $('#sealWheat').setAttribute('d', WP);
 const sigEl = $('#sig'), signBtn = $('#signBtn'), skipBtn = $('#skipBtn'), signMsg = $('#signMsg'), seal = $('#seal'), sctx = sigEl.getContext('2d');
 let sigW = 0, sigH = 0, drawing = false, last = null, lastW = 2.6, ink = 0, signed = false;
 function fitSig() { const r = sigEl.getBoundingClientRect(); if (!r.width) return; const dpr = Math.min(devicePixelRatio || 1, 2), old = signed ? sigEl.toDataURL() : null; sigEl.width = r.width * dpr; sigEl.height = r.height * dpr; sctx.setTransform(dpr, 0, 0, dpr, 0, 0); sigW = r.width; sigH = r.height; if (old) { const im = new Image(); im.onload = () => sctx.drawImage(im, 0, 0, sigW, sigH); im.src = old; } }
@@ -1525,7 +1465,7 @@ function autoScribble(done, fast) {
   const o = { k: 0 }; let dn = 0; gsap.to(o, { k: 1, duration: fast ? .01 : 1.5, ease: 'power1.inOut', onUpdate: () => { const n = Math.floor(o.k * (pts.length - 1)); for (; dn < n; dn++) inkLine(pts[dn], pts[dn + 1], 1.4 + Math.abs(Math.sin(dn * .21)) * 1.8); }, onComplete: done });
 }
 function stamp(text) {
-  signed = true; signBtn.disabled = true; skipBtn.disabled = true; if (!skipBtn.classList.contains('done')) signBtn.classList.add('done'); const fsg = $('#finalSig'); fsg.src = sigEl.toDataURL('image/png'); fsg.hidden = false;
+  signed = true; signBtn.disabled = true; skipBtn.disabled = true; if (!skipBtn.classList.contains('done')) signBtn.classList.add('done');
   const stl = gsap.timeline().fromTo(seal, { opacity: 0, scale: reduce ? 1 : 2.6, rotate: reduce ? -12 : -34 }, { opacity: .92, scale: 1, rotate: -12, duration: reduce ? .2 : .32, ease: 'power4.in', onComplete: () => Sound.thump() }); if (!reduce) stl.fromTo('#deed', { y: 0 }, { y: 3, duration: .06, yoyo: true, repeat: 3, ease: 'none' });
   signMsg.innerHTML = `${text}<span class="mono">Sealed · 9,500 BC · keep scrolling to read the fine print</span>`; signMsg.tabIndex = -1; signMsg.focus({ preventScroll: true });
 }
@@ -1664,7 +1604,7 @@ const torn = (function () {
   const vn = (x, y) => { const i = Math.floor(x), j = Math.floor(y), fx = x - i, fy = y - j, ux = fx * fx * (3 - 2 * fx), uy = fy * fy * (3 - 2 * fy);
     return lerp(lerp(hs(i, j), hs(i + 1, j), ux), lerp(hs(i, j + 1), hs(i + 1, j + 1), ux), uy); };
   st.build = () => { const r = cv.getBoundingClientRect(); if (!r.width) return; const dpr = Math.min(devicePixelRatio || 1, 2), cell = r.width < 700 ? 3.8 : 4.6;
-    if (st.W === r.width && st.H === r.height) return; st.W = r.width; st.H = r.height; st.cell = cell; st.cols = Math.ceil(r.width / cell); st.rows = Math.ceil(r.height / cell);
+    if (st.W === r.width && st.H === r.height) return; st.W = r.width; st.H = r.height; st.B = parseFloat(getComputedStyle(cv).getPropertyValue('--torn-b')) || 0; st.cell = cell; st.cols = Math.ceil(r.width / cell); st.rows = Math.ceil(r.height / cell);
     cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     const N = st.N = new Float32Array(st.cols * st.rows);
     for (let y = 0; y < st.rows; y++) for (let x = 0; x < st.cols; x++) { const px = x * cell, py = y * cell;
@@ -1674,11 +1614,14 @@ const torn = (function () {
   return st; })();
 function tornUpdate(p) {
   const st = torn; if (!st.N) st.build(); if (!st.N) return;
-  const L = .02 + .98 * clamp(p * 1.12), key = Math.round(L * 500); if (key === st.key) return; st.key = key;
-  // measured in px: the edge keeps the same raggedness at any canvas size, and its highest dot never touches the canvas top
+  const L = clamp(p * 1.12), key = Math.round(L * 500); if (key === st.key) return; st.key = key;
+  st.ctx.clearRect(0, 0, st.W, st.H); if (!L) return;
+  // measured in px: the edge keeps the same raggedness at any canvas size, and its highest dot never touches the canvas top.
+  // At rest the whole ragged band sits in the clear strip below the paper's top (off screen), so the hero shows nothing
+  // until the page moves, and the first paper to come up is already broken up.
   const { cols, rows, cell, N, ctx } = st, small = st.W < 700, A = small ? 134 : 210, up = small ? 19 : 30, solidAt = small ? 6 : 9;
-  const front0 = st.H - 3, frontMin = A / 2 + up + 6, front = lerp(front0, frontMin, L);
-  ctx.clearRect(0, 0, st.W, st.H); ctx.fillStyle = '#ebe5d9';
+  const front0 = st.H - st.B + A / 2 + up, frontMin = A / 2 + up + 6, front = lerp(front0, frontMin, L);
+  ctx.fillStyle = '#ebe5d9';
   const solid = new Path2D(), dots = new Path2D();
   for (let y = 0; y < rows; y++) { const py = (y + .5) * cell;
     for (let x = 0; x < cols; x++) { const v = py + (N[y * cols + x] - .5) * A - front, cx = (x + .5) * cell;
@@ -1693,7 +1636,9 @@ fitWord(); document.fonts && document.fonts.ready.then(fitWord); addEventListene
 // word fills, masked lines, reveals, counters
 $$('[data-fill]').forEach(el => { el.innerHTML = el.textContent.trim().split(/\s+/).map(w => `<span class="w${/offer|fine|print\.?$/.test(w) ? ' hot' : ''}">${w}</span>`).join(' '); });
 const fillWords = $$('[data-fill]').map(el => $$('.w', el));
-function paintFill(p) { const total = fillWords.reduce((s, a) => s + a.length, 0); let f = p * (total + 1); for (const words of fillWords) { words.forEach((w, i) => { const t = clamp((f - i) / 2), tgt = w.classList.contains('hot') ? 'var(--ember)' : 'var(--ink)'; const css = t >= 1 ? tgt : t <= 0 ? 'var(--ink-ghost)' : `color-mix(in oklab, ${tgt} ${(t * 100).toFixed(1)}%, var(--ink-ghost))`; if (w._c !== css) { w._c = css; w.style.color = css; } }); f -= words.length; } }
+function paintFill(p) { const total = fillWords.reduce((s, a) => s + a.length, 0); let f = p * (total + 1); for (const words of fillWords) { words.forEach((w, i) => { const t = clamp((f - i) / 2), tgt = w.classList.contains('hot') ? 'var(--ember)' : 'var(--ink)'; const css = t >= 1 ? tgt : t <= 0 ? 'var(--ink-ghost)' : `color-mix(in oklab, ${tgt} ${(t * 100).toFixed(1)}%, var(--ink-ghost))`; if (w._c !== css) { w._c = css; w.style.color = css; }
+    // the bullet lights with its line's first word
+    if (!i) { const d = t >= 1 ? 'var(--ember)' : t <= 0 ? 'var(--ink-ghost)' : `color-mix(in oklab, var(--ember) ${(t * 100).toFixed(1)}%, var(--ink-ghost))`; const el = w.parentElement; if (el._d !== d) { el._d = d; el.style.setProperty('--dot', d); } } }); f -= words.length; } }
 function charify(node, out, ctr) { [...node.childNodes].forEach(n => {
     if (n.nodeType === 3) { n.textContent.split(/(\s+)/).forEach(w => { if (!w) return; if (/^\s+$/.test(w)) { out.appendChild(document.createTextNode(' ')); return; } const wd = document.createElement('span'); wd.className = 'wd'; [...w].forEach(c => { const sp = document.createElement('span'); sp.className = 'ch'; sp.textContent = c; sp.style.setProperty('--i', ctr.i++); wd.appendChild(sp); }); out.appendChild(wd); }); }
     else if (n.nodeType === 1) { const c = n.cloneNode(false); charify(n, c, ctr); out.appendChild(c); } }); }
@@ -1709,7 +1654,6 @@ function buildScroll() {
   chapterST = ScrollTrigger.create({ trigger: '#chapterStage', start: 'top top', end: () => '+=' + innerHeight * 17.8, pin: true, onEnter: () => $('#chKeeper').classList.add('is-lit') });
   traceST = ScrollTrigger.create({ trigger: '#tracePin', start: 'top top', end: () => '+=' + innerHeight * 14.2, pin: true });
   revealST = ScrollTrigger.create({ trigger: '#revealStage', start: 'top top', end: () => '+=' + innerHeight * 5.4, pin: true });
-  ScrollTrigger.create({ trigger: '#verdict', start: 'top 70%', onEnter: () => { if (!signed) { signed = true; $('#finalSig').alt = 'Signature added for you'; autoScribble(() => stamp('Your ancestors already signed.'), true); } } });
   ScrollTrigger.refresh();
 }
 
@@ -1717,15 +1661,21 @@ function buildScroll() {
 const heroCard = $('#heroCard'), heroShade = $('#heroShade'), chapterCard = $('#chapterCard'), chapterMedia = $('#chapterMedia'), revealCard = $('#revealCard');
 const interCard = $('#interCard'), interImg = $('#interImg'), iwords = $$('.iw'), interSec = $('#interlude');
 const PAINT = { A: 'PAINT_A', B: 'PAINT_B', shape: 3, den: 1 };
-const pinsBox = $('#pins'), pins = $$('#pins .pin'), PINU = pins.map(p => +p.dataset.u);
-// the eye travels across the painting left to right, at a steady pace, and stays on the right as it dissolves
-// the eye moves left to right and stops on each hotspot: a short travel, then a long hold on that detail
-const interFocus = pr => { const n = PINU.length, k = map(pr, .02, .36) * n, i = Math.min(n - 1, Math.floor(k)), l = k - i;
-  return lerp(i ? PINU[i - 1] : PINU[0] - .07, PINU[i], easeIO(map(l, 0, .35))); };
-let interPanPx = 0;
-let pinPan = .5;
-function layoutPins() { const W = pinsBox.offsetWidth, H = pinsBox.offsetHeight, iw = interImg.naturalWidth || 3200, ih = interImg.naturalHeight || 2359, s = Math.max(W / iw, H / ih), ox = (W - iw * s) * pinPan, oy = (H - ih * s) / 2, cw = interCard.clientWidth, chh = interCard.clientHeight, top = pinsBox.offsetTop;
-  pins.forEach(p => { const x = ox + p.dataset.u * iw * s, y = oy + p.dataset.v * ih * s; p.style.left = x.toFixed(1) + 'px'; p.style.top = y.toFixed(1) + 'px'; p.classList.toggle('l', x > cw * .55); p.classList.toggle('up', top + y > chh * .62); p.hidden = x < 28 || x > cw - 28 || top + y < 96 || top + y > chh - 24; }); }
+const pinsBox = $('#pins'), pins = $$('#pins .pin');
+// all hotspots together: a slow fade in, a long hold, a slow fade out before the painting dissolves
+const pinAlpha = pr => easeIO(map(pr, .04, .15)) * (1 - easeIO(map(pr, .3, .42)));
+// the painting is shifted so the hotspots, as a group, sit in the middle of the card (as far as the painting's edges allow)
+const PG = { gx: 0, gy: 0, dw: 0, dh: 0, tx: 0, ty: 0, zs: 1.1 };
+function pinShift(zs, drift = 0) { const cw = interCard.clientWidth, chh = interCard.clientHeight, mx = Math.max(0, (PG.dw * zs - cw) / 2), my = Math.max(0, (PG.dh * zs - chh) / 2);
+  return [clamp(-zs * PG.gx, -mx, mx), clamp(-zs * PG.gy + drift, -my, my)]; }
+function layoutPins() { const W = pinsBox.offsetWidth, H = pinsBox.offsetHeight, iw = interImg.naturalWidth || 3200, ih = interImg.naturalHeight || 2359, s = Math.max(W / iw, H / ih), ox = (W - iw * s) / 2, oy = (H - ih * s) / 2, cw = interCard.clientWidth, chh = interCard.clientHeight;
+  const xy = pins.map(p => [ox + p.dataset.u * iw * s, oy + p.dataset.v * ih * s]), xs = xy.map(q => q[0]), ys = xy.map(q => q[1]);
+  PG.gx = (Math.min(...xs) + Math.max(...xs)) / 2 - W / 2; PG.gy = (Math.min(...ys) + Math.max(...ys)) / 2 - H / 2; PG.dw = iw * s; PG.dh = ih * s;
+  const zs = 1.1, [tx, ty] = pinShift(zs);
+  pins.forEach((p, i) => { const [x, y] = xy[i], vx = cw / 2 + zs * (x - W / 2) + tx, vy = chh / 2 + zs * (y - H / 2) + ty; p.style.left = x.toFixed(1) + 'px'; p.style.top = y.toFixed(1) + 'px';
+    // each plate keeps its chosen side so neighbours never collide, and flips only if it would run off the card
+    const bw = (p.lastElementChild.offsetWidth + 26) * zs, left = p.dataset.side === 'l' ? vx - bw > 12 : vx + bw > cw - 12;
+    p.classList.toggle('l', left); p.classList.toggle('up', vy > chh * .62); p.hidden = vx < 28 || vx > cw - 28 || vy < 96 || vy > chh - 24; }); }
 new ResizeObserver(layoutPins).observe(pinsBox); interImg.addEventListener('load', layoutPins);
 { const ei = new Image(); ei.onload = () => { const go = () => { if (!F.EAR_LAND) return setTimeout(go, 150); try { buildEarPhoto(ei); } catch (e) { console.warn(e); } }; go(); }; ei.src = 'img/wheat-ear.jpg'; }
 (interImg.complete && interImg.naturalWidth ? Promise.resolve() : new Promise(r => interImg.addEventListener('load', r, { once: true }))).then(() => { try { buildPaint(interImg); } catch (e) { console.warn(e); } });
@@ -1785,9 +1735,9 @@ function frame() {
   fieldCam.position.set(fcam.px + par.x * (.5 + hi * 3), fcam.py - par.y * (.16 + hi * 2), fcam.pz); look.set(fcam.tx + par.x * .6, fcam.ty, fcam.tz); fieldCam.lookAt(look); fieldCam.updateMatrixWorld();
   if (title.local && title.mat.uniforms.uAlpha.value > 0) { title.mesh.position.copy(title.local).applyMatrix4(fieldCam.matrixWorld); title.mesh.quaternion.copy(fieldCam.quaternion); }
   sky.position.copy(fieldCam.position);
-  FU.uTime.value = t; FU.uMouseStr.value = lerp(FU.uMouseStr.value, now - S.moved < 1300 ? 1 : 0, .06);
+  FU.uTime.value = t; FU.uMouseStr.value = lerp(FU.uMouseStr.value, now - S.moved < 1300 ? 1 : 0, .025);
   ndc.set(S.px / vw * 2 - 1, -(S.py / VH) * 2 + 1);
-  if (W.field > .05) { ray.setFromCamera(ndc, fieldCam); if (ray.ray.intersectPlane(groundPlane, hit)) FU.uMouse.value.set(hit.x, hit.z); }
+  if (W.field > .05) { ray.setFromCamera(ndc, fieldCam); if (ray.ray.intersectPlane(groundPlane, hit)) { const m = FU.uMouse.value; if (Math.hypot(hit.x - m.x, hit.z - m.y) > 6) m.set(hit.x, hit.z); else m.set(lerp(m.x, hit.x, .045), lerp(m.y, hit.z, .045)); } }
 
   // particles: stage resolution
   pCam.position.set(par.x * .35, -par.y * .25, 11); pCam.lookAt(0, 0, 0);
@@ -1803,12 +1753,12 @@ function frame() {
       ch.dots.forEach((d, i) => d.style.transform = `scaleX(${i < stepIdx ? 1 : i === stepIdx ? clamp(f) : 0})`); { const pr = clamp((stepIdx + clamp(f)) / 6); dialProg.style.strokeDashoffset = (169.65 * (1 - pr)).toFixed(2); dialHand.style.transform = `rotate(${(pr * 360).toFixed(1)}deg)`; }
       if (!ch.swapping) { setText(ch.stat, cur.stat(local)); setText(ch.statU, cur.statU(local)); } setYear(cur.year(local));
     } else if (active.type === 'painting') {
-      prev = PAINT; cur = PAINT; morph = 1; local = map(interPr, .48, .92); box = cardBox(active.r); box.cx += interPanPx / active.r.width * box.w; fullXf = 'paint';
+      prev = PAINT; cur = PAINT; morph = 1; local = map(interPr, .46, .88); box = cardBox(active.r); box.cx += PG.tx / active.r.width * box.w; box.cy -= PG.ty / active.r.height * box.h; fullXf = 'paint';
     } else {
       prev = { B: 'DUST', den: .4 }; cur = EARS; morph = easeIO(map(rP, .02, .2)); local = map(rP, .27, .43); box = cardBox(active.r); fullXf = true;
     }
-    setAttrs(prev, cur);
-    const scale = fullXf === 'paint' ? Math.max(box.w / (4.6 * PAINT_ASPECT), box.h / 4.6) * 1.06 : fullXf ? box.h / 8.6 : chScale(cur, box);
+    setAttrs(prev, cur); PU.uSweep.value = active.type === 'painting' ? 1 : 0;
+    const scale = fullXf === 'paint' ? Math.max(box.w / (4.6 * PAINT_ASPECT), box.h * 1.12 / 4.6) * PG.zs : fullXf ? box.h / 8.6 : chScale(cur, box);
     const sc_ = scale * grow, cyOff = fullXf === true ? box.h * .04 : 0;
     PU.uXfCur.value.set(box.cx, box.cy + cyOff, sc_, rotFor(cur, t, local));
     if (cur === EARS) {
@@ -1868,26 +1818,18 @@ function frame() {
   finalPass.uniforms.uDot.value = !active ? 0 : active.type === 'hero' ? 1 : active.type === 'reveal' ? W.field : 0; finalPass.uniforms.uCell.value = vw < 700 ? 3.1 : 4.2; finalPass.uniforms.uLift.value = active && active.type === 'reveal' ? W.field : 0; FU.uDim.value = FU.uFloor.value = active && active.type === 'reveal' ? 1 : 0;
 
   // editorial motion: chapter media grow-in, cards grow, interlude
-  if (!reduce) windows.forEach(g => { const r = g.getBoundingClientRect(); if (r.top > vh || r.bottom < 0) return; const e = easeIO(clamp((vh - r.top) / (vh * .9))), iy = (1 - e) * 8, ix = (1 - e) * (vw < 900 ? 10 : 22), rr = lerp(40, parseFloat(getComputedStyle(g).borderRadius) || 24, e); g.style.clipPath = e >= 1 ? '' : `inset(${iy.toFixed(2)}% ${ix.toFixed(2)}% ${iy.toFixed(2)}% ${ix.toFixed(2)}% round ${rr.toFixed(1)}px)`; });
+  // a window near the end of the page finishes growing by the time the page can't scroll any further
+  const toEnd = Math.max(0, document.documentElement.scrollHeight - innerHeight - scrollY);
+  if (!reduce) windows.forEach(g => { const r = g.getBoundingClientRect(); if (r.top > vh || r.bottom < 0) return; const e = easeIO(clamp((vh - r.top) / Math.max(1, Math.min(vh * .9, vh - r.top + toEnd)))), iy = (1 - e) * 8, ix = (1 - e) * (vw < 900 ? 10 : 22), rr = lerp(40, parseFloat(getComputedStyle(g).borderRadius) || 24, e); g.style.clipPath = e >= 1 ? '' : `inset(${iy.toFixed(2)}% ${ix.toFixed(2)}% ${iy.toFixed(2)}% ${ix.toFixed(2)}% round ${rr.toFixed(1)}px)`; });
   { const r = interSec.getBoundingClientRect(), pr = clamp(-r.top / Math.max(1, r.height - vh));
-    const fu = reduce ? .5 : interFocus(pr), live = pr > .03 && pr < .38; let cur = -1;
-    pins.forEach((pn, i) => { const on = live && fu >= PINU[i] - .015; if (on) cur = i; pn.classList.toggle('on', on); });
-    pins.forEach((pn, i) => pn.classList.toggle('past', i < cur));
-    const iw = interImg.naturalWidth || 3200, ih = interImg.naturalHeight || 2359, W = pinsBox.offsetWidth, H = pinsBox.offsetHeight, sc2 = Math.max(W / iw, H / ih), span = iw * sc2 - W;
-    if (interCard.clientWidth < interCard.clientHeight) {
-      // portrait card: pan the painting itself so the travelling focus stays centred
-      const np = clamp((fu * iw * sc2 - W / 2) / Math.max(1, span)); interPanPx = span * (.5 - np);
-      if (Math.abs(np - pinPan) > .0005) { pinPan = np; interImg.style.objectPosition = `${(pinPan * 100).toFixed(2)}% 50%`; layoutPins(); }
-      interImg.style.transform = pinsBox.style.transform = reduce ? 'scale(1.07)' : `translate3d(0,${(pr - .5) * -6}%,0) scale(${1.12 - pr * .1})`;
-    } else {
-      // landscape card: the zoomed painting slides left as the focus moves right
-      if (pinPan !== .5) { pinPan = .5; interImg.style.objectPosition = ''; layoutPins(); }
-      const zs = 1.12 - pr * .1, tx = reduce ? 0 : (.5 - fu) * .068; interPanPx = tx * interCard.clientWidth;
-      interImg.style.transform = pinsBox.style.transform = reduce ? 'scale(1.07)' : `translate3d(${(tx * 100).toFixed(3)}%,${(pr - .5) * -6}%,0) scale(${zs.toFixed(4)})`;
-    }
+    const pa = pinAlpha(pr).toFixed(3);
+    if (pinsBox._pa !== pa) { pinsBox._pa = pa; pinsBox.style.setProperty('--pa', pa); }
+    // no horizontal travel: the painting holds the hotspots centred, with a slow settle in scale and a slight vertical drift
+    { const zs = reduce ? 1.07 : 1.12 - pr * .1, [tx, ty] = pinShift(zs, reduce ? 0 : (pr - .5) * -.06 * pinsBox.offsetHeight);
+      PG.tx = tx; PG.ty = ty; PG.zs = zs; interImg.style.transform = pinsBox.style.transform = `translate3d(${tx.toFixed(1)}px,${ty.toFixed(1)}px,0) scale(${zs.toFixed(4)})`; }
     { const e = reduce ? 1 : easeIO(clamp((vh - r.top) / vh)), iy = (1 - e) * 8, ix = (1 - e) * (vw < 900 ? 10 : 22); interCard.style.clipPath = e >= 1 ? '' : `inset(${iy.toFixed(2)}% ${ix.toFixed(2)}% ${iy.toFixed(2)}% ${ix.toFixed(2)}% round ${lerp(40, 24, e).toFixed(1)}px)`; }
-    iwords.forEach((w, i) => { const a0 = .56 + i * .08, e = easeO(map(pr, a0, a0 + .14)); w.style.opacity = e.toFixed(3); if (reduce) return; w.style.transform = `translate3d(${((1 - e) * (i === 0 ? -60 : i === 2 ? 60 : 0)).toFixed(1)}px,${((1 - e) * 40).toFixed(1)}px,0)`; w.style.filter = e < 1 ? `blur(${((1 - e) * 10).toFixed(1)}px)` : ''; });
-    setText($('#paintTag'), pr > .46 ? `Dissolving · ${Math.round(map(pr, .48, .92) * 100)}% to grain` : 'Oil on oak · 119 × 162 cm'); }
+    iwords.forEach((w, i) => { const a0 = .62 + i * .07, e = easeO(map(pr, a0, a0 + .12)); w.style.opacity = e.toFixed(3); if (reduce) return; w.style.transform = `translate3d(${((1 - e) * (i === 0 ? -60 : i === 2 ? 60 : 0)).toFixed(1)}px,${((1 - e) * 40).toFixed(1)}px,0)`; w.style.filter = e < 1 ? `blur(${((1 - e) * 10).toFixed(1)}px)` : ''; });
+    setText($('#paintTag'), pr > .46 ? `Dissolving · ${Math.round(map(pr, .46, .88) * 100)}% to grain` : 'Oil on oak · 119 × 162 cm'); }
   if (thesisST) paintFill(clamp(thesisST.progress * 1.05));
   let traceYear = null; if (traceST) { const tr = tracePin.getBoundingClientRect(); if (tr.bottom > 0 && tr.top < vh) traceYear = traceFrame(traceST.progress); }
 
@@ -1913,7 +1855,7 @@ function frame() {
 
 /* ============================== input ============================== */
 addEventListener('click', e => { if (e.target.closest('button,a,.deed,input')) return;
-  if (W.field > .4 && e.target.closest('#heroCard,#revealCard')) { ndc.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / VH) * 2 + 1); ray.setFromCamera(ndc, fieldCam); if (ray.ray.intersectPlane(groundPlane, hit)) { FU.uGust.value.set(hit.x, hit.z, FU.uTime.value); Sound.tick(220); } } });
+  if (W.field > .4 && e.target.closest('#heroCard,#revealCard')) { ndc.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / VH) * 2 + 1); ray.setFromCamera(ndc, fieldCam); if (ray.ray.intersectPlane(groundPlane, hit)) { FU.uGust.value.set(hit.x, hit.z, FU.uTime.value + .2); Sound.tick(220); } } });
 chapterCard.addEventListener('click', e => { if (ch.idx !== 2 || e.target.closest('button')) return; ndc.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / VH) * 2 + 1); ray.setFromCamera(ndc, pCam); if (!ray.ray.intersectPlane(zPlane, hit)) return; const b = cardBox(chapterCard.getBoundingClientRect()), s = chScale(STEPS[2], b); AG.infectAt((hit.x - b.cx) / s, (hit.y - b.cy) / s); });
 function goStep(i) { if (!chapterST) return; i = clamp(i, 0, 5); const len = (chapterST.end - chapterST.start) / 6; goToY(chapterST.start + len * (i + .72)); }
 $$('#chDots button').forEach(b => b.addEventListener('click', () => goStep(+b.dataset.step)));
@@ -1960,7 +1902,7 @@ function preloadAll(onProgress) {
   $('#loader').classList.add('is-done'); document.querySelector('meta[name=theme-color]').content = '#ebe5d9';
   const cells = $$('#ldGrid i'); cells.forEach(c => c.style.background = Math.random() < .12 ? 'var(--ember)' : '');
   gsap.to(cells, { scale: 0, duration: reduce ? .01 : .55, ease: 'power3.in', stagger: { each: .012, grid: [12, 20], from: 'center' }, onComplete: () => $('#loader').remove() });
-  document.body.classList.remove('locked'); lenis && lenis.start(); fitFp(); layoutTitle(); ScrollTrigger.refresh();
+  document.body.classList.remove('locked'); lenis && lenis.start(); layoutTitle(); ScrollTrigger.refresh();
   document.fonts && document.fonts.ready.then(() => { layoutTitle(); ScrollTrigger.refresh(); });
   gsap.timeline({ delay: .35 })
     .to(finalPass.uniforms.uFade, { value: 1, duration: 2.2, ease: 'power2.out' }, 0)
