@@ -163,7 +163,7 @@ main>section,main>div{position:relative;z-index:3}
 .anno i{display:block;width:5px;height:5px;border-radius:50%;border:1px solid currentColor;flex:none}
 .anno b{display:block;width:18px;height:1px;background:currentColor;opacity:.5;flex:none}
 .anno.l{flex-direction:row-reverse}
-.anno.bare i,.anno.bare b{display:none}
+.anno i,.anno b{display:none}
 .anno.hi{color:#ffd88a}
 .anno.box span{background:var(--straw);color:var(--coal);padding:2px 6px;border-radius:2px}
 .anno.big{font-family:var(--f-display);font-size:17px;letter-spacing:-.01em;text-transform:none;color:var(--straw)}
@@ -333,6 +333,16 @@ main>section,main>div{position:relative;z-index:3}
 .pin b{font-family:var(--f-display);font-weight:400;font-size:17px;letter-spacing:-.01em;line-height:1.1}
 .pin em{font-style:normal;font-family:var(--f-mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:rgba(241,230,200,.72);line-height:1.35}
 @media (prefers-reduced-motion:reduce){.pin.on i::after{animation:none}}
+.anno.grp{flex-direction:column;align-items:center;gap:5px;text-align:center}
+.anno.grp .nm{font-size:10px;letter-spacing:.12em;color:rgba(241,230,200,.6)}
+.anno.grp .sh{display:none}
+.anno.grp .ct{font-family:var(--f-display);font-size:19px;letter-spacing:-.01em;text-transform:none;color:var(--straw)}
+.gauge{position:absolute;left:0;top:0;pointer-events:none;opacity:0;transition:opacity .4s var(--ease-out)}
+.gauge svg{display:block;width:100%;height:100%;overflow:visible}
+.gauge circle{fill:none;vector-effect:non-scaling-stroke;transform:rotate(-90deg);transform-origin:50% 50%}
+.gauge .trk{stroke:rgba(241,230,200,.1);stroke-width:2}
+.gauge .arc{stroke:var(--ember);stroke-width:2.5;stroke-linecap:round;transition:stroke-dasharray .35s var(--ease-out)}
+@media (max-width:560px){.anno.grp .ct{font-size:15px}.anno.grp .nm{font-size:9px}.anno.grp .lg{display:none}.anno.grp .sh{display:inline}}
 /* ---------- CHAPTER III: the record, one object at a time ---------- */
 .trace__pin{position:relative;height:100svh;overflow:hidden;color:var(--ink);transition:color .9s var(--ease-out)}
 html.theme-dark .trace__pin,html.theme-dark .coda,html.theme-dark .trace__head .meta{color:var(--straw)}
@@ -1151,7 +1161,7 @@ function edges(cvs) {
 }
 let arenaLayout = null;
 function buildArena(vertical) {
-  arenaLayout = vertical ? { band: [0, 1.38], rb: .7, vil: [0, -1.12], rv: 1.0 } : { band: [-1.6, .05], rb: .9, vil: [1.22, .05], rv: 1.32 };
+  arenaLayout = vertical ? { band: [-1.48, .5], rb: .8, vil: [1.16, .5], rv: 1.16 } : { band: [-1.6, .22], rb: .9, vil: [1.22, .22], rv: 1.32 };
   const f = newF(), L = arenaLayout; seed = 71; let i = 0;
   const ring = (c, r, n) => { for (let k = 0; k < n; k++, i++) { let a; do { a = R() * 6.283; } while ((a / 6.283 * 96) % 1 > .55); sp(f, i, c[0] + Math.cos(a) * r, c[1] + Math.sin(a) * r, 0, .7); sc(f, i, .95, .85, .65, .22); } };
   ring(L.band, L.rb, Math.floor(N * .05)); ring(L.vil, L.rv, Math.floor(N * .07));
@@ -1351,7 +1361,7 @@ const STEPS = [
   { A: 'POP', B: 'POP', shape: 4, den: .55, rot: 'spin', count: true, title: 'No way back', cap: '1 glyph ≈ 125,000 people', year: l => yearStr(popAt(l).year), stat: l => popWord(popAt(l).n), statU: l => `world population · ${yearStr(popAt(l).year)}`, desc: 'The same land feeds far more farmers than foragers. Once the population grew, there was no returning to the old life. Harari calls it the luxury trap.', src: 'UN World Population Prospects · historical estimates' }
 ];
 const PRE = { A: 'MARK', B: 'MARK', shape: 5, den: .5 };
-const annoRoot = $('#annos');
+const annoRoot = $('#annos'), GAUGES = [];
 function anno(text, cls = '') { const el = document.createElement('div'); el.className = 'anno ' + cls; el.innerHTML = '<i></i><b></b><span></span>'; el.lastChild.textContent = text; annoRoot.appendChild(el); return el; }
 const LBL = [];
 function buildLabels() {
@@ -1363,11 +1373,12 @@ function buildLabels() {
     { el: anno('165 cm', 'big hi'), pos: l => B.top(B.wX + .33, lerp(165, 152, l)), a: () => 1, text: l => `${Math.round(lerp(165, 152, l))} cm` },
     ...[140, 160, 180].map(t => ({ el: anno(String(t), 'l'), pos: () => B.tick(t), a: () => .7 })), { el: anno('Men'), pos: () => [B.mX, B.G - .2, 0], a: () => .8 }, { el: anno('Women'), pos: () => [B.wX, B.G - .2, 0], a: () => .8 },
     { el: anno('Ice Age outline', 'hi'), pos: () => B.top(B.mX - .62, 175), a: l => map(l, .5, .7) }];
-  { const top = (c, r) => () => [c()[0] - r() * .62, c()[1] + r() + .08, 0], bandC = () => arenaLayout.band, bandR = () => arenaLayout.rb, vilC = () => arenaLayout.vil, vilR = () => arenaLayout.rv;
-  LBL[2] = [{ el: anno('Forager band · 30', 'big bare'), pos: top(bandC, bandR), a: () => 1, dy: -26 },
-    { el: anno('Infected 0 / 30', 'box bare'), pos: top(bandC, bandR), a: () => 1, text: () => `Infected ${AG.counts()[0]} / 30` },
-    { el: anno('Farming village · 360 + livestock', 'big bare'), pos: top(vilC, vilR), a: () => 1, dy: -26 },
-    { el: anno('Infected 0 / 360', 'box bare'), pos: top(vilC, vilR), a: () => 1, text: () => `Infected ${AG.counts()[1]} / 360` }]; }
+  { const grp = (name, short) => { const el = document.createElement('div'); el.className = 'anno grp'; el.innerHTML = '<span class="nm"><span class="lg"></span><span class="sh"></span></span><span class="ct"></span>'; el.querySelector('.lg').textContent = name; el.querySelector('.sh').textContent = short; annoRoot.appendChild(el); return el; };
+    const below = (c, r) => () => [c()[0], c()[1] - r() - .16, 0];
+    LBL[2] = [{ el: grp('Forager band · 30', 'Band · 30'), pos: below(() => arenaLayout.band, () => arenaLayout.rb), a: () => 1, center: true, text: () => `${AG.counts()[0]} / 30 infected` },
+      { el: grp('Farming village · 360 + livestock', 'Village · 360'), pos: below(() => arenaLayout.vil, () => arenaLayout.rv), a: () => 1, center: true, text: () => `${AG.counts()[1]} / 360 infected` }];
+    const gauge = (c, r, total, k) => { const el = document.createElement('div'); el.className = 'gauge'; el.innerHTML = '<svg viewBox="0 0 100 100"><circle class="trk" cx="50" cy="50" r="50" pathLength="100"/><circle class="arc" cx="50" cy="50" r="50" pathLength="100" stroke-dasharray="0 100"/></svg>'; annoRoot.appendChild(el); return { el, arc: el.querySelector('.arc'), c, r, total, k, d: '' }; };
+    GAUGES.push(gauge(() => arenaLayout.band, () => arenaLayout.rb + .08, 30, 0), gauge(() => arenaLayout.vil, () => arenaLayout.rv + .08, 360, 1)); }
   const foods = ['Acorns', 'Wild barley', 'Pistachios', 'Gazelle', 'Figs', 'Lentils', 'River fish', 'Mushrooms', 'Wild honey', 'Tubers', 'Shellfish', 'Almonds', 'Locusts', 'Grass seed'];
   LBL[3] = [...foods.map((f, k) => ({ el: anno(f), pos: () => ANCH.diet.species[k], a: l => 1 - map(l, .05, .25), rot: true })),
     ...['Rice · ~20%', 'Wheat · ~20%', 'Maize · ~20%'].map((t, k) => ({ el: anno(t, 'big hi'), pos: () => ANCH.diet.groups[k], a: l => map(l, .7, .88), rot: true })),
@@ -1650,7 +1661,7 @@ let cardRad = parseFloat(getComputedStyle(heroCard).borderRadius) || 20;
 const setText = (el, v) => { if (el._t !== v) { el._t = v; el.textContent = v; } };
 let curKey = '', simStarted = false, vertical = innerWidth < 900;
 // the outbreak arena stacks vertically on phones and can use more of the card's width there
-const chScale = (st, box) => vertical && st && st.A === 'ARENA' ? Math.min(box.w / 3.9, box.h / 6.3) : Math.min(box.w / 5.8, box.h / 4.8);
+const chScale = (st, box) => vertical && st && st.A === 'ARENA' ? Math.min(box.w / 5.5, box.h / 4.6) : Math.min(box.w / 5.8, box.h / 4.8);
 function cardBox(r) { const vis = 2 * pCam.position.z * Math.tan(pCam.fov * Math.PI / 360), visW = vis * pCam.aspect; return { cx: ((r.left + r.width / 2) / innerWidth - .5) * visW, cy: (.5 - (r.top + r.height / 2) / VH) * vis, w: r.width / innerWidth * visW, h: r.height / innerHeight * vis }; }
 function setAttrs(prev, cur) { const key = prev.B + '|' + cur.A + '|' + cur.B; if (key === curKey) return; curKey = key; pGeo.setAttribute('pPrev', F[prev.B].p); pGeo.setAttribute('cPrev', F[prev.B].c); pGeo.setAttribute('pA', F[cur.A].p); pGeo.setAttribute('cA', F[cur.A].c); pGeo.setAttribute('pB', F[cur.B].p); pGeo.setAttribute('cB', F[cur.B].c); }
 const rotFor = (s, t, l) => s.rot === 'sway' ? Math.sin(t * .22) * .32 : s.rot === 'spin' ? t * .1 + l * 2.2 : 0;
@@ -1742,11 +1753,19 @@ function frame() {
       if (si !== stepIdx || morph < .4) { if (L.vis) { L.el.style.opacity = 0; L.vis = false; } return; }
       let pos = L.pos(local); if (L.rot) pos = rotY3(pos, PU.uXfCur.value.w); if (L.front && pos[2] < 0) { L.el.style.opacity = 0; return; }
       tV.set(pos[0] * sc_ + box.cx, pos[1] * sc_ + box.cy, pos[2] * sc_).project(pCam);
-      const sx = (tV.x * .5 + .5) * vw - active.r.left, sy = (-tV.y * .5 + .5) * vh - active.r.top;
+      const sx = (tV.x * .5 + .5) * vw - active.r.left, sy = (-tV.y * .5 + .5) * VH - active.r.top;
       if (L.text) { const tx = L.text(local); if (L.tx !== tx) { L.tx = tx; L.el.lastChild.textContent = tx; L.w = 0; } }
-      if (!L.w) L.w = L.el.offsetWidth; const ins = 16, lw = L.w; let lx = L.el.classList.contains('l') ? sx - lw + 3 : sx - 3; lx = Math.min(Math.max(lx, ins), active.r.width - lw - ins); L.el.style.transform = `translate(${lx}px,${Math.max(ins, sy - 6 + (L.dy || 0))}px)`; L.el.style.opacity = (L.a(local) * map(morph, .5, 1)).toFixed(3); L.vis = true;
+      if (!L.w) L.w = L.el.offsetWidth; const ins = 16, lw = L.w; let lx = L.center ? sx - lw / 2 : L.el.classList.contains('l') ? sx - lw + 3 : sx - 3; lx = Math.min(Math.max(lx, ins), active.r.width - lw - ins); L.el.style.transform = `translate(${lx}px,${Math.max(ins, sy - 6 + (L.dy || 0))}px)`; L.el.style.opacity = (L.a(local) * map(morph, .5, 1)).toFixed(3); L.vis = true;
     }));
-  } else { AG.m.material.uniforms.uAlpha.value = 0; grat.material.opacity = 0; }
+    // outbreak gauges ride on the circles
+    const showG = stepIdx === 2 && morph > .4;
+    GAUGES.forEach(G => { if (!showG) { if (G.vis) { G.el.style.opacity = 0; G.vis = false; } return; }
+      const c = G.c(), r = G.r(); tV.set(c[0] * sc_ + box.cx, c[1] * sc_ + box.cy, 0).project(pCam); const gx = (tV.x * .5 + .5) * vw - active.r.left, gy = (-tV.y * .5 + .5) * VH - active.r.top;
+      tV.set((c[0] + r) * sc_ + box.cx, c[1] * sc_ + box.cy, 0).project(pCam); const R = Math.abs((tV.x * .5 + .5) * vw - active.r.left - gx);
+      G.el.style.transform = `translate(${(gx - R).toFixed(1)}px,${(gy - R).toFixed(1)}px)`; G.el.style.width = G.el.style.height = (R * 2).toFixed(1) + 'px';
+      const d = `${(AG.counts()[G.k] / G.total * 100).toFixed(1)} 100`; if (d !== G.d) { G.d = d; G.arc.setAttribute('stroke-dasharray', d); }
+      G.el.style.opacity = map(morph, .5, 1).toFixed(3); G.vis = true; });
+  } else { AG.m.material.uniforms.uAlpha.value = 0; grat.material.opacity = 0; GAUGES.forEach(G => { if (G.vis) { G.el.style.opacity = 0; G.vis = false; } }); }
 
   // reveal overlays
   if (active && active.type === 'reveal') {
@@ -1806,7 +1825,7 @@ addEventListener('keydown', e => { if (!chapterST || e.target.closest('input,tex
   if (e.key === 'ArrowRight') { e.preventDefault(); goStep(ch.idx + 1); } else if (e.key === 'ArrowLeft') { e.preventDefault(); goStep(ch.idx - 1); } });
 chapterCard.addEventListener('click', e => { if (!coarse || ch.idx === 2 || e.target.closest('button')) return; const r = chapterCard.getBoundingClientRect(), x = (e.clientX - r.left) / r.width; if (x < .3) goStep(ch.idx - 1); else if (x > .7) goStep(ch.idx + 1); });
 let resizeT = 0;
-function onResize() { VH = glH(); cardRad = parseFloat(getComputedStyle(heroCard).borderRadius) || 20; const w = innerWidth, h = VH; renderer.setSize(w, h, false); composer.setSize(w, h); bloom.setSize(w / 2, h / 2); finalPass.uniforms.uRes.value.set(w, h); fieldCam.aspect = pCam.aspect = w / h; fieldCam.updateProjectionMatrix(); pCam.updateProjectionMatrix();
+function onResize() { VH = glH(); LBL.forEach(l => l.forEach(L => L.w = 0)); cardRad = parseFloat(getComputedStyle(heroCard).borderRadius) || 20; const w = innerWidth, h = VH; renderer.setSize(w, h, false); composer.setSize(w, h); bloom.setSize(w / 2, h / 2); finalPass.uniforms.uRes.value.set(w, h); fieldCam.aspect = pCam.aspect = w / h; fieldCam.updateProjectionMatrix(); pCam.updateProjectionMatrix();
   const v = w < 900; if (v !== vertical) { vertical = v; buildArena(v); curKey = ''; if (simStarted) AG.seed(); } FU.uHideR.value = w < h ? 4.6 : 3.2; layoutTitle(); ScrollTrigger.refresh(); }
 // the GL buffer, cameras and title follow the window every frame; the heavier rebuild waits for the resize to settle
 let resizeRaf = 0;
