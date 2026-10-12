@@ -277,7 +277,8 @@ main>section,main>div{position:relative;z-index:3}
 .chapter__cap{position:absolute;left:var(--inset);bottom:var(--inset);display:flex;gap:8px;align-items:center;color:var(--straw);z-index:2}
 .chapter__cap b{font-weight:500;background:var(--ember);color:var(--paper-hi);padding:3px 6px;border-radius:2px}
 .chapter__text{display:flex;flex-direction:column;justify-content:space-between;min-width:0;padding:6px 0 4px}
-.chapter__num{font-family:var(--f-display);font-size:clamp(90px,13vw,210px);line-height:.78;letter-spacing:-.06em;color:var(--ink)}
+/* the numerals' ink rises ~.09em above their box; the column has 6px of top padding: together they put the digits' tops on the image's top edge */
+.chapter__num{font-family:var(--f-display);font-size:clamp(90px,13vw,210px);line-height:.78;letter-spacing:-.06em;color:var(--ink);margin-top:calc(.09em - 6px)}
 .chapter__num small{font-size:.2em;letter-spacing:0;color:var(--ink-soft);margin-left:.2em;vertical-align:top;line-height:1.6}
 .chapter__keeper{margin-bottom:6px;font-family:var(--f-display);font-size:clamp(22px,2vw,30px);letter-spacing:-.02em}
 .chapter__title{font-family:var(--f-display);font-size:clamp(40px,5.2vw,88px);letter-spacing:-.05em;line-height:1.06;padding-bottom:.06em}
@@ -366,10 +367,23 @@ html.theme-dark .trace__float{opacity:1}
 .trace__rail li{opacity:.6;transition:opacity .4s}
 .trace__rail li.on{opacity:1}
 .coda{padding:0 var(--gutter);color:var(--ink);transition:color .9s var(--ease-out)}
-.coda__item{min-height:82svh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;text-align:center}
-.coda__year{color:var(--ember)}
-.coda__line{font-family:var(--f-display);font-size:clamp(32px,3.8vw,62px);letter-spacing:-.035em;line-height:1.14;max-width:19ch}
+/* the modern record as amendments: a year set like the chapter numeral, then the clause, one figure, a note and its source */
+.coda__item{min-height:82svh;max-width:1440px;margin:0 auto;padding:clamp(56px,9vh,110px) 0;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:var(--gutter);align-items:start;align-content:center}
+/* the numerals' ink sits ~.09em above their box: drop them so the digits' tops meet the clause chip */
+.coda__year{font-family:var(--f-display);font-size:clamp(90px,13vw,210px);line-height:.78;letter-spacing:-.06em;color:var(--ember);font-variant-numeric:tabular-nums;margin-top:.09em}
+.coda__body{display:flex;flex-direction:column;gap:20px;max-width:40rem;min-width:0}
+.coda__keeper{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 16px;font-family:var(--f-display);font-size:clamp(22px,2vw,30px);letter-spacing:-.02em}
+.coda__keeper .hl{color:var(--coal)}
+.coda__kicker{opacity:.6}
+.coda__line{font-family:var(--f-display);font-size:clamp(32px,3.4vw,56px);letter-spacing:-.035em;line-height:1.14;max-width:19ch;text-wrap:balance}
+.coda__line .split-line>span{text-wrap:balance}
 .coda__line em{display:block;font-style:normal;opacity:.5}
+.coda__stat{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;border-top:1px solid color-mix(in oklab,currentColor 32%,transparent);padding-top:16px;margin-top:6px}
+.coda__stat .v{font-family:var(--f-display);font-size:clamp(34px,3.6vw,58px);letter-spacing:-.045em;line-height:1;font-variant-numeric:tabular-nums;color:var(--ember)}
+.coda__stat .u{opacity:.62}
+.coda__desc{font-size:clamp(16px,1.25vw,19px);line-height:1.55;opacity:.74;max-width:34rem;text-wrap:pretty}
+.coda__src{opacity:.45;letter-spacing:.06em}
+@media (max-width:900px){.coda__item{grid-template-columns:minmax(0,1fr);gap:20px;align-content:center}.coda__year{font-size:clamp(72px,22vw,128px)}.coda__body{gap:16px}}
 @media (max-width:700px){.trace__float canvas:nth-child(n+5),.trace__head .meta span:nth-child(3){display:none}.trace__rail{font-size:10px;letter-spacing:.04em}}
 .desk::after,.footer__card::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);pointer-events:none;z-index:3}
 /* ---------- REVEAL ---------- */
@@ -392,8 +406,8 @@ html.theme-dark .trace__float{opacity:1}
 .rv-area p{font-family:var(--f-display);font-size:clamp(20px,2vw,28px);letter-spacing:-.02em}
 .rv-area .mono{color:rgba(255,248,236,.92)}
 .rv-quote{top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:26px}
-.rv-quote p{font-family:var(--f-display);font-size:clamp(40px,5.8vw,92px);line-height:1.08;letter-spacing:-.05em;max-width:14ch;text-indent:-.4em}
-.rv-quote em{font-style:normal;color:#ffe3a6}
+.rv-quote p{font-family:var(--f-display);font-size:clamp(40px,5.8vw,92px);line-height:1.08;letter-spacing:-.05em;max-width:16ch;text-indent:-.4em;text-wrap:balance}
+.rv-quote em{display:block;font-style:normal;color:#ffe3a6;text-indent:0}
 
 /* ---------- VERDICT ---------- */
 .live{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gutter);margin-top:clamp(30px,5vh,60px)}
@@ -708,10 +722,46 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
 </section>
 
 <section class="coda" id="coda" aria-label="The modern record">
-  <div class="coda__item" data-year="AD 1798"><span class="mono coda__year">1798</span><p class="coda__line" data-lines>Malthus warns that people will always <em>outgrow their food.</em></p></div>
-  <div class="coda__item" data-year="AD 1909"><span class="mono coda__year">1909</span><p class="coda__line" data-lines>Haber and Bosch pull fertiliser out of the air. <em>It now feeds half of us.</em></p></div>
-  <div class="coda__item" data-year="AD 1960"><span class="mono coda__year">1960s</span><p class="coda__line" data-lines>Semi-dwarf wheat multiplies the harvest. <em>The contract scales.</em></p></div>
-  <div class="coda__item" data-year="AD 2026"><span class="mono coda__year">2026</span><p class="coda__line" data-lines>8.2 billion signatories. <em>Not one has read the fine print.</em></p></div>
+  <div class="coda__item" data-year="AD 1798">
+    <p class="coda__year">1798</p>
+    <div class="coda__body">
+      <p class="coda__keeper" data-reveal><span class="hl hl--gold">Amendment I</span><span class="coda__kicker mono">The warning</span></p>
+      <p class="coda__line" data-lines>Malthus warns that people will always <em>outgrow their food.</em></p>
+      <div class="coda__stat" data-reveal><span class="v"><span data-count="8">0</span>×</span><span class="u mono">as many people as when he wrote</span></div>
+      <p class="coda__desc" data-reveal>People multiply, he argued, while food only adds up, so famine will always close the gap. About a billion people were alive as he wrote. The contract has since fed eight times as many.</p>
+      <p class="coda__src mono" data-reveal>T. R. Malthus, An Essay on the Principle of Population (1798)</p>
+    </div>
+  </div>
+  <div class="coda__item" data-year="AD 1909">
+    <p class="coda__year">1909</p>
+    <div class="coda__body">
+      <p class="coda__keeper" data-reveal><span class="hl hl--gold">Amendment II</span><span class="coda__kicker mono">The loophole</span></p>
+      <p class="coda__line" data-lines>Haber and Bosch pull fertiliser out of the air. <em>It now feeds half of us.</em></p>
+      <div class="coda__stat" data-reveal><span class="v"><span data-count="48">0</span>%</span><span class="u mono">of humanity fed by synthetic nitrogen</span></div>
+      <p class="coda__desc" data-reveal>For ten thousand years the harvest was rationed by the nitrogen in the soil. Fritz Haber made ammonia from air on a laboratory bench; by 1913 Carl Bosch had built it into a factory. About half the nitrogen in your body has passed through one.</p>
+      <p class="coda__src mono" data-reveal>J. W. Erisman et al., Nature Geoscience (2008) · V. Smil, Enriching the Earth (2001)</p>
+    </div>
+  </div>
+  <div class="coda__item" data-year="AD 1960">
+    <p class="coda__year">1960s</p>
+    <div class="coda__body">
+      <p class="coda__keeper" data-reveal><span class="hl hl--gold">Amendment III</span><span class="coda__kicker mono">The upgrade</span></p>
+      <p class="coda__line" data-lines>Semi-dwarf wheat multiplies the harvest. <em>The contract scales.</em></p>
+      <div class="coda__stat" data-reveal><span class="v"><span data-count="3">0</span>×</span><span class="u mono">wheat per hectare since 1961</span></div>
+      <p class="coda__desc" data-reveal>Fed on fertiliser, tall wheat grew heavy and fell over. Norman Borlaug’s short-stemmed varieties stood up under the extra grain. India’s wheat harvest nearly doubled in six years. The new seeds came with terms of their own: more fertiliser, more water.</p>
+      <p class="coda__src mono" data-reveal>FAOSTAT · N. Borlaug, Nobel Peace Prize lecture (1970)</p>
+    </div>
+  </div>
+  <div class="coda__item" data-year="AD 2026">
+    <p class="coda__year">2026</p>
+    <div class="coda__body">
+      <p class="coda__keeper" data-reveal><span class="hl hl--gold">Current terms</span><span class="coda__kicker mono">In force</span></p>
+      <p class="coda__line" data-lines>8.2 billion signatories. <em>Not one has read the fine print.</em></p>
+      <div class="coda__stat" data-reveal><span class="v"><span data-count="800">0</span></span><span class="u mono">million tonnes of wheat, every year</span></div>
+      <p class="coda__desc" data-reveal>Wheat is grown on more land than any other food crop and supplies about a fifth of the world’s calories and protein. The terms are the ones agreed twelve thousand years ago: plant, harvest, store, repeat.</p>
+      <p class="coda__src mono" data-reveal>FAOSTAT (2023) · CIMMYT</p>
+    </div>
+  </div>
 </section>
 
 <section id="reveal" data-year="AD 2026">
@@ -723,7 +773,7 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
       <div class="rv rv-sig"><span class="mono">Party A · signature on file</span><span class="latin">Triticum aestivum</span><span class="mono" style="color:var(--straw-3)">Bread wheat · an annual grass</span></div>
       <div class="rv rv-origin"><span class="mono">c. 9000 BC · Karacadağ, south-east Turkey</span><b>A single wild wheat plant</b></div>
       <div class="rv rv-area"><span class="mono">Today, the world’s wheat harvest covers</span><span class="area-num" id="areaNum">0<small>km²</small></span><p>About the size of Greenland</p><span class="mono" style="color:rgba(255,248,236,.85);letter-spacing:.06em;text-transform:none">About 219 million hectares</span></div>
-      <blockquote class="rv rv-quote"><p>“We did not domesticate wheat. <em>It domesticated us.</em>”</p><cite class="mono">Yuval Noah Harari, Sapiens</cite></blockquote>
+      <blockquote class="rv rv-quote"><p>“We did not domesticate wheat. <em>It domesticated us.”</em></p><cite class="mono">Yuval Noah Harari, Sapiens</cite></blockquote>
     </div>
   </div>
 </section>
@@ -761,6 +811,7 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
           <li>M. Dyble et al., Nature Human Behaviour, 2019</li>
           <li>M. Heun et al., Science, 1997 · T. Molleson, Scientific American, 1994</li>
           <li>FAO, Dimensions of Need (1995) · FAOSTAT (2022) · UN World Population Prospects</li>
+          <li>T. R. Malthus, An Essay on the Principle of Population, 1798 · J. W. Erisman et al., Nature Geoscience, 2008 · V. Smil, Enriching the Earth, 2001 · N. Borlaug, Nobel lecture, 1970</li>
         </ol></div>
       <div class="footer__col"><span class="footer__colTitle mono">Images</span>
         <p>The Metropolitan Museum of Art, Open Access (CC0): Bruegel, The Harvesters (1565); Van Gogh, Wheat Field with Cypresses (1889); Model of a Granary with Scribes; Proto-cuneiform barley tablet; Servant Grinding Grain; Harvest Scenes, Tomb of Menna (facsimile). Unsplash: Marek Studzinski, Sandy Ravaloniaina, Lu, Andrey Soldatov.</p></div>
@@ -900,9 +951,9 @@ composer.addPass(new StagePass());
 const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth / 2, VH / 2), .7, .6, .8); composer.addPass(bloom);
 const RAYS = small ? 22 : 44;
 const finalPass = new ShaderPass({
-  uniforms: { tDiffuse: { value: null }, uSun: { value: new THREE.Vector2(.5, .6) }, uRays: { value: 0 }, uTime: { value: 0 }, uCA: { value: .35 }, uGrain: { value: .032 }, uCard: { value: new THREE.Vector4(0, 0, 1, 1) }, uRes: { value: new THREE.Vector2(innerWidth, VH) }, uFade: { value: 1 }, uVig: { value: 1 }, uDot: { value: 0 }, uCell: { value: 5 }, uLift: { value: 0 } },
+  uniforms: { tDiffuse: { value: null }, uSun: { value: new THREE.Vector2(.5, .6) }, uRays: { value: 0 }, uTime: { value: 0 }, uCA: { value: .35 }, uGrain: { value: .032 }, uCard: { value: new THREE.Vector4(0, 0, 1, 1) }, uRes: { value: new THREE.Vector2(innerWidth, VH) }, uFade: { value: 1 }, uVig: { value: 1 }, uDot: { value: 0 }, uCell: { value: 5 }, uLift: { value: 0 }, uQuiet: { value: 0 } },
   vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
-  fragmentShader: `uniform sampler2D tDiffuse; uniform vec2 uSun,uRes; uniform vec4 uCard; uniform float uRays,uTime,uCA,uGrain,uFade,uVig,uDot,uCell,uLift; varying vec2 vUv;
+  fragmentShader: `uniform sampler2D tDiffuse; uniform vec2 uSun,uRes; uniform vec4 uCard; uniform float uRays,uTime,uCA,uGrain,uFade,uVig,uDot,uCell,uLift,uQuiet; varying vec2 vUv;
     float hash(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
     vec3 soft(vec3 c){ vec3 k = max(c - 0.8, 0.0); return min(c, 0.8) + 0.2 * (1.0 - exp(-k / 0.2)); }
     void main(){
@@ -922,6 +973,7 @@ const finalPass = new ShaderPass({
         for (int i = 0; i < ${RAYS}; i++) { p -= dl; vec3 s = texture2D(tDiffuse, p).rgb; float l = max(dot(s, vec3(0.3, 0.59, 0.11)) - 0.85, 0.0); acc += s * l * ill; ill *= 0.955; }
         col += acc / float(${RAYS}) * uRays * 4.5; }
       col = soft(col);
+      col *= 1.0 - uQuiet * 0.52;
       col *= mix(1.0, smoothstep(1.25, 0.35, length(dc * vec2(1.0, 0.8)) * 1.25), uVig * 0.8);
       col += (hash(vUv * uRes + fract(floor(uTime * 24.0) * 0.137) * 91.0) - 0.5) * uGrain;
       gl_FragColor = vec4(col * uFade, 1.0);
@@ -1815,7 +1867,7 @@ function frame() {
   finalPass.uniforms.uRays.value = (tV.z < 1 && Math.abs(tV.x) < 1.6 && Math.abs(tV.y) < 1.6) ? W.field * .28 : 0; finalPass.uniforms.uTime.value = t;
   const pm = active && active.type === 'reveal' ? 0 : W.particles * (1 - W.field); bloom.strength = lerp(.22, .5, pm); bloom.radius = lerp(.3, .45, pm); bloom.threshold = lerp(.96, .82, pm);
   finalPass.uniforms.uVig.value = active && (active.type === 'chapter' || active.type === 'painting') ? .45 : 1;
-  finalPass.uniforms.uDot.value = !active ? 0 : active.type === 'hero' ? 1 : active.type === 'reveal' ? W.field : 0; finalPass.uniforms.uCell.value = vw < 700 ? 3.1 : 4.2; finalPass.uniforms.uLift.value = active && active.type === 'reveal' ? W.field : 0; FU.uDim.value = FU.uFloor.value = active && active.type === 'reveal' ? 1 : 0;
+  finalPass.uniforms.uDot.value = !active ? 0 : active.type === 'hero' ? 1 : active.type === 'reveal' ? W.field : 0; finalPass.uniforms.uCell.value = vw < 700 ? 3.1 : 4.2; finalPass.uniforms.uLift.value = active && active.type === 'reveal' ? W.field : 0; finalPass.uniforms.uQuiet.value = active && active.type === 'reveal' ? easeIO(map(rP, .8, .9)) : 0; FU.uDim.value = FU.uFloor.value = active && active.type === 'reveal' ? 1 : 0;
 
   // editorial motion: chapter media grow-in, cards grow, interlude
   // a window near the end of the page finishes growing by the time the page can't scroll any further
