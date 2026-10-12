@@ -312,7 +312,7 @@ main>section,main>div{position:relative;z-index:3}
 .dial__hub{fill:var(--ink)!important;stroke:none!important}
 
 /* ---------- INTERLUDE ---------- */
-.interlude{height:380vh}
+.interlude{height:820vh}
 .interlude__sticky{position:sticky;top:0;height:100svh;padding:10px}
 .interlude__card{position:relative;height:100%;border-radius:var(--radius);overflow:hidden;background:transparent;will-change:transform}
 .interlude__card img{z-index:1}
@@ -343,8 +343,6 @@ main>section,main>div{position:relative;z-index:3}
 .pin.past i{scale:.55}
 .pin.past i::after{animation:none}
 .pin.past>span{opacity:0;translate:0 0;transition-delay:0s}
-.pin-spot{position:absolute;inset:0;pointer-events:none;opacity:0;--sx:20%;--sy:70%;background:radial-gradient(circle var(--sr,400px) at var(--sx) var(--sy),rgba(10,8,6,0) 32%,rgba(10,8,6,.55) 100%)}
-@media (max-width:700px){.pin-spot{--sr:230px}}
 @media (prefers-reduced-motion:reduce){.pin.on i::after{animation:none}}
 .anno.grp{flex-direction:column;align-items:center;gap:6px;text-align:center}
 .anno.grp .nm{font-size:9px;letter-spacing:.14em;color:rgba(241,230,200,.6)}
@@ -727,7 +725,6 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
     <div class="interlude__card" id="interCard">
       <img src="img/harvesters.jpg" alt="Pieter Bruegel the Elder, The Harvesters, 1565: peasants cutting and binding wheat, others resting under a pear tree" id="interImg">
       <div class="interlude__pins" id="pins" aria-hidden="true">
-        <span class="pin-spot" id="pinSpot"></span>
         <span class="pin" data-u=".215" data-v=".745"><i></i><span><b>The reapers</b><em>Dawn to dusk, by hand</em></span></span>
         <span class="pin" data-u=".555" data-v=".86"><i></i><span><b>Asleep at noon</b><em>The August day is twelve hours long</em></span></span>
         <span class="pin l" data-u=".725" data-v=".29"><i></i><span><b>The church</b><em>One tenth of every harvest</em></span></span>
@@ -1719,10 +1716,10 @@ function buildScroll() {
 const heroCard = $('#heroCard'), heroShade = $('#heroShade'), chapterCard = $('#chapterCard'), chapterMedia = $('#chapterMedia'), revealCard = $('#revealCard');
 const interCard = $('#interCard'), interImg = $('#interImg'), iwords = $$('.iw'), interSec = $('#interlude');
 const PAINT = { A: 'PAINT_A', B: 'PAINT_B', shape: 3, den: 1 };
-const pinsBox = $('#pins'), pins = $$('#pins .pin'), pinSpot = $('#pinSpot'), PINU = pins.map(p => +p.dataset.u), PINV = pins.map(p => +p.dataset.v);
+const pinsBox = $('#pins'), pins = $$('#pins .pin'), PINU = pins.map(p => +p.dataset.u);
 // the eye travels across the painting left to right, at a steady pace, and stays on the right as it dissolves
 const interFocus = pr => { const k = map(pr, .04, .34); return lerp(PINU[0] - .07, PINU[PINU.length - 1] + .05, k * .7 + easeIO(k) * .3); };
-let interPanPx = 0, spotV = PINV[0];
+let interPanPx = 0;
 let pinPan = .5;
 function layoutPins() { const W = pinsBox.offsetWidth, H = pinsBox.offsetHeight, iw = interImg.naturalWidth || 3200, ih = interImg.naturalHeight || 2359, s = Math.max(W / iw, H / ih), ox = (W - iw * s) * pinPan, oy = (H - ih * s) / 2, cw = interCard.clientWidth, chh = interCard.clientHeight, top = pinsBox.offsetTop;
   pins.forEach(p => { const x = ox + p.dataset.u * iw * s, y = oy + p.dataset.v * ih * s; p.style.left = x.toFixed(1) + 'px'; p.style.top = y.toFixed(1) + 'px'; p.classList.toggle('l', x > cw * .55); p.hidden = x < 28 || x > cw - 28 || top + y < 96 || top + y > chh - 120; }); }
@@ -1885,9 +1882,6 @@ function frame() {
       const zs = 1.12 - pr * .1, tx = reduce ? 0 : (.5 - fu) * .068; interPanPx = tx * interCard.clientWidth;
       interImg.style.transform = pinsBox.style.transform = reduce ? 'scale(1.07)' : `translate3d(${(tx * 100).toFixed(3)}%,${(pr - .5) * -6}%,0) scale(${zs.toFixed(4)})`;
     }
-    { let ni = 0; PINU.forEach((u, i) => { if (Math.abs(u - fu) < Math.abs(PINU[ni] - fu)) ni = i; }); spotV = reduce ? PINV[ni] : lerp(spotV, PINV[ni], .07);
-      const ox = (W - iw * sc2) * pinPan, oy = (H - ih * sc2) / 2, so = reduce ? 0 : map(pr, .03, .09) * (1 - map(pr, .32, .38));
-      pinSpot.style.setProperty('--sx', (ox + fu * iw * sc2).toFixed(1) + 'px'); pinSpot.style.setProperty('--sy', (oy + spotV * ih * sc2).toFixed(1) + 'px'); pinSpot.style.opacity = so.toFixed(3); }
     { const e = reduce ? 1 : easeIO(clamp((vh - r.top) / vh)), iy = (1 - e) * 8, ix = (1 - e) * (vw < 900 ? 10 : 22); interCard.style.clipPath = e >= 1 ? '' : `inset(${iy.toFixed(2)}% ${ix.toFixed(2)}% ${iy.toFixed(2)}% ${ix.toFixed(2)}% round ${lerp(40, 24, e).toFixed(1)}px)`; }
     iwords.forEach((w, i) => { const a0 = .56 + i * .08, e = easeO(map(pr, a0, a0 + .14)); w.style.opacity = e.toFixed(3); if (reduce) return; w.style.transform = `translate3d(${((1 - e) * (i === 0 ? -60 : i === 2 ? 60 : 0)).toFixed(1)}px,${((1 - e) * 40).toFixed(1)}px,0)`; w.style.filter = e < 1 ? `blur(${((1 - e) * 10).toFixed(1)}px)` : ''; });
     setText($('#paintTag'), pr > .46 ? `Dissolving · ${Math.round(map(pr, .48, .92) * 100)}% to grain` : 'Oil on oak · 119 × 162 cm'); }
