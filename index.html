@@ -997,7 +997,7 @@ float snoise(vec3 v){ const vec2 C=vec2(1./6.,1./3.); const vec4 D=vec4(0.,.5,1.
 
 /* ============================== FIELD WORLD ============================== */
 const FU = {
-  uTime: { value: 0 }, uRadius: { value: 95 }, uHide: { value: 1 }, uHideR: { value: innerWidth < innerHeight ? 4.6 : 3.2 }, uMouse: { value: new THREE.Vector2(999, 999) }, uMouseStr: { value: 0 },
+  uTime: { value: 0 }, uHero0: { value: 0 }, uRadius: { value: 95 }, uHide: { value: 1 }, uHideR: { value: innerWidth < innerHeight ? 4.6 : 3.2 }, uMouse: { value: new THREE.Vector2(999, 999) }, uMouseStr: { value: 0 },
   uGust: { value: new THREE.Vector3(0, 0, -999) }, uCamPos: { value: fieldCam.position }, uWindDir: { value: new THREE.Vector2(.92, .38).normalize() },
   uHorizon: { value: new THREE.Color('#f08a30') }, uZenith: { value: new THREE.Color('#2a1510') }, uRose: { value: new THREE.Color('#d0582a') },
   uSunDir: { value: new THREE.Vector3(.1, .05, -1).normalize() }, uSunCol: { value: new THREE.Color('#ff8f2e') },
@@ -1055,8 +1055,10 @@ sky.renderOrder = -2; fieldScene.add(sky);
 })();
 const ground = new THREE.Mesh(new THREE.PlaneGeometry(1400, 1400), new THREE.ShaderMaterial({ uniforms: FU,
   vertexShader: `varying vec3 vW; void main(){ vec4 w = modelMatrix * vec4(position,1.0); vW = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }`,
-  fragmentShader: `uniform vec3 uHorizon,uZenith,uCamPos; uniform float uFogNear,uFogFar,uExposure,uDim; varying vec3 vW;
-    void main(){ float d = length(vW - uCamPos); vec3 col = mix(vec3(0.06, 0.035, 0.02), mix(uHorizon, uZenith, 0.35) * 0.72, smoothstep(uFogNear, uFogFar * 2.2, d)); gl_FragColor = vec4(col * uExposure * mix(1.0, 0.36, uDim), 1.0); }` }));
+  fragmentShader: `uniform vec3 uHorizon,uZenith,uRose,uCamPos; uniform float uFogNear,uFogFar,uExposure,uDim; varying vec3 vW;
+    uniform float uRadius,uHide;
+    void main(){ float d = length(vW - uCamPos); vec3 col = mix(vec3(0.06, 0.035, 0.02), mix(uHorizon, uZenith, 0.35) * 0.72, smoothstep(uFogNear, uFogFar * 2.2, d));
+      float cov = (1.0 - smoothstep(uRadius - 10.0, uRadius, length(vW.xz))) * (1.0 - uHide) * smoothstep(40.0, 120.0, d); col = mix(col, mix(vec3(0.3, 0.18, 0.07), mix(uHorizon, uRose, 0.25) * 0.8, smoothstep(uFogNear, uFogFar * 1.3, d)), cov); gl_FragColor = vec4(col * uExposure * mix(1.0, 0.36, uDim), 1.0); }` }));
 ground.rotation.x = -Math.PI / 2; fieldScene.add(ground);
 const WN = small ? 34000 : 76000;
 (function wheat() {
@@ -1064,19 +1066,19 @@ const WN = small ? 34000 : 76000;
   for (const rot of [0, Math.PI / 2]) { for (let s = 0; s <= segs; s++) { const t = s / segs; for (const sd of [-.5, .5]) { pos.push(Math.cos(rot) * sd, t, Math.sin(rot) * sd); uvs.push(sd + .5, t); } }
     for (let s = 0; s < segs; s++) { const a = base + s * 2; idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); } base += (segs + 1) * 2; }
   const offs = new Float32Array(WN * 2), rnd = new Float32Array(WN * 4); rnd.set([.5, .5, .5, 1.22], 0); seed = 3; let i = 1;
-  while (i < WN) { let x, z; if (R() < .42) { const r = 96 * Math.sqrt(R()), a = R() * Math.PI * 2; x = r * Math.cos(a); z = r * Math.sin(a); } else { x = gauss() * 10; z = -6 + gauss() * 8.5; }
+  while (i < WN) { let x, z; const q = R(); if (q < .42) { const r = q < .29 ? 96 * Math.sqrt(R()) : Math.sqrt(lerp(96 * 96, 268 * 268, R())), a = R() * Math.PI * 2; x = r * Math.cos(a); z = r * Math.sin(a); } else { x = gauss() * 10; z = -6 + gauss() * 8.5; }
     if (Math.hypot(x, z) < .5) continue; offs[i * 2] = x; offs[i * 2 + 1] = z; rnd[i * 4] = R(); rnd[i * 4 + 1] = R(); rnd[i * 4 + 2] = R(); rnd[i * 4 + 3] = .95 + R() * .55; i++; }
   const g = new THREE.InstancedBufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2)); g.setIndex(idx);
   g.setAttribute('aOffset', new THREE.InstancedBufferAttribute(offs, 2)); g.setAttribute('aRand', new THREE.InstancedBufferAttribute(rnd, 4)); g.instanceCount = WN;
   const mesh = new THREE.Mesh(g, new THREE.ShaderMaterial({ uniforms: { ...FU, uTex: { value: ATLAS.tex } }, side: THREE.DoubleSide, alphaToCoverage: true,
     vertexShader: `attribute vec2 aOffset; attribute vec4 aRand;
-      uniform float uTime,uRadius,uMouseStr,uFogNear,uFogFar,uHide,uHideR; uniform vec2 uMouse,uWindDir; uniform vec3 uGust,uCamPos;
+      uniform float uTime,uRadius,uMouseStr,uFogNear,uFogFar,uHide,uHideR,uHero0; uniform vec2 uMouse,uWindDir; uniform vec3 uGust,uCamPos;
       varying vec2 vUv; varying float vFog; varying float vSheen; varying vec3 vW; varying float vRand; varying float vFar;
       void main(){ vUv = uv; float t = position.y; vec2 base = aOffset; float d = length(base);
         float grow = 1.0 - smoothstep(uRadius, uRadius + min(3.0, 0.25 + uRadius * 0.35), d);
         grow *= mix(1.0, step(uHideR, length(vec2(base.x * 0.8, base.y - 7.0))), uHide);
         float h = aRand.w * grow; float ang = aRand.x * 6.2831; float ca = cos(ang), sa = sin(ang);
-        float camD = length(uCamPos.xz - base); vFar = smoothstep(7.0, 30.0, camD); float wid = 0.24 * (1.0 + smoothstep(9.0, 70.0, camD) * 2.2) * grow;
+        float camD = length(uCamPos.xz - base); vFar = smoothstep(7.0, 30.0, camD); float wid = 0.24 * (1.0 + smoothstep(9.0, 70.0, camD) * 2.2 + smoothstep(80.0, 230.0, camD) * 3.5) * grow;
         vec3 lp = vec3(position.x * wid, t * h, position.z * wid); lp = vec3(ca * lp.x - sa * lp.z, lp.y, sa * lp.x + ca * lp.z);
         float wave = sin(dot(base, uWindDir) * 0.3 - uTime * 1.25 + sin(base.y * 0.09 + uTime * 0.17) * 2.4);
         float gust = 0.5 + 0.5 * sin(base.x * 0.04 - uTime * 0.21 + base.y * 0.03);
@@ -1085,11 +1087,11 @@ const WN = small ? 34000 : 76000;
         vec2 dm = base - uMouse; float md = length(dm); vec2 push = dm / (md + 0.001) * (1.0 - smoothstep(0.0, 3.0, md)) * uMouseStr;
         float ga = uTime - uGust.z; float gd = length(base - uGust.xy); float ring = exp(-pow((gd - ga * 9.0) * 0.6, 2.0)) * exp(-ga * 0.42) * step(0.0, ga);
         vec2 gp = (base - uGust.xy) / (gd + 0.001) * ring * 1.6;
-        vec2 off = (wind + push + gp) * t * t * h; lp.xz += off; lp.y -= dot(off, off) * 0.42;
+        vec2 off = (wind + push + gp) * t * t * h * (1.0 - uHero0 * step(d, 0.4)); lp.xz += off; lp.y -= dot(off, off) * 0.42;
         vec3 wp = vec3(base.x, 0.0, base.y) + lp; vSheen = smoothstep(0.15, 1.0, wave * gust) + ring * 0.8; vW = wp; vRand = aRand.y;
         vFog = smoothstep(uFogNear, uFogFar, length(wp - uCamPos)); gl_Position = projectionMatrix * viewMatrix * vec4(wp, 1.0); }`,
     fragmentShader: `uniform sampler2D uTex; uniform vec3 uSunDir,uSunCol,uHorizon,uRose,uCamPos; uniform float uExposure;
-      varying vec2 vUv; varying float vFog; varying float vSheen; varying vec3 vW; varying float vRand; varying float vFar;
+      uniform float uHero0; varying vec2 vUv; varying float vFog; varying float vSheen; varying vec3 vW; varying float vRand; varying float vFar;
       void main(){ vec4 tx = texture2D(uTex, vUv); float sharp = (tx.a - 0.42) / max(fwidth(tx.a), 1e-4) + 0.5;
         float a = mix(sharp, smoothstep(0.08, 0.55, tx.a), vFar); if (a < 0.01) discard;
         float part = tx.g, lum = tx.r;
@@ -1100,7 +1102,7 @@ const WN = small ? 34000 : 76000;
         vec3 col = alb * 0.38 * ao;
         col += uSunCol * back * thin * smoothstep(0.35, 1.0, vUv.y) * (1.25 + 0.6 * lum);
         col += vec3(1.0, 0.86, 0.62) * vSheen * 0.16 * smoothstep(0.55, 1.0, vUv.y);
-        col *= mix(0.4, 1.0, smoothstep(2.0, 15.0, length(vW - uCamPos)));
+        col *= mix(mix(0.4, 1.0, smoothstep(2.0, 15.0, length(vW - uCamPos))), 1.35, uHero0 * step(length(vW.xz), 0.4));
         col = mix(col, mix(uHorizon, uRose, 0.25) * 0.92, vFog); gl_FragColor = vec4(col * uExposure, clamp(a, 0.0, 1.0)); }` }));
   mesh.frustumCulled = false; fieldScene.add(mesh);
 })();
@@ -1167,6 +1169,8 @@ const F = {}, ANCH = {};
 const newF = () => ({ p: new Float32Array(N * 4), c: new Float32Array(N * 4) });
 const sp = (f, i, x, y, z, s = 1) => { const k = i * 4; f.p[k] = x; f.p[k + 1] = y; f.p[k + 2] = z; f.p[k + 3] = s; };
 const sc = (f, i, r, g, b, a) => { const k = i * 4; f.c[k] = r; f.c[k + 1] = g; f.c[k + 2] = b; f.c[k + 3] = a; };
+// the landing shape is drawn in the field sprite's pixel frame; x is squeezed like the sprite's quad (.24 wide for 1.22 tall)
+const LAND_K = 7.2 / 620, LAND_Y0 = 310, LAND_SX = (.24 / 256) / (1.22 / 1024), EAR_TOPM = (LAND_Y0 - 48) * LAND_K, EAR_BOTM = (LAND_Y0 - 380) * LAND_K;
 const commit = (name, f) => F[name] = { p: new THREE.BufferAttribute(f.p, 4), c: new THREE.BufferAttribute(f.c, 4) };
 const rotX = (p, a) => { const c = Math.cos(a), s = Math.sin(a); return [p[0], c * p[1] - s * p[2], s * p[1] + c * p[2]]; };
 const rotY3 = (p, a) => { const c = Math.cos(a), s = Math.sin(a); return [c * p[0] + s * p[2], p[1], -s * p[0] + c * p[2]]; };
@@ -1267,11 +1271,32 @@ function buildFormations(vertical) {
     pts.sort((a, b) => a.d - b.d);
     pts.forEach((o, i) => { sp(f, i, o.p[0] * R0, o.p[1] * R0, o.p[2] * R0, i < 200 ? 1.4 : 1); const w = i < N * .02 ? 1.3 : 1; sc(f, i, 1.45 * w, 1.0 * w, .48 * w, .34); });
     commit('POP', f); ANCH.pop = { origin: sd.map(v => v * R0 * 1.02) }; }
-  // Party A's ear
-  { const c = document.createElement('canvas'); c.width = 256; c.height = 560; c.getContext('2d').drawImage(ATLAS.canvas, 0, 0, 256, 560, 0, 0, 256, 560);
-    const f = newF(); seed = 61; const pts = sampleCanvas(c, N, 60), s = 5.4 / 560;
-    pts.forEach((p, i) => { const part = p[3] / 255; sp(f, i, (p[0] - 128) * s, (280 - p[1]) * s + .2, gauss() * .05, part > .8 ? 1 : .7); const l = p[2] / 255 * .6 + .5; if (part > .8) sc(f, i, 1.5 * l, 1.02 * l, .45, .16); else sc(f, i, 1.35, .98, .5, .2); });
-    commit('EAR', f); }
+  // Party A's ear comes from a photograph (buildEarPhoto); empty slots until it loads
+  commit('EAR', newF()); commit('EAR_LAND', newF());
+}
+// Party A's ear from a photograph: turned upright and sampled on a square grid like the painting's dissolve.
+// As it sinks into the field, the same dots regroup into the silhouette of the field's centre stalk.
+function buildEarPhoto(img) {
+  const th = 63 * Math.PI / 180, w = img.naturalWidth, h = img.naturalHeight, ct = Math.cos(th), st = Math.sin(th), RW = Math.ceil(w * ct + h * st), RH = Math.ceil(w * st + h * ct);
+  const c = document.createElement('canvas'); c.width = RW; c.height = RH; const x = c.getContext('2d', { willReadFrequently: true });
+  x.fillStyle = '#000'; x.fillRect(0, 0, RW, RH); x.translate(RW / 2, RH / 2); x.rotate(th); x.drawImage(img, -w / 2, -h / 2);
+  const d = x.getImageData(0, 0, RW, RH).data, lum = i => (d[i] * .3 + d[i + 1] * .59 + d[i + 2] * .11) / 255;
+  let x0 = RW, x1 = 0, y0 = RH, y1 = 0, n = 0;
+  for (let yy = 0; yy < RH; yy++) for (let xx = 0; xx < RW; xx++) if (lum((yy * RW + xx) * 4) > .07) { n++; if (xx < x0) x0 = xx; if (xx > x1) x1 = xx; if (yy < y0) y0 = yy; if (yy > y1) y1 = yy; }
+  if (!n) return;
+  const step = Math.max(.5, Math.sqrt(n / (N * .94))), Hm = 6.7, k = Hm / (y1 - y0), cxm = (x0 + x1) / 2, cym = (y0 + y1) / 2, size = 1.5 * step * k / .0209, pts = [];
+  for (let gy = y0; gy <= y1 && pts.length < N; gy += step) for (let gx = x0; gx <= x1 && pts.length < N; gx += step) {
+    const q = (Math.round(gy) * RW + Math.round(gx)) * 4, L = lum(q); if (L > .07) pts.push([(gx - cxm) * k, (cym - gy) * k + .3, (L - .4) * .3, d[q] / 255, d[q + 1] / 255, d[q + 2] / 255, L]); }
+  // landing targets: the centre stalk's ear, awns and upper stem, from the same sprite the field draws
+  const lc = document.createElement('canvas'); lc.width = 256; lc.height = 620; lc.getContext('2d').drawImage(ATLAS.canvas, 0, 0, 256, 620, 0, 0, 256, 620);
+  const land = sampleCanvas(lc, pts.length, 60).map(p => [(p[0] - 128) * LAND_K * LAND_SX, (LAND_Y0 - p[1]) * LAND_K, (R() - .5) * .06]);
+  pts.sort((a, b) => b[1] - a[1]); land.sort((a, b) => b[1] - a[1]);
+  const A = newF(), B = newF(), b = 1.18;
+  pts.forEach((p, i) => { const r = Math.min(1.4, p[3] * b), g = Math.min(1.3, p[4] * b), bl = p[5] * b, al = Math.min(1, p[6] * 1.9) * .5;
+    let fd = clamp((p[1] - .3 + Hm / 2) / (Hm * .34)); fd = fd * fd * (3 - 2 * fd); // stems fade into the dark instead of stopping short
+    sp(A, i, p[0], p[1], p[2], size * (.6 + .4 * fd)); sc(A, i, r * (.4 + .6 * fd), g * (.4 + .6 * fd), bl * (.4 + .6 * fd), al * fd); const l = land[i]; sp(B, i, l[0], l[1], l[2], size * .8); sc(B, i, r, g, bl, Math.max(al, .3)); });
+  for (let i = pts.length; i < N; i++) { sp(A, i, 0, 0, -9, 0); sc(A, i, 0, 0, 0, 0); sp(B, i, 0, 0, -9, 0); sc(B, i, 0, 0, 0, 0); }
+  commit('EAR', A); commit('EAR_LAND', B); curKey = '';
 }
 let PAINT_ASPECT = 1.356;
 function buildPaint(img) {
@@ -1381,7 +1406,7 @@ const STEPS = [
   { A: 'CLASS_A', B: 'CLASS_B', shape: 5, den: .45, title: 'Someone is king', cap: 'A ziggurat of 63', year: () => '3,200 BC', stat: () => '29,086', statU: () => 'measures of barley, signed Kushim', desc: 'Grain keeps, and stored grain needs guards, counters and collectors. The first person in history we know by name, Kushim, was an accountant tallying barley in Uruk.', src: 'Yuval Noah Harari, Sapiens (2011)' },
   { A: 'POP', B: 'POP', shape: 4, den: .55, rot: 'spin', count: true, title: 'No way back', cap: '1 glyph ≈ 125,000 people', year: l => yearStr(popAt(l).year), stat: l => popWord(popAt(l).n), statU: l => `world population · ${yearStr(popAt(l).year)}`, desc: 'The same land feeds far more farmers than foragers. Once the population grew, there was no returning to the old life. Harari calls it the luxury trap.', src: 'UN World Population Prospects · historical estimates' }
 ];
-const PRE = { A: 'MARK', B: 'MARK', shape: 5, den: .5 };
+const PRE = { A: 'MARK', B: 'MARK', shape: 5, den: .5 }, EARS = { A: 'EAR', B: 'EAR_LAND', shape: 3, den: 1 };
 const annoRoot = $('#annos'), GAUGES = [];
 function anno(text, cls = '') { const el = document.createElement('div'); el.className = 'anno ' + cls; el.innerHTML = '<i></i><b></b><span></span>'; el.lastChild.textContent = text; annoRoot.appendChild(el); return el; }
 const LBL = [];
@@ -1677,6 +1702,7 @@ let pinPan = .5;
 function layoutPins() { const W = pinsBox.offsetWidth, H = pinsBox.offsetHeight, iw = interImg.naturalWidth || 3200, ih = interImg.naturalHeight || 2359, s = Math.max(W / iw, H / ih), ox = (W - iw * s) * pinPan, oy = (H - ih * s) / 2, cw = interCard.clientWidth, chh = interCard.clientHeight, top = pinsBox.offsetTop;
   pins.forEach(p => { const x = ox + p.dataset.u * iw * s, y = oy + p.dataset.v * ih * s; p.style.left = x.toFixed(1) + 'px'; p.style.top = y.toFixed(1) + 'px'; p.classList.toggle('l', x > cw * .55); p.hidden = x < 28 || x > cw - 28 || top + y < 96 || top + y > chh - 120; }); }
 new ResizeObserver(layoutPins).observe(pinsBox); interImg.addEventListener('load', layoutPins);
+{ const ei = new Image(); ei.onload = () => { const go = () => { if (!F.EAR_LAND) return setTimeout(go, 150); try { buildEarPhoto(ei); } catch (e) { console.warn(e); } }; go(); }; ei.src = 'img/wheat-ear.jpg'; }
 (interImg.complete && interImg.naturalWidth ? Promise.resolve() : new Promise(r => interImg.addEventListener('load', r, { once: true }))).then(() => { try { buildPaint(interImg); } catch (e) { console.warn(e); } });
 const windows = $$('[data-window]'), progressBar = $('#progressBar');
 const rv = { q: $('.rv-q'), sig: $('.rv-sig'), origin: $('.rv-origin'), area: $('.rv-area'), quote: $('.rv-quote') }, areaNum = $('#areaNum'), revTag = $('#revTag');
@@ -1721,15 +1747,15 @@ function frame() {
   W.field = 0; W.particles = 0;
   if (active && active.type === 'hero') W.field = 1 - cover * .6;
   if (active && active.type === 'chapter') W.particles = chFade;
-  if (active && active.type === 'reveal') { W.field = map(rP, .3, .4); W.particles = 1 - map(rP, .32, .42); }
+  if (active && active.type === 'reveal') { W.field = map(rP, .34, .42); W.particles = 1 - map(rP, .41, .48); }
   if (active && active.type === 'painting') W.particles = map(interPr, .36, .44);
   interImg.style.opacity = (active && active.type === 'painting') ? (1 - map(interPr, .4, .48)).toFixed(3) : 1;
   FU.uExposure.value = W.field; PU.uAlpha.value = W.particles;
 
   // field camera
-  if (!active || active.type !== 'reveal') { setCam(HERO, { ...HERO, pz: 5.6, py: 1.6, ty: 1.22 }, easeIO(cover)); FU.uHide.value = 1; FU.uRadius.value = 95; FU.uFogNear.value = 7; FU.uFogFar.value = 64; title.mat.uniforms.uAlpha.value = 1; }
-  else { const m = map(rP, .43, .8), k = easeIO(m), kb = easeO(m); setCam(CLOSE, HIGH, k); fcam.pz = lerp(CLOSE.pz, HIGH.pz, kb); fcam.px = lerp(CLOSE.px, HIGH.px, kb);
-    FU.uHide.value = 0; FU.uRadius.value = 95 * Math.pow(map(rP, .45, .8), 2); FU.uFogNear.value = lerp(6, 26, k); FU.uFogFar.value = lerp(42, 170, k); title.mat.uniforms.uAlpha.value = 0; }
+  if (!active || active.type !== 'reveal') { setCam(HERO, { ...HERO, pz: 5.6, py: 1.6, ty: 1.22 }, easeIO(cover)); FU.uHide.value = 1; FU.uRadius.value = 95; FU.uHero0.value = 0; FU.uFogNear.value = 7; FU.uFogFar.value = 64; title.mat.uniforms.uAlpha.value = 1; }
+  else { const m = map(rP, .47, .82), k = easeIO(m), kb = easeO(m); setCam(CLOSE, HIGH, k); fcam.pz = lerp(CLOSE.pz, HIGH.pz, kb); fcam.px = lerp(CLOSE.px, HIGH.px, kb);
+    FU.uHide.value = 0; FU.uRadius.value = 262 * Math.pow(map(rP, .49, .82), 2.2); FU.uHero0.value = 1 - map(rP, .46, .54); FU.uFogNear.value = lerp(6, 26, k); FU.uFogFar.value = lerp(42, 170, k); title.mat.uniforms.uAlpha.value = 0; }
   par.x = lerp(par.x, S.mx, .035); par.y = lerp(par.y, S.my, .035); const hi = clamp(fcam.py / 6);
   fieldCam.position.set(fcam.px + par.x * (.5 + hi * 3), fcam.py - par.y * (.16 + hi * 2), fcam.pz); look.set(fcam.tx + par.x * .6, fcam.ty, fcam.tz); fieldCam.lookAt(look); fieldCam.updateMatrixWorld();
   if (title.local && title.mat.uniforms.uAlpha.value > 0) { title.mesh.position.copy(title.local).applyMatrix4(fieldCam.matrixWorld); title.mesh.quaternion.copy(fieldCam.quaternion); }
@@ -1754,12 +1780,20 @@ function frame() {
     } else if (active.type === 'painting') {
       prev = PAINT; cur = PAINT; morph = 1; local = map(interPr, .48, .92); box = cardBox(active.r); box.cx += interPanPx / active.r.width * box.w; fullXf = 'paint';
     } else {
-      prev = { B: 'DUST', den: .4 }; cur = { A: 'EAR', B: 'EAR', shape: 5, den: .55 }; morph = easeIO(map(rP, .02, .2)); local = 0; box = cardBox(active.r); fullXf = true;
+      prev = { B: 'DUST', den: .4 }; cur = EARS; morph = easeIO(map(rP, .02, .2)); local = map(rP, .29, .41); box = cardBox(active.r); fullXf = true;
     }
     setAttrs(prev, cur);
     const scale = fullXf === 'paint' ? Math.max(box.w / (4.6 * PAINT_ASPECT), box.h / 4.6) * 1.06 : fullXf ? box.h / 8.6 : chScale(cur, box);
     const sc_ = scale * grow, cyOff = fullXf === true ? box.h * .04 : 0;
     PU.uXfCur.value.set(box.cx, box.cy + cyOff, sc_, rotFor(cur, t, local));
+    if (cur === EARS) {
+      // where the field's centre stalk sits on screen right now (the field camera is parked on it until the pull-back)
+      const vis = 2 * pCam.position.z * Math.tan(pCam.fov * Math.PI / 360), visW = vis * pCam.aspect, wy = py => (1 - py / 1024) * 1.22;
+      tV.set(0, wy(380), 0).project(fieldCam); const bx = tV.x * visW / 2, by = tV.y * vis / 2; tV.set(0, wy(48), 0).project(fieldCam); const ty = tV.y * vis / 2;
+      const ts = (ty - by) / (EAR_TOPM - EAR_BOTM), tcy = by - EAR_BOTM * ts, e = reduce ? map(rP, .3, .31) : easeIO(map(rP, .28, .41));
+      const sway = 0;
+      PU.uXfCur.value.set(lerp(box.cx, bx, e), lerp(box.cy + cyOff, tcy, e), lerp(sc_, ts, e), sway);
+    }
     const prevScale = prev === PRE ? Math.min(box.w, box.h) / 6.4 : (active.type === 'chapter' ? chScale(prev, box) : scale) * growPrev;
     PU.uXfPrev.value.set(box.cx, box.cy + cyOff, prevScale, prev.rot ? rotFor(prev, t, 1) : 0);
     if (cur === PRE) PU.uXfCur.value.z = prevScale;
@@ -1796,8 +1830,8 @@ function frame() {
 
   // reveal overlays
   if (active && active.type === 'reveal') {
-    rv.q.style.opacity = rP < .05 ? 1 : win(rP, 0, .05, .13, .17); rv.sig.style.opacity = win(rP, .16, .2, .28, .32); rv.origin.style.opacity = win(rP, .38, .42, .48, .52);
-    rv.area.style.opacity = map(rP, .5, .56) * (1 - map(rP, .79, .83)); const rr = Math.pow(map(rP, .45, .8), 2); areaNum.firstChild.nodeValue = fmt(2190000 * rr * rr);
+    rv.q.style.opacity = rP < .05 ? 1 : win(rP, 0, .05, .13, .17); rv.sig.style.opacity = win(rP, .16, .2, .28, .32); rv.origin.style.opacity = win(rP, .42, .46, .51, .55);
+    rv.area.style.opacity = map(rP, .54, .6) * (1 - map(rP, .8, .84)); const rr = Math.pow(map(rP, .49, .82), 2); areaNum.firstChild.nodeValue = fmt(2190000 * rr * rr);
     rv.quote.style.opacity = map(rP, .84, .9); rv.quote.style.transform = `translateY(calc(-50% + ${(1 - map(rP, .84, .92)) * 30}px))`;
     revTag.textContent = rP > .16 ? 'Identity: Triticum aestivum' : 'Identity: withheld';
   }
