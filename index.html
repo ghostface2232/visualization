@@ -79,6 +79,8 @@ a{color:inherit}
 .progressbar{position:fixed;top:0;left:0;z-index:150;width:100%;height:2px;background:var(--ember);transform-origin:left;transform:scaleX(0);pointer-events:none}
 .hud{position:fixed;left:0;right:0;top:0;z-index:120;display:flex;justify-content:space-between;align-items:flex-start;padding:calc(env(safe-area-inset-top,0px) + 26px) var(--gutter) 0;pointer-events:none;color:var(--ink);transition:color .3s}
 .hud.on-dark{color:var(--straw)}
+.hud::before{content:"";position:absolute;inset:0 0 -34px;z-index:-1;pointer-events:none;background:linear-gradient(var(--hud-scrim),transparent);transition:opacity .4s;--hud-scrim:rgba(235,229,217,.88)}
+.hud.on-dark::before{--hud-scrim:rgba(12,10,8,.5)}
 .brand{display:flex;align-items:center;gap:10px}
 .brand svg{width:18px;height:26px}
 .brand svg path{fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round}
@@ -202,7 +204,7 @@ main>section,main>div{position:relative;z-index:3}
 .facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--gutter);padding:0 var(--gutter) clamp(80px,12vh,160px)}
 .fact{border-top:1px solid var(--ink);padding-top:16px;min-width:0}
 .fact__num{font-family:var(--f-display);font-size:var(--fs-d3);letter-spacing:-.045em;line-height:1;font-variant-numeric:tabular-nums}
-.fact__unit{font-family:var(--f-display);font-size:clamp(18px,1.8vw,28px);color:var(--ember);margin-left:4px}
+.fact__unit{font-family:var(--f-display);font-size:clamp(18px,1.8vw,28px);color:var(--ember-ink);margin-left:4px}
 .fact__label{display:block;margin-top:12px;color:var(--ink-soft)}
 
 /* ---------- CONTRACT (desk) ---------- */
@@ -275,7 +277,7 @@ main>section,main>div{position:relative;z-index:3}
 .chapter__num{font-family:var(--f-display);font-size:clamp(90px,13vw,210px);line-height:.78;letter-spacing:-.06em;color:var(--ink)}
 .chapter__num small{font-size:.2em;letter-spacing:0;color:var(--ink-soft);margin-left:.2em;vertical-align:top;line-height:1.6}
 .chapter__keeper{margin-bottom:6px;font-family:var(--f-display);font-size:clamp(22px,2vw,30px);letter-spacing:-.02em}
-.chapter__title{font-family:var(--f-display);font-size:var(--fs-d2);letter-spacing:-.05em;line-height:1.06;padding-bottom:.06em}
+.chapter__title{font-family:var(--f-display);font-size:clamp(40px,5.2vw,88px);letter-spacing:-.05em;line-height:1.06;padding-bottom:.06em}
 .swap{display:inline-block;transition:opacity .4s var(--ease-out),transform .45s var(--ease-out),filter .4s var(--ease-out)}
 .swap.is-out{opacity:0;transform:translateY(-18px);filter:blur(4px);transition-duration:.3s}
 .swap.is-below{opacity:0;transform:translateY(20px);filter:blur(4px);transition:none}
@@ -284,7 +286,7 @@ main>section,main>div{position:relative;z-index:3}
 .chapter__stat .u{color:var(--ink-soft)}
 .chapter__desc{font-size:clamp(16px,1.25vw,19px);line-height:1.5;margin-top:16px;max-width:34rem;transition:opacity .36s}
 .chapter__desc.is-out{opacity:0}
-.chapter__desc .cw{color:rgba(23,20,15,.45)}
+.chapter__desc .cw{color:rgba(23,20,15,.62)}
 .chapter__src{margin-top:16px;color:var(--ink-soft);letter-spacing:.04em;text-transform:none;font-weight:400}
 .dots{display:flex;gap:6px;margin-top:20px}
 .dots button{position:relative;flex:1;height:22px;cursor:pointer}
@@ -299,8 +301,6 @@ main>section,main>div{position:relative;z-index:3}
 #dialHand{transform-origin:32px 32px}
 #dialHand circle{fill:var(--ember);stroke:none}
 .dial__hub{fill:var(--ink)!important;stroke:none!important}
-.sim-reset{position:absolute;right:var(--inset);bottom:var(--inset);z-index:3;opacity:0;pointer-events:none;transition:opacity .4s}
-.sim-reset.on{opacity:1;pointer-events:auto}
 
 /* ---------- INTERLUDE ---------- */
 .interlude{height:380vh}
@@ -314,6 +314,7 @@ main>section,main>div{position:relative;z-index:3}
 .iw em{font-family:var(--f-latin);font-style:italic;letter-spacing:-.02em;color:var(--pill-gold)}
 .iw:nth-child(1){align-self:flex-start}.iw:nth-child(2){align-self:center}.iw:nth-child(3){align-self:flex-end}
 .interlude__tag{z-index:3}
+.interlude__tag.tr{top:auto;bottom:var(--inset)}
 .interlude__cap{z-index:3;position:absolute;left:var(--inset);bottom:var(--inset);z-index:2;color:rgba(245,241,232,.82);display:flex;gap:16px;flex-wrap:wrap}
 .interlude__cap .latin{font-size:16px;letter-spacing:0;text-transform:none}
 
@@ -352,13 +353,13 @@ html.theme-dark .trace__float{opacity:1}
 .trace__rail{position:absolute;left:var(--gutter);right:var(--gutter);bottom:var(--gutter);z-index:3;list-style:none;margin:0;padding:14px 0 0;display:flex;justify-content:space-between;opacity:.95}
 .trace__rail::before,.trace__rail::after{content:"";position:absolute;left:0;top:0;height:1px;width:100%;background:currentColor;opacity:.18}
 .trace__rail::after{opacity:1;background:var(--ember);transform-origin:left;transform:scaleX(var(--p,0))}
-.trace__rail li{opacity:.42;transition:opacity .4s}
+.trace__rail li{opacity:.6;transition:opacity .4s}
 .trace__rail li.on{opacity:1}
 .coda{padding:0 var(--gutter);color:var(--ink);transition:color .9s var(--ease-out)}
 .coda__item{min-height:82svh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;text-align:center}
 .coda__year{color:var(--ember)}
 .coda__line{font-family:var(--f-display);font-size:clamp(32px,3.8vw,62px);letter-spacing:-.035em;line-height:1.14;max-width:19ch}
-.coda__line em{font-style:normal;opacity:.5}
+.coda__line em{display:block;font-style:normal;opacity:.5}
 @media (max-width:700px){.trace__float canvas:nth-child(n+5),.trace__head .meta span:nth-child(3){display:none}.trace__rail{font-size:10px;letter-spacing:.04em}}
 .desk::after,.footer__card::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);pointer-events:none;z-index:3}
 /* ---------- REVEAL ---------- */
@@ -400,7 +401,7 @@ html.theme-dark .trace__float{opacity:1}
 .sigbox img{max-height:100%;max-width:100%}
 .who{font-family:var(--f-display);font-size:1.06rem}
 .who .latin{font-size:1.3rem}
-.terms{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:18px}
+.terms{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
 .terms div{display:flex;flex-direction:column;gap:4px}
 .terms dt{font-family:var(--f-mono);font-size:10px;letter-spacing:.12em;color:var(--ink-soft)}
 .terms dd{font-family:var(--f-display);font-size:clamp(1.2rem,2.2vw,1.6rem);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
@@ -425,7 +426,7 @@ html.theme-dark .trace__float{opacity:1}
 .footer__colTitle{color:var(--pill-gold)}
 .footer__col ol,.footer__col p{font-size:14px;line-height:1.55;color:rgba(245,241,232,.75)}
 .footer__col ol{padding-left:1.1em;display:flex;flex-direction:column;gap:6px}
-.footer__word{font-family:var(--f-display);font-size:12vw;letter-spacing:-.055em;line-height:.86;color:var(--ember);white-space:nowrap;padding-bottom:.06em}
+.footer__word{width:max-content;font-family:var(--f-display);font-size:12vw;letter-spacing:-.055em;line-height:.86;color:var(--ember);white-space:nowrap;padding-bottom:.06em}
 .footer__bar{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;border-top:1px solid rgba(245,241,232,.2);padding-top:16px;margin-top:20px;color:rgba(245,241,232,.7)}
 .footer__bar button:hover{color:var(--paper-hi)}
 
@@ -446,7 +447,7 @@ html.theme-anim .hud,html.theme-anim .index{transition-duration:.9s}
 .index i{display:block;width:10px;height:1.5px;background:currentColor;opacity:.35;transition:width .55s var(--ease-out),opacity .3s,background-color .3s}
 .index li.active i{width:22px;opacity:1;background:var(--ember)}
 .index li.active .n{opacity:0}
-@media (max-width:900px){.index{display:none}}
+@media (max-width:1199px){.index{display:none}}
 /* ---------- lightbox ---------- */
 .lb{position:fixed;inset:0;z-index:250;background:rgba(12,10,8,.95);display:grid;grid-template-rows:minmax(0,1fr) auto;gap:18px;padding:calc(env(safe-area-inset-top,0px) + 80px) var(--gutter) calc(env(safe-area-inset-bottom,0px) + var(--gutter));color:var(--straw)}
 .lb img{width:100%;height:100%;min-height:0;object-fit:contain}
@@ -481,10 +482,9 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
   .final-parties{grid-template-columns:minmax(0,1fr)}
   .footer__cols{grid-template-columns:minmax(0,1fr)}
   .tag.tr,.tag.br{display:none}
-  .sim-reset{top:var(--inset);bottom:auto}
   .live,.footer__cols{row-gap:clamp(40px,10vw,56px)}
   .facts{row-gap:clamp(32px,8vw,48px)}
-  .chapter__desc{min-height:6em}
+  .chapter__desc{min-height:7.5em}
   .chapter__stat .u{flex-basis:100%}
 }
 @media (max-width:900px) and (min-aspect-ratio:4/3){
@@ -493,9 +493,12 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
 @media (max-width:560px){
   .hud .brand b,.odo-wrap .mono{display:none}
   .desk{padding-inline:10px}
-  .deed{padding:34px 22px}
+  .deed{padding:34px 28px}
   .articles li{grid-template-columns:minmax(0,1fr);gap:6px}
   .chapter__num{display:none}
+  .anno.big{font-size:15px}
+  .chapter__top{margin-bottom:12px}
+  .dial{width:40px}
   .seal{width:100px;height:100px}
 }
 @media (prefers-reduced-motion:reduce){
@@ -666,7 +669,6 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
           <div class="tag tl"><b id="tagId">P01</b><span id="tagXY">00.0, 00.0</span></div>
           <div class="tag tr"><b>Party B</b><span id="tagStep">Proviso 1 of 6</span></div>
           <figcaption class="chapter__cap mono"><b id="capN">FIG. 01</b><span id="capT">One week, 168 hours</span></figcaption>
-          <button class="btn btn-line sim-reset mono" id="simReset" type="button" hidden>Restart outbreak</button>
         </div>
       </figure>
       <div class="chapter__text">
@@ -772,7 +774,6 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
         <div class="v-result" id="vResult" hidden><span id="vpDeal">0%</span></div>
           <p class="v-note" id="vNote" aria-live="polite"></p>
         </div>
-      </div>
     </article>
   </div>
 </section>
@@ -1149,7 +1150,7 @@ function edges(cvs) {
 }
 let arenaLayout = null;
 function buildArena(vertical) {
-  arenaLayout = vertical ? { band: [0, 1.25], rb: .85, vil: [0, -.95], rv: 1.15 } : { band: [-1.6, .05], rb: .9, vil: [1.22, .05], rv: 1.32 };
+  arenaLayout = vertical ? { band: [0, 1.38], rb: .7, vil: [0, -1.12], rv: 1.0 } : { band: [-1.6, .05], rb: .9, vil: [1.22, .05], rv: 1.32 };
   const f = newF(), L = arenaLayout; seed = 71; let i = 0;
   const ring = (c, r, n) => { for (let k = 0; k < n; k++, i++) { let a; do { a = R() * 6.283; } while ((a / 6.283 * 96) % 1 > .55); sp(f, i, c[0] + Math.cos(a) * r, c[1] + Math.sin(a) * r, 0, .7); sc(f, i, .95, .85, .65, .22); } };
   ring(L.band, L.rb, Math.floor(N * .05)); ring(L.vil, L.rv, Math.floor(N * .07));
@@ -1361,10 +1362,11 @@ function buildLabels() {
     { el: anno('165 cm', 'big hi'), pos: l => B.top(B.wX + .33, lerp(165, 152, l)), a: () => 1, text: l => `${Math.round(lerp(165, 152, l))} cm` },
     ...[140, 160, 180].map(t => ({ el: anno(String(t), 'l'), pos: () => B.tick(t), a: () => .7 })), { el: anno('Men'), pos: () => [B.mX, B.G - .2, 0], a: () => .8 }, { el: anno('Women'), pos: () => [B.wX, B.G - .2, 0], a: () => .8 },
     { el: anno('Ice Age outline', 'hi'), pos: () => B.top(B.mX - .62, 175), a: l => map(l, .5, .7) }];
-  LBL[2] = [{ el: anno('Forager band · 30', 'big'), pos: () => [arenaLayout.band[0] - arenaLayout.rb * .7, arenaLayout.band[1] + arenaLayout.rb + .2, 0], a: () => 1 },
-    { el: anno('Infected 0 / 30', 'box'), pos: () => [arenaLayout.band[0] - arenaLayout.rb * .7, arenaLayout.band[1] + arenaLayout.rb + .03, 0], a: () => 1, text: () => `Infected ${AG.counts()[0]} / 30` },
-    { el: anno('Farming village · 360 + livestock', 'big'), pos: () => [arenaLayout.vil[0] - arenaLayout.rv * .7, arenaLayout.vil[1] + arenaLayout.rv + .2, 0], a: () => 1 },
-    { el: anno('Infected 0 / 360', 'box'), pos: () => [arenaLayout.vil[0] - arenaLayout.rv * .7, arenaLayout.vil[1] + arenaLayout.rv + .03, 0], a: () => 1, text: () => `Infected ${AG.counts()[1]} / 360` }];
+  { const top = (c, r) => () => [c()[0] - r() * .62, c()[1] + r() + .08, 0], bandC = () => arenaLayout.band, bandR = () => arenaLayout.rb, vilC = () => arenaLayout.vil, vilR = () => arenaLayout.rv;
+  LBL[2] = [{ el: anno('Forager band · 30', 'big'), pos: top(bandC, bandR), a: () => 1, dy: -26 },
+    { el: anno('Infected 0 / 30', 'box'), pos: top(bandC, bandR), a: () => 1, text: () => `Infected ${AG.counts()[0]} / 30` },
+    { el: anno('Farming village · 360 + livestock', 'big'), pos: top(vilC, vilR), a: () => 1, dy: -26 },
+    { el: anno('Infected 0 / 360', 'box'), pos: top(vilC, vilR), a: () => 1, text: () => `Infected ${AG.counts()[1]} / 360` }]; }
   const foods = ['Acorns', 'Wild barley', 'Pistachios', 'Gazelle', 'Figs', 'Lentils', 'River fish', 'Mushrooms', 'Wild honey', 'Tubers', 'Shellfish', 'Almonds', 'Locusts', 'Grass seed'];
   LBL[3] = [...foods.map((f, k) => ({ el: anno(f), pos: () => ANCH.diet.species[k], a: l => 1 - map(l, .05, .25), rot: true })),
     ...['Rice · ~20%', 'Wheat · ~20%', 'Maize · ~20%'].map((t, k) => ({ el: anno(t, 'big hi'), pos: () => ANCH.diet.groups[k], a: l => map(l, .7, .88), rot: true })),
@@ -1381,7 +1383,7 @@ function applyStep(i) {
   if (i === ch.idx) return; const first = ch.idx === -1; ch.idx = i; const s = STEPS[i], tok = ch.tok = (ch.tok || 0) + 1;
   const fill = () => { ch.num.textContent = String(i + 1).padStart(2, '0'); ch.title.textContent = s.title; setDesc(s); ch.src.textContent = s.src; ch.capN.textContent = `FIG. 0${i + 1}`; ch.capT.textContent = s.cap; ch.tagId.textContent = `P0${i + 1}`; ch.tagStep.textContent = `Proviso ${i + 1} of 6`; };
   $('#chapterCard').dataset.cursor = s.interactive ? 'Infect' : 'Exhibit';
-  $('#simReset').classList.toggle('on', !!s.interactive); $('#simReset').hidden = !s.interactive;
+
   if (first) { fill(); ch.tintStart = 0; return; }
   ch.tintStart = null; [ch.num, ch.title].forEach(e => { e.classList.add('is-out'); }); ch.desc.classList.add('is-out');
   setTimeout(() => { if (tok !== ch.tok) return; fill(); [ch.num, ch.title].forEach(e => { e.classList.remove('is-out'); e.classList.add('is-below'); void e.offsetWidth; e.classList.remove('is-below'); }); ch.desc.classList.remove('is-out'); setTimeout(() => { if (ch.idx === i) ch.tintStart = ch.lastWithin || 0; }, 280); }, 360);
@@ -1390,7 +1392,7 @@ function applyStep(i) {
 function paintDesc(within) {
   if (!ch.words.length || ch.tintStart === null) return;
   const st = Math.min(ch.tintStart, .7), w = clamp((within - st) / (.85 - st)), n = ch.words.length, band = Math.max(2, Math.round(n * .24)), f = w * (n + band - 1);
-  ch.words.forEach((el, i) => { const e = clamp(f - i), s = clamp((f - i - 1) / (band - 1)); const css = s >= 1 ? 'var(--ink)' : e <= 0 ? 'rgba(23,20,15,.45)' : `color-mix(in oklab, var(--ink) ${(s * 100).toFixed(1)}%, color-mix(in oklab, var(--ember-ink) ${(e * 100).toFixed(1)}%, rgba(23,20,15,.45)))`; if (el._c !== css) { el._c = css; el.style.color = css; } });
+  ch.words.forEach((el, i) => { const e = clamp(f - i), s = clamp((f - i - 1) / (band - 1)); const css = s >= 1 ? 'var(--ink)' : e <= 0 ? 'rgba(23,20,15,.62)' : `color-mix(in oklab, var(--ink) ${(s * 100).toFixed(1)}%, color-mix(in oklab, var(--ember-ink) ${(e * 100).toFixed(1)}%, rgba(23,20,15,.45)))`; if (el._c !== css) { el._c = css; el.style.color = css; } });
 }
 
 /* ============================== DOM: hero, contract, extras ============================== */
@@ -1594,7 +1596,7 @@ const torn = (function () {
   return st; })();
 function tornUpdate(p) {
   const st = torn; if (!st.N) st.build(); if (!st.N) return;
-  const L = .1 + .9 * clamp(p * 1.12), key = Math.round(L * 400); if (key === st.key) return; st.key = key;
+  const L = .02 + .98 * clamp(p * 1.12), key = Math.round(L * 400); if (key === st.key) return; st.key = key;
   const { W, H, N, img } = st, d = img.data, th = 1 - L;
   for (let y = 0; y < H; y++) { const g = y / (H - 1);
     for (let x = 0; x < W; x++) { const n = y * W + x, v = g + (N[n] - .5) * 1.4 - th, k = n * 4;
@@ -1632,7 +1634,8 @@ const heroCard = $('#heroCard'), heroShade = $('#heroShade'), chapterCard = $('#
 const interCard = $('#interCard'), interImg = $('#interImg'), iwords = $$('.iw'), interSec = $('#interlude');
 const PAINT = { A: 'PAINT_A', B: 'PAINT_B', shape: 3, den: 1 };
 const pinsBox = $('#pins'), pins = $$('#pins .pin');
-function layoutPins() { const W = pinsBox.offsetWidth, H = pinsBox.offsetHeight, iw = interImg.naturalWidth || 3200, ih = interImg.naturalHeight || 2359, s = Math.max(W / iw, H / ih), ox = (W - iw * s) / 2, oy = (H - ih * s) / 2, cw = interCard.clientWidth, chh = interCard.clientHeight, top = pinsBox.offsetTop;
+let pinPan = .5;
+function layoutPins() { const W = pinsBox.offsetWidth, H = pinsBox.offsetHeight, iw = interImg.naturalWidth || 3200, ih = interImg.naturalHeight || 2359, s = Math.max(W / iw, H / ih), ox = (W - iw * s) * pinPan, oy = (H - ih * s) / 2, cw = interCard.clientWidth, chh = interCard.clientHeight, top = pinsBox.offsetTop;
   pins.forEach(p => { const x = ox + p.dataset.u * iw * s, y = oy + p.dataset.v * ih * s; p.style.left = x.toFixed(1) + 'px'; p.style.top = y.toFixed(1) + 'px'; p.classList.toggle('l', x > cw * .55); p.hidden = x < 28 || x > cw - 28 || top + y < 96 || top + y > chh - 120; }); }
 new ResizeObserver(layoutPins).observe(pinsBox); interImg.addEventListener('load', layoutPins);
 (interImg.complete && interImg.naturalWidth ? Promise.resolve() : new Promise(r => interImg.addEventListener('load', r, { once: true }))).then(() => { try { buildPaint(interImg); } catch (e) { console.warn(e); } });
@@ -1645,6 +1648,8 @@ const tV = new THREE.Vector3();
 let cardRad = parseFloat(getComputedStyle(heroCard).borderRadius) || 20;
 const setText = (el, v) => { if (el._t !== v) { el._t = v; el.textContent = v; } };
 let curKey = '', simStarted = false, vertical = innerWidth < 900;
+// the outbreak arena stacks vertically on phones and can use more of the card's width there
+const chScale = (st, box) => vertical && st && st.A === 'ARENA' ? Math.min(box.w / 3.9, box.h / 5.9) : Math.min(box.w / 5.8, box.h / 4.8);
 function cardBox(r) { const vis = 2 * pCam.position.z * Math.tan(pCam.fov * Math.PI / 360), visW = vis * pCam.aspect; return { cx: ((r.left + r.width / 2) / innerWidth - .5) * visW, cy: (.5 - (r.top + r.height / 2) / VH) * vis, w: r.width / innerWidth * visW, h: r.height / innerHeight * vis }; }
 function setAttrs(prev, cur) { const key = prev.B + '|' + cur.A + '|' + cur.B; if (key === curKey) return; curKey = key; pGeo.setAttribute('pPrev', F[prev.B].p); pGeo.setAttribute('cPrev', F[prev.B].c); pGeo.setAttribute('pA', F[cur.A].p); pGeo.setAttribute('cA', F[cur.A].c); pGeo.setAttribute('pB', F[cur.B].p); pGeo.setAttribute('cB', F[cur.B].c); }
 const rotFor = (s, t, l) => s.rot === 'sway' ? Math.sin(t * .22) * .32 : s.rot === 'spin' ? t * .1 + l * 2.2 : 0;
@@ -1713,10 +1718,10 @@ function frame() {
       prev = { B: 'DUST', den: .4 }; cur = { A: 'EAR', B: 'EAR', shape: 5, den: .55 }; morph = easeIO(map(rP, .02, .2)); local = 0; box = cardBox(active.r); fullXf = true;
     }
     setAttrs(prev, cur);
-    const scale = fullXf === 'paint' ? Math.max(box.w / (4.6 * PAINT_ASPECT), box.h / 4.6) * 1.06 : fullXf ? box.h / 8.6 : Math.min(box.w / 5.8, box.h / 4.8);
+    const scale = fullXf === 'paint' ? Math.max(box.w / (4.6 * PAINT_ASPECT), box.h / 4.6) * 1.06 : fullXf ? box.h / 8.6 : chScale(cur, box);
     const sc_ = scale * grow, cyOff = fullXf === true ? box.h * .04 : 0;
     PU.uXfCur.value.set(box.cx, box.cy + cyOff, sc_, rotFor(cur, t, local));
-    const prevScale = prev === PRE ? Math.min(box.w, box.h) / 6.4 : scale * growPrev;
+    const prevScale = prev === PRE ? Math.min(box.w, box.h) / 6.4 : (active.type === 'chapter' ? chScale(prev, box) : scale) * growPrev;
     PU.uXfPrev.value.set(box.cx, box.cy + cyOff, prevScale, prev.rot ? rotFor(prev, t, 1) : 0);
     if (cur === PRE) PU.uXfCur.value.z = prevScale;
     PU.uMorph.value = morph; PU.uLocal.value = local; PU.uTime.value = t;
@@ -1738,7 +1743,7 @@ function frame() {
       tV.set(pos[0] * sc_ + box.cx, pos[1] * sc_ + box.cy, pos[2] * sc_).project(pCam);
       const sx = (tV.x * .5 + .5) * vw - active.r.left, sy = (-tV.y * .5 + .5) * vh - active.r.top;
       if (L.text) { const tx = L.text(local); if (L.tx !== tx) { L.tx = tx; L.el.lastChild.textContent = tx; L.w = 0; } }
-      if (!L.w) L.w = L.el.offsetWidth; const ins = 16, lw = L.w; let lx = L.el.classList.contains('l') ? sx - lw + 3 : sx - 3; lx = Math.min(Math.max(lx, ins), active.r.width - lw - ins); L.el.style.transform = `translate(${lx}px,${sy - 6}px)`; L.el.style.opacity = (L.a(local) * map(morph, .5, 1)).toFixed(3); L.vis = true;
+      if (!L.w) L.w = L.el.offsetWidth; const ins = 16, lw = L.w; let lx = L.el.classList.contains('l') ? sx - lw + 3 : sx - 3; lx = Math.min(Math.max(lx, ins), active.r.width - lw - ins); L.el.style.transform = `translate(${lx}px,${sy - 6 + (L.dy || 0)}px)`; L.el.style.opacity = (L.a(local) * map(morph, .5, 1)).toFixed(3); L.vis = true;
     }));
   } else { AG.m.material.uniforms.uAlpha.value = 0; grat.material.opacity = 0; }
 
@@ -1761,6 +1766,9 @@ function frame() {
   if (!reduce) windows.forEach(g => { const r = g.getBoundingClientRect(); if (r.top > vh || r.bottom < 0) return; const e = easeIO(clamp((vh - r.top) / (vh * .9))), iy = (1 - e) * 8, ix = (1 - e) * (vw < 900 ? 10 : 22), rr = lerp(40, parseFloat(getComputedStyle(g).borderRadius) || 24, e); g.style.clipPath = e >= 1 ? '' : `inset(${iy.toFixed(2)}% ${ix.toFixed(2)}% ${iy.toFixed(2)}% ${ix.toFixed(2)}% round ${rr.toFixed(1)}px)`; });
   { const r = interSec.getBoundingClientRect(), pr = clamp(-r.top / Math.max(1, r.height - vh)); interImg.style.transform = pinsBox.style.transform = reduce ? 'scale(1.07)' : `translate3d(0,${(pr - .5) * -6}%,0) scale(${1.12 - pr * .1})`;
     pins.forEach((pn, i) => pn.classList.toggle('on', pr > .05 + i * .055 && pr < .38));
+    if (interCard.clientWidth < interCard.clientHeight) { const iw = interImg.naturalWidth || 3200, ih = interImg.naturalHeight || 2359, W = pinsBox.offsetWidth, H = pinsBox.offsetHeight, sc2 = Math.max(W / iw, H / ih), span = iw * sc2 - W;
+      const k = Math.floor((pr - .05) / .055), tgt = pr > .05 && pr < .38 && pins[clamp(k, 0, pins.length - 1)] ? clamp((pins[clamp(k, 0, pins.length - 1)].dataset.u * iw * sc2 - W / 2) / Math.max(1, span)) : .5;
+      const np = reduce ? tgt : lerp(pinPan, tgt, .08); if (Math.abs(np - pinPan) > .0005) { pinPan = np; interImg.style.objectPosition = `${(pinPan * 100).toFixed(2)}% 50%`; layoutPins(); } }
     { const e = reduce ? 1 : easeIO(clamp((vh - r.top) / vh)), iy = (1 - e) * 8, ix = (1 - e) * (vw < 900 ? 10 : 22); interCard.style.clipPath = e >= 1 ? '' : `inset(${iy.toFixed(2)}% ${ix.toFixed(2)}% ${iy.toFixed(2)}% ${ix.toFixed(2)}% round ${lerp(40, 24, e).toFixed(1)}px)`; }
     iwords.forEach((w, i) => { const a0 = .56 + i * .08, e = easeO(map(pr, a0, a0 + .14)); w.style.opacity = e.toFixed(3); if (reduce) return; w.style.transform = `translate3d(${((1 - e) * (i === 0 ? -60 : i === 2 ? 60 : 0)).toFixed(1)}px,${((1 - e) * 40).toFixed(1)}px,0)`; w.style.filter = e < 1 ? `blur(${((1 - e) * 10).toFixed(1)}px)` : ''; });
     setText($('#paintTag'), pr > .46 ? `Dissolving · ${Math.round(map(pr, .48, .92) * 100)}% to grain` : 'Oil on oak · 119 × 162 cm'); }
@@ -1790,8 +1798,7 @@ function frame() {
 /* ============================== input ============================== */
 addEventListener('click', e => { if (e.target.closest('button,a,.deed,input')) return;
   if (W.field > .4 && e.target.closest('#heroCard,#revealCard')) { ndc.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / VH) * 2 + 1); ray.setFromCamera(ndc, fieldCam); if (ray.ray.intersectPlane(groundPlane, hit)) { FU.uGust.value.set(hit.x, hit.z, FU.uTime.value); Sound.tick(220); } } });
-chapterCard.addEventListener('click', e => { if (ch.idx !== 2 || e.target.closest('button')) return; ndc.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / VH) * 2 + 1); ray.setFromCamera(ndc, pCam); if (!ray.ray.intersectPlane(zPlane, hit)) return; const b = cardBox(chapterCard.getBoundingClientRect()), s = Math.min(b.w / 5.8, b.h / 4.8); AG.infectAt((hit.x - b.cx) / s, (hit.y - b.cy) / s); });
-$('#simReset').addEventListener('click', () => { AG.seed(); AG.infectFirst(); simStarted = true; });
+chapterCard.addEventListener('click', e => { if (ch.idx !== 2 || e.target.closest('button')) return; ndc.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / VH) * 2 + 1); ray.setFromCamera(ndc, pCam); if (!ray.ray.intersectPlane(zPlane, hit)) return; const b = cardBox(chapterCard.getBoundingClientRect()), s = chScale(STEPS[2], b); AG.infectAt((hit.x - b.cx) / s, (hit.y - b.cy) / s); });
 function goStep(i) { if (!chapterST) return; i = clamp(i, 0, 5); const len = (chapterST.end - chapterST.start) / 6; goToY(chapterST.start + len * (i + .72)); }
 $$('#chDots button').forEach(b => b.addEventListener('click', () => goStep(+b.dataset.step)));
 addEventListener('keydown', e => { if (!chapterST || e.target.closest('input,textarea') || !lb.hidden) return; const y = scrollY; if (y < chapterST.start - 2 || y > chapterST.end + 2) return;
