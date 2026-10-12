@@ -294,7 +294,6 @@ main>section,main>div{position:relative;z-index:3}
 .chapter__desc{font-size:clamp(16px,1.25vw,19px);line-height:1.5;margin-top:16px;max-width:34rem;transition:opacity .36s}
 .chapter__desc.is-out{opacity:0}
 .chapter__desc .cw{color:rgba(23,20,15,.62)}
-.chapter__src{margin-top:16px;color:var(--ink-soft);letter-spacing:.04em;text-transform:none;font-weight:400}
 .dots{display:flex;gap:6px;margin-top:20px}
 .dots button{position:relative;flex:1;height:22px;cursor:pointer}
 .dots button::before{content:"";position:absolute;left:0;right:0;top:50%;height:3px;margin-top:-1.5px;background:var(--ink-ghost);border-radius:2px;transition:background-color .3s}
@@ -499,7 +498,7 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
   .chapter__desc{font-size:14.5px;margin-top:10px}
   .chapter__stat{margin-top:10px;padding-top:10px}
   .chapter__stat .v{font-size:30px}
-  .chapter__src,.dots{display:none}
+  .dots{display:none}
   .facts{grid-template-columns:repeat(2,minmax(0,1fr))}
   .live{grid-template-columns:minmax(0,1fr)}
   .final-parties{grid-template-columns:minmax(0,1fr)}
@@ -701,7 +700,6 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
           <h3 class="chapter__title"><span class="swap" id="chTitle">More work</span></h3>
           <div class="chapter__stat"><span class="v" id="chStat">20 h</span><span class="u mono" id="chStatU">of work per week</span></div>
           <p class="chapter__desc" id="chDesc"></p>
-          <p class="chapter__src mono" id="chSrc"></p>
           </div><div class="dots" id="chDots" role="group" aria-label="Jump to a proviso"><button type="button" data-step="0" aria-label="Proviso 1"><span></span></button><button type="button" data-step="1" aria-label="Proviso 2"><span></span></button><button type="button" data-step="2" aria-label="Proviso 3"><span></span></button><button type="button" data-step="3" aria-label="Proviso 4"><span></span></button><button type="button" data-step="4" aria-label="Proviso 5"><span></span></button><button type="button" data-step="5" aria-label="Proviso 6"><span></span></button></div>
         </div>
       </div>
@@ -711,7 +709,7 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
 
 <section id="record" data-year="9,500 BC">
   <div class="trace__pin" id="tracePin">
-    <div class="trace__head"><div class="meta mono"><span>Chapter III</span><span>The record</span><span>Five objects · The Met</span></div></div>
+    <div class="trace__head"><div class="meta mono"><span>Chapter III</span><span>The record</span><span>Five objects</span></div></div>
     <div class="trace__float" id="traceFloat" aria-hidden="true"></div>
     <canvas class="trace__cv" id="traceCv" aria-hidden="true"></canvas>
     <h2 class="trace__title" id="traceTitle">Twelve thousand years of paperwork, <em>in five objects.</em></h2>
@@ -736,7 +734,7 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
       <ul class="sr-only"><li>The reapers: dawn to dusk, by hand.</li><li>The sheaves: stacked, counted, carted off.</li><li>The church: one tenth of every harvest.</li><li>Lunch: bread, porridge, a few pears.</li><li>Asleep at noon: the August day is twelve hours long.</li></ul>
       <div class="interlude__words" role="img" aria-label="More grain, more toil, no way back."><span class="iw" aria-hidden="true">More <em>grain,</em></span><span class="iw" aria-hidden="true">more <em>toil,</em></span><span class="iw" aria-hidden="true">no way <em>back.</em></span></div>
       <div class="tag tr interlude__tag"><b>P07</b><span id="paintTag">Oil on oak · 119 × 162 cm</span></div>
-      <p class="interlude__cap mono"><span class="latin">The Harvesters</span><span>Pieter Bruegel the Elder · 1565</span><span>The Met · CC0</span></p>
+      <p class="interlude__cap mono"><span class="latin">The Harvesters</span><span>Pieter Bruegel the Elder · 1565</span></p>
     </div>
   </div>
 </section>
@@ -756,7 +754,7 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
       <div class="rv rv-q"><p class="mono">One last question</p><h2>So who was<br>Party A?</h2></div>
       <div class="rv rv-sig"><span class="mono">Party A · signature on file</span><span class="latin">Triticum aestivum</span><span class="mono" style="color:var(--straw-3)">Bread wheat · an annual grass</span></div>
       <div class="rv rv-origin"><span class="mono">c. 9000 BC · Karacadağ, south-east Turkey</span><b>A single wild wheat plant</b></div>
-      <div class="rv rv-area"><span class="mono">Today, the world’s wheat harvest covers</span><span class="area-num" id="areaNum">0<small>km²</small></span><p>About the size of Greenland</p><span class="mono" style="color:rgba(255,248,236,.85);letter-spacing:.06em;text-transform:none">FAOSTAT 2022 · about 219 million hectares</span></div>
+      <div class="rv rv-area"><span class="mono">Today, the world’s wheat harvest covers</span><span class="area-num" id="areaNum">0<small>km²</small></span><p>About the size of Greenland</p><span class="mono" style="color:rgba(255,248,236,.85);letter-spacing:.06em;text-transform:none">About 219 million hectares</span></div>
       <blockquote class="rv rv-quote"><p>“We did not domesticate wheat. <em>It domesticated us.</em>”</p><cite class="mono">Yuval Noah Harari, Sapiens</cite></blockquote>
     </div>
   </div>
@@ -1454,11 +1452,11 @@ function buildLabels() {
 }
 // chapter text swapping with a scroll-driven tint sweep
 const dialProg = $('#dialProg'), dialHand = $('#dialHand');
-const ch = { idx: -1, num: $('#chNum'), title: $('#chTitle'), stat: $('#chStat'), statU: $('#chStatU'), desc: $('#chDesc'), src: $('#chSrc'), capN: $('#capN'), capT: $('#capT'), tagId: $('#tagId'), tagStep: $('#tagStep'), dots: $$('#chDots span'), words: [], tintStart: 0 };
+const ch = { idx: -1, num: $('#chNum'), title: $('#chTitle'), stat: $('#chStat'), statU: $('#chStatU'), desc: $('#chDesc'), capN: $('#capN'), capT: $('#capT'), tagId: $('#tagId'), tagStep: $('#tagStep'), dots: $$('#chDots span'), words: [], tintStart: 0 };
 function setDesc(s) { ch.desc.innerHTML = s.desc.split(/\s+/).map(w => `<span class="cw">${w}</span>`).join(' '); ch.words = $$('.cw', ch.desc); }
 function applyStep(i) {
   if (i === ch.idx) return; const first = ch.idx === -1; ch.idx = i; const s = STEPS[i], tok = ch.tok = (ch.tok || 0) + 1;
-  const fill = () => { ch.num.textContent = String(i + 1).padStart(2, '0'); ch.title.textContent = s.title; setDesc(s); ch.src.textContent = s.src; ch.capN.textContent = `FIG. 0${i + 1}`; ch.capT.textContent = s.cap; ch.tagId.textContent = `P0${i + 1}`; ch.tagStep.textContent = `Proviso ${i + 1} of 6`; };
+  const fill = () => { ch.num.textContent = String(i + 1).padStart(2, '0'); ch.title.textContent = s.title; setDesc(s); ch.capN.textContent = `FIG. 0${i + 1}`; ch.capT.textContent = s.cap; ch.tagId.textContent = `P0${i + 1}`; ch.tagStep.textContent = `Proviso ${i + 1} of 6`; };
   $('#chapterCard').dataset.cursor = s.interactive ? 'Infect' : 'Exhibit';
 
   if (first) { fill(); ch.tintStart = 0; return; }
@@ -1533,11 +1531,11 @@ skipBtn.addEventListener('click', () => { skipBtn.classList.add('done'); skipBtn
 
 // chapter III: one object at a time, traced through the record; each object is a rectangle of dots
 const TRACE = [
-  { y: '9,500 BC', src: 'img/ear-black.jpg', alt: 'A ripe ear of bread wheat against black', name: 'An ear of wheat', prop: 'Photograph · Marek Studzinski · Unsplash', line: 'In the hills of Karacadağ, people begin planting a wild grass on purpose.' },
-  { y: '3,100 BC', src: 'img/tablet.jpg', alt: 'Proto-cuneiform clay tablet recording barley distribution, with cylinder seal impressions', name: 'An account of barley rations', prop: 'Uruk · c. 3100–2900 BC · The Met', line: 'The first thing anyone wrote down was a receipt: barley rations, pressed into clay.' },
-  { y: '2,400 BC', src: 'img/grinding.jpg', alt: 'Limestone statuette of a servant kneeling to grind grain', name: 'Servant grinding grain', prop: 'Giza · c. 2420–2323 BC · The Met', line: 'Every loaf is ground by hand, on the knees. Skeletons keep the receipt: worn toes, knees and spines.' },
-  { y: '1,980 BC', src: 'img/granary.jpg', alt: 'Wooden tomb model of a granary with scribes and workers carrying sacks', name: 'Model of a granary with scribes', prop: 'Thebes · c. 1981–1975 BC · The Met', line: 'Stored grain can be counted, guarded and taken. So a scribe sits at the granary door.' },
-  { y: '1,400 BC', src: 'img/menna.jpg', alt: 'Harvest scenes from the tomb of Menna: grain cut, carried, measured and recorded', name: 'Harvest scenes, tomb of Menna', prop: 'Thebes · c. 1400 BC · The Met', line: 'The harvest is measured for the state. Menna’s job title: Scribe of the Fields.' }
+  { y: '9,500 BC', src: 'img/ear-black.jpg', alt: 'A ripe ear of bread wheat against black', name: 'An ear of wheat', prop: 'Bread wheat · photograph', line: 'In the hills of Karacadağ, people begin planting a wild grass on purpose.' },
+  { y: '3,100 BC', src: 'img/tablet.jpg', alt: 'Proto-cuneiform clay tablet recording barley distribution, with cylinder seal impressions', name: 'An account of barley rations', prop: 'Uruk · c. 3100–2900 BC', line: 'The first thing anyone wrote down was a receipt: barley rations, pressed into clay.' },
+  { y: '2,400 BC', src: 'img/grinding.jpg', alt: 'Limestone statuette of a servant kneeling to grind grain', name: 'Servant grinding grain', prop: 'Giza · c. 2420–2323 BC', line: 'Every loaf is ground by hand, on the knees. Skeletons keep the receipt: worn toes, knees and spines.' },
+  { y: '1,980 BC', src: 'img/granary.jpg', alt: 'Wooden tomb model of a granary with scribes and workers carrying sacks', name: 'Model of a granary with scribes', prop: 'Thebes · c. 1981–1975 BC', line: 'Stored grain can be counted, guarded and taken. So a scribe sits at the granary door.' },
+  { y: '1,400 BC', src: 'img/menna.jpg', alt: 'Harvest scenes from the tomb of Menna: grain cut, carried, measured and recorded', name: 'Harvest scenes, tomb of Menna', prop: 'Thebes · c. 1400 BC', line: 'The harvest is measured for the state. Menna’s job title: Scribe of the Fields.' }
 ];
 const FLOATS = [['img/rice-panicles.jpg', .04, .2, 116, .5], ['img/stalks-mono.jpg', .83, .14, 92, .8], ['img/cypresses.jpg', .1, .66, 104, 1.1], ['img/grasses-night.jpg', .85, .58, 120, .65], ['img/harvesters.jpg', .03, 1.02, 132, .9], ['img/rice-panicles.jpg', .76, 1.08, 88, 1.25], ['img/stalks-mono.jpg', .2, 1.32, 76, 1], ['img/grasses-night.jpg', .66, 1.4, 100, .75]];
 const DOT_PAL = ['#a8411a', '#e0521c', '#e2b864', '#f4e7c4'];
