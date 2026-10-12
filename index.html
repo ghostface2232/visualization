@@ -1383,7 +1383,7 @@ const grat = (function () { const pos = [];
 const AG = (function () {
   const n = 424, g = new THREE.BufferGeometry(), pos = new Float32Array(n * 3), col = new Float32Array(n * 4), shp = new Float32Array(n);
   g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('aCol', new THREE.BufferAttribute(col, 4)); g.setAttribute('aShape', new THREE.BufferAttribute(shp, 1));
-  const m = new THREE.Points(g, new THREE.ShaderMaterial({ uniforms: { uXf: PU.uXfCur, uPR: PU.uPR, uAlpha: { value: 0 } }, transparent: true, depthWrite: false, depthTest: false, blending: THREE.CustomBlending, blendSrc: THREE.OneFactor, blendDst: THREE.OneFactor,
+  const m = new THREE.Points(g, new THREE.ShaderMaterial({ uniforms: { uXf: { value: new THREE.Vector4(0, 0, 1, 0) }, uPR: PU.uPR, uAlpha: { value: 0 } }, transparent: true, depthWrite: false, depthTest: false, blending: THREE.CustomBlending, blendSrc: THREE.OneFactor, blendDst: THREE.OneFactor,
     vertexShader: `attribute vec4 aCol; attribute float aShape; uniform vec4 uXf; uniform float uPR, uAlpha; varying vec4 vC; varying float vS;
       void main(){ vec3 p = position * uXf.z + vec3(uXf.xy, 0.0); vec4 mv = modelViewMatrix * vec4(p, 1.0); gl_Position = projectionMatrix * mv;
         gl_PointSize = (aShape > 0.5 ? 70.0 : 62.0) * uXf.z * uPR / -mv.z * (aCol.a > 1.5 ? 1.6 : 1.0); vC = vec4(aCol.rgb, min(aCol.a, 1.0) * uAlpha); vS = aShape; }`,
@@ -1442,7 +1442,7 @@ function buildLabels() {
   LBL[3] = [...foods.map((f, k) => ({ el: anno(f), pos: () => ANCH.diet.species[k], a: l => 1 - map(l, .05, .25), rot: true })),
     ...['Rice · ~20%', 'Wheat · ~20%', 'Maize · ~20%'].map((t, k) => ({ el: anno(t, 'big hi'), pos: () => ANCH.diet.groups[k], a: l => map(l, .7, .88), rot: true })),
     { el: anno('12 other crops · 30%'), pos: () => ANCH.diet.others, a: l => map(l, .75, .9), rot: true }, { el: anno('Everything else · 10%'), pos: () => ANCH.diet.rest, a: l => map(l, .8, .95), rot: true }];
-  LBL[4] = [...['King', 'Priests', 'Scribes', 'Warriors', 'Artisans', 'Farmers'].map((t, k) => ({ el: anno(t, k === 0 ? 'big hi l' : 'l'), pos: () => ANCH.cls.tier(k), a: l => map(l, .65 + k * .03, .85), rot: true })),
+  LBL[4] = [...['King', 'Priests', 'Scribes', 'Warriors', 'Artisans', 'Farmers'].map((t, k) => ({ el: anno(t, k === 0 ? 'big hi l' : 'l'), pos: () => ANCH.cls.tier(k), a: l => map(l, .5 + k * .06, .66 + k * .06), rot: true })),
     { el: anno('Surplus grain', 'box'), pos: () => ANCH.cls.granary, a: l => map(l, .7, .9), rot: true }, { el: anno('63 people around a fire', 'big'), pos: () => ANCH.cls.fire, a: l => 1 - map(l, .05, .2), rot: true }];
   LBL[5] = [{ el: anno('The Fertile Crescent', 'box'), pos: () => ANCH.pop.origin, a: l => 1 - map(l, .55, .7), rot: true, front: true }];
 }
@@ -1462,7 +1462,7 @@ function applyStep(i) {
 }
 function paintDesc(within) {
   if (!ch.words.length || ch.tintStart === null) return;
-  const st = Math.min(ch.tintStart, .7), w = clamp((within - st) / (.85 - st)), n = ch.words.length, band = Math.max(2, Math.round(n * .24)), f = w * (n + band - 1);
+  const st = Math.min(ch.tintStart, .6), w = clamp((within - st) / (.72 - st)), n = ch.words.length, band = Math.max(2, Math.round(n * .24)), f = w * (n + band - 1);
   ch.words.forEach((el, i) => { const e = clamp(f - i), s = clamp((f - i - 1) / (band - 1)); const css = s >= 1 ? 'var(--ink)' : e <= 0 ? 'rgba(23,20,15,.62)' : `color-mix(in oklab, var(--ink) ${(s * 100).toFixed(1)}%, color-mix(in oklab, var(--ember-ink) ${(e * 100).toFixed(1)}%, rgba(23,20,15,.45)))`; if (el._c !== css) { el._c = css; el.style.color = css; } });
 }
 
@@ -1696,7 +1696,7 @@ $$('[data-reveal],.meta,[data-lines]').forEach(el => io.observe(el));
 let thesisST, chapterST, revealST, traceST;
 function buildScroll() {
   thesisST = ScrollTrigger.create({ trigger: '#thesisStage', start: 'top top', end: () => '+=' + innerHeight * 1.7, pin: true });
-  chapterST = ScrollTrigger.create({ trigger: '#chapterStage', start: 'top top', end: () => '+=' + innerHeight * 10.2, pin: true, onEnter: () => $('#chKeeper').classList.add('is-lit') });
+  chapterST = ScrollTrigger.create({ trigger: '#chapterStage', start: 'top top', end: () => '+=' + innerHeight * 13.8, pin: true, onEnter: () => $('#chKeeper').classList.add('is-lit') });
   traceST = ScrollTrigger.create({ trigger: '#tracePin', start: 'top top', end: () => '+=' + innerHeight * 7, pin: true });
   revealST = ScrollTrigger.create({ trigger: '#revealStage', start: 'top top', end: () => '+=' + innerHeight * 5.4, pin: true });
   ScrollTrigger.create({ trigger: '#verdict', start: 'top 70%', onEnter: () => { if (!signed) { signed = true; $('#finalSig').alt = 'Signature added for you'; autoScribble(() => stamp('Your ancestors already signed.'), true); } } });
@@ -1785,7 +1785,7 @@ function frame() {
       const p = chapterST ? (y - chapterST.start) / Math.max(1, chapterST.end - chapterST.start) : 0, s = clamp(p, 0, .99999) * 6;
       stepIdx = Math.min(5, Math.floor(s)); const f = p < 0 ? 0 : s - stepIdx;
       cur = STEPS[stepIdx]; prev = stepIdx === 0 ? PRE : STEPS[stepIdx - 1];
-      morph = p < 0 ? 0 : easeIO(map(f, 0, .13)); local = map(f, .14, .46); grow = 1 + .06 * easeIO(map(f, .44, 1)); growPrev = stepIdx === 0 ? 1 : 1.06;
+      morph = p < 0 ? 0 : easeIO(map(f, 0, .16)); local = map(f, .15, .5); grow = 1 + .06 * easeIO(map(f, .48, 1)); growPrev = stepIdx === 0 ? 1 : 1.06;
       box = cardBox(active.r); fullXf = false;
       applyStep(stepIdx); ch.lastWithin = f; paintDesc(f);
       ch.dots.forEach((d, i) => d.style.transform = `scaleX(${i < stepIdx ? 1 : i === stepIdx ? clamp(f) : 0})`); { const pr = clamp((stepIdx + clamp(f)) / 6); dialProg.style.strokeDashoffset = (169.65 * (1 - pr)).toFixed(2); dialHand.style.transform = `rotate(${(pr * 360).toFixed(1)}deg)`; }
@@ -1817,25 +1817,26 @@ function frame() {
     if (inside) tagXY.textContent = `${(((S.px - active.r.left) / active.r.width) * 10).toFixed(1).padStart(4, '0')}, ${(((S.py - active.r.top) / active.r.height) * 10).toFixed(1).padStart(4, '0')}`;
     // globe graticule + agents
     grat.material.opacity = cur.count ? .1 * morph * map(local, 0, .15) : 0; grat.scale.setScalar(sc_ * 1.95); grat.position.set(box.cx, box.cy, 0); grat.rotation.set(0, PU.uXfCur.value.w, 0);
-    const sim = !!cur.interactive; AG.m.material.uniforms.uAlpha.value = sim ? morph : 0;
+    const sim = !!cur.interactive, simOut = !sim && prev.interactive && morph < .5, AU = AG.m.material.uniforms; AU.uAlpha.value = sim ? morph : simOut ? 1 - map(morph, 0, .5) : 0; AU.uXf.value.copy(simOut ? PU.uXfPrev.value : PU.uXfCur.value);
     if (sim) { if (!simStarted && morph > .6) { AG.seed(); AG.infectFirst(); simStarted = true; } if (simStarted) AG.step(); }
     // annotations
     LBL.forEach((list, si) => list.forEach(L => {
-      if (si !== stepIdx || morph < .4) { if (L.vis) { L.el.style.opacity = 0; L.vis = false; } return; }
-      let pos = L.pos(local); if (L.rot) pos = rotY3(pos, PU.uXfCur.value.w); if (L.front && pos[2] < 0) { L.el.style.opacity = 0; return; }
-      tV.set(pos[0] * sc_ + box.cx, pos[1] * sc_ + box.cy, pos[2] * sc_).project(pCam);
+      const leaving = si === stepIdx - 1 && morph < .5, ll = leaving ? 1 : local, XF = leaving ? PU.uXfPrev.value : PU.uXfCur.value;
+      if ((si !== stepIdx || morph < .4) && !leaving) { if (L.vis) { L.el.style.opacity = 0; L.vis = false; } return; }
+      let pos = L.pos(ll); if (L.rot) pos = rotY3(pos, XF.w); if (L.front && pos[2] < 0) { L.el.style.opacity = 0; return; }
+      tV.set(pos[0] * XF.z + XF.x, pos[1] * XF.z + XF.y, pos[2] * XF.z).project(pCam);
       const sx = (tV.x * .5 + .5) * vw - active.r.left, sy = (-tV.y * .5 + .5) * VH - active.r.top;
-      if (L.text) { const tx = L.text(local); if (L.tx !== tx) { L.tx = tx; L.el.lastChild.textContent = tx; L.w = 0; } }
-      if (!L.w) L.w = L.el.offsetWidth; const ins = 16, lw = L.w; let lx = L.center ? sx - lw / 2 : L.el.classList.contains('l') ? sx - lw + 3 : sx - 3; lx = Math.min(Math.max(lx, ins), active.r.width - lw - ins); L.el.style.transform = `translate(${lx}px,${Math.max(ins, sy - 6 + (L.dy || 0))}px)`; L.el.style.opacity = (L.a(local) * map(morph, .5, 1)).toFixed(3); L.vis = true;
+      if (L.text) { const tx = L.text(ll); if (L.tx !== tx) { L.tx = tx; L.el.lastChild.textContent = tx; L.w = 0; } }
+      if (!L.w) L.w = L.el.offsetWidth; const ins = 16, lw = L.w; let lx = L.center ? sx - lw / 2 : L.el.classList.contains('l') ? sx - lw + 3 : sx - 3; lx = Math.min(Math.max(lx, ins), active.r.width - lw - ins); L.el.style.transform = `translate(${lx}px,${Math.max(ins, sy - 6 + (L.dy || 0))}px)`; L.el.style.opacity = (leaving ? L.a(1) * (1 - map(morph, 0, .5)) : L.a(local) * map(morph, .5, 1)).toFixed(3); L.vis = true;
     }));
     // outbreak gauges ride on the circles
-    const showG = stepIdx === 2 && morph > .4;
+    const showG = (stepIdx === 2 && morph > .4) || (stepIdx === 3 && morph < .5), gXf = stepIdx === 3 ? PU.uXfPrev.value : PU.uXfCur.value, gA = stepIdx === 3 ? 1 - map(morph, 0, .5) : map(morph, .5, 1);
     GAUGES.forEach(G => { if (!showG) { if (G.vis) { G.el.style.opacity = 0; G.vis = false; } return; }
-      const c = G.c(), r = G.r(); tV.set(c[0] * sc_ + box.cx, c[1] * sc_ + box.cy, 0).project(pCam); const gx = (tV.x * .5 + .5) * vw - active.r.left, gy = (-tV.y * .5 + .5) * VH - active.r.top;
-      tV.set((c[0] + r) * sc_ + box.cx, c[1] * sc_ + box.cy, 0).project(pCam); const R = Math.abs((tV.x * .5 + .5) * vw - active.r.left - gx);
+      const c = G.c(), r = G.r(); tV.set(c[0] * gXf.z + gXf.x, c[1] * gXf.z + gXf.y, 0).project(pCam); const gx = (tV.x * .5 + .5) * vw - active.r.left, gy = (-tV.y * .5 + .5) * VH - active.r.top;
+      tV.set((c[0] + r) * gXf.z + gXf.x, c[1] * gXf.z + gXf.y, 0).project(pCam); const R = Math.abs((tV.x * .5 + .5) * vw - active.r.left - gx);
       G.el.style.transform = `translate(${(gx - R).toFixed(1)}px,${(gy - R).toFixed(1)}px)`; G.el.style.width = G.el.style.height = (R * 2).toFixed(1) + 'px';
       const d = `${(AG.counts()[G.k] / G.total * 100).toFixed(1)} 100`; if (d !== G.d) { G.d = d; G.arc.setAttribute('stroke-dasharray', d); }
-      G.el.style.opacity = map(morph, .5, 1).toFixed(3); G.vis = true; });
+      G.el.style.opacity = gA.toFixed(3); G.vis = true; });
   } else { AG.m.material.uniforms.uAlpha.value = 0; grat.material.opacity = 0; GAUGES.forEach(G => { if (G.vis) { G.el.style.opacity = 0; G.vis = false; } }); }
 
   // reveal overlays
