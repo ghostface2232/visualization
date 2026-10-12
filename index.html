@@ -172,8 +172,6 @@ main>section,main>div{position:relative;z-index:3}
 .hero__card,.interlude__card,.reveal__stage .stage,.footer__card{--inset:var(--inset-bleed)}
 .hero__card{height:100%;transform-origin:50% 40%;will-change:transform}
 .hero__shade{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;z-index:5}
-.eyebrow{position:absolute;left:50%;transform:translateX(-50%);top:22vh;display:flex;align-items:center;gap:12px;color:var(--ink);opacity:0;white-space:nowrap}
-.eyebrow::before,.eyebrow::after{content:"";width:28px;height:1px;background:currentColor}
 .hero__fallback{display:none}
 .no-gl .hero__fallback{display:block;position:absolute;left:var(--gutter);top:26vh;font-family:var(--f-display);font-size:clamp(3rem,10vw,10rem);line-height:1.02;letter-spacing:-.045em}
 .no-gl .stage{background:radial-gradient(120% 90% at 50% 60%,#4a2f17 0%,#1a120a 60%,var(--coal) 100%)}
@@ -191,7 +189,7 @@ main>section,main>div{position:relative;z-index:3}
 .scroll-pill svg{width:14px;height:14px;animation:bob 1.8s infinite var(--ease-swift)}
 @keyframes bob{0%,100%{transform:translateY(-2px)}50%{transform:translateY(2px)}}
 
-.eyebrow{transition:color 1.2s var(--ease-out)}
+
 /* ---------- THESIS ---------- */
 .thesis{position:relative;z-index:3;background:var(--paper)}
 .torn{position:absolute;left:0;top:calc(1px - var(--torn-h));display:block;width:100%;height:var(--torn-h);fill:var(--paper);pointer-events:none;--torn-h:150px}
@@ -552,7 +550,6 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
       <p class="hero__fallback" aria-hidden="true">The greatest con<br>in human history</p>
       <div class="grid-ov" style="opacity:.25"></div>
       <div class="tag br"><b>S01</b><span>37.6°N · 39.8°E · Karacadağ</span></div>
-      <p class="eyebrow mono" id="eyebrow">Case No. 10,000 BC · Unsolved</p>
       <div class="hero__foot">
         <div class="suspect">
           <span class="mono">Suspect</span>
@@ -938,11 +935,11 @@ const finalPass = new ShaderPass({
       vec2 cuv = (vUv - uCard.xy) / max(uCard.zw, vec2(1e-3)); vec2 dc = cuv - 0.5; float r2 = dot(dc, dc); vec2 off = dc * r2 * uCA * 0.02 * uCard.zw;
       vec3 col = vec3(texture2D(tDiffuse, vUv + off).r, texture2D(tDiffuse, vUv).g, texture2D(tDiffuse, vUv - off).b);
       if (uRays > 0.001) { vec2 dl = (vUv - uSun) * (0.92 / float(${RAYS})); vec2 p = vUv; float ill = 1.0; vec3 acc = vec3(0.0);
-        for (int i = 0; i < ${RAYS}; i++) { p -= dl; vec3 s = texture2D(tDiffuse, p).rgb; float l = max(dot(s, vec3(0.3, 0.59, 0.11)) - 0.62, 0.0); acc += s * l * ill; ill *= 0.955; }
-        col += acc / float(${RAYS}) * uRays * 3.0; }
+        for (int i = 0; i < ${RAYS}; i++) { p -= dl; vec3 s = texture2D(tDiffuse, p).rgb; float l = max(dot(s, vec3(0.3, 0.59, 0.11)) - 0.85, 0.0); acc += s * l * ill; ill *= 0.955; }
+        col += acc / float(${RAYS}) * uRays * 4.5; }
       col = soft(col);
       col *= mix(1.0, smoothstep(1.25, 0.35, length(dc * vec2(1.0, 0.8)) * 1.25), uVig * 0.8);
-      col += (hash(vUv * uRes + fract(uTime * 13.7) * 91.0) - 0.5) * uGrain;
+      col += (hash(vUv * uRes + fract(floor(uTime * 24.0) * 0.137) * 91.0) - 0.5) * uGrain;
       gl_FragColor = vec4(col * uFade, 1.0);
     }`
 });
@@ -993,7 +990,7 @@ const sky = new THREE.Mesh(new THREE.SphereGeometry(900, 48, 24), new THREE.Shad
   fragmentShader: `uniform vec3 uHorizon,uZenith,uRose,uSunDir,uSunCol; uniform float uTime,uExposure,uNight; varying vec3 vDir;
     float h2(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
     float n2(vec2 p){ vec2 i = floor(p), f = fract(p); f = f*f*(3.-2.*f); return mix(mix(h2(i), h2(i+vec2(1,0)), f.x), mix(h2(i+vec2(0,1)), h2(i+vec2(1,1)), f.x), f.y); }
-    float fbm(vec2 p){ float a = .5, s = 0.; for (int i = 0; i < 5; i++){ s += a * n2(p); p = p * 2.03 + 11.7; a *= .5; } return s; }
+    float fbm(vec2 p){ float fw = length(fwidth(p)) * 1.5, a = .5, s = 0.; for (int i = 0; i < 5; i++){ s += a * mix(n2(p), .5, smoothstep(.2, .7, fw)); p = p * 2.03 + 11.7; fw *= 2.03; a *= .5; } return s; }
     void main(){ vec3 d = normalize(vDir); float y = d.y; float s = max(dot(d, uSunDir), 0.0);
       float hy = max(y, 0.0);
       vec3 col = mix(uHorizon, uRose, smoothstep(0.0, 0.16, hy));
@@ -1004,7 +1001,7 @@ const sky = new THREE.Mesh(new THREE.SphereGeometry(900, 48, 24), new THREE.Shad
       if (y > 0.0) { vec2 uv = d.xz / (y + 0.08); vec2 q = vec2(uv.x * 0.22, uv.y * 0.9) + vec2(uTime * 0.006, 0.0); float c = fbm(q * 1.4);
         c = smoothstep(0.5, 0.86, c) * smoothstep(0.0, 0.07, y) * (1.0 - smoothstep(0.32, 0.62, y));
         col = mix(col, mix(uRose * 0.75 + uZenith * 0.3, vec3(1.0, 0.6, 0.35), pow(s, 2.0) * 0.8 + 0.15), c * 0.58); }
-      col += mix(vec3(1.0, 0.66, 0.32), vec3(0.9, 0.93, 1.0), uNight) * smoothstep(0.99935, 0.9997, s) * mix(0.85, 1.1, uNight);
+      col += mix(vec3(1.0, 0.66, 0.32), vec3(0.9, 0.93, 1.0), uNight) * smoothstep(0.9991, 0.99975, s) * mix(0.85, 1.1, uNight);
       col = mix(col, uHorizon * 0.55, smoothstep(0.0, -0.12, y));
       gl_FragColor = vec4(min(col, vec3(1.7)) * uExposure, 1.0); }`
 }));
@@ -1038,12 +1035,12 @@ const WN = small ? 34000 : 76000;
   const mesh = new THREE.Mesh(g, new THREE.ShaderMaterial({ uniforms: { ...FU, uTex: { value: ATLAS.tex } }, side: THREE.DoubleSide, alphaToCoverage: true,
     vertexShader: `attribute vec2 aOffset; attribute vec4 aRand;
       uniform float uTime,uRadius,uMouseStr,uFogNear,uFogFar,uHide,uHideR; uniform vec2 uMouse,uWindDir; uniform vec3 uGust,uCamPos;
-      varying vec2 vUv; varying float vFog; varying float vSheen; varying vec3 vW; varying float vRand;
+      varying vec2 vUv; varying float vFog; varying float vSheen; varying vec3 vW; varying float vRand; varying float vFar;
       void main(){ vUv = uv; float t = position.y; vec2 base = aOffset; float d = length(base);
         float grow = 1.0 - smoothstep(uRadius, uRadius + min(3.0, 0.25 + uRadius * 0.35), d);
         grow *= mix(1.0, step(uHideR, length(vec2(base.x * 0.8, base.y - 7.0))), uHide);
         float h = aRand.w * grow; float ang = aRand.x * 6.2831; float ca = cos(ang), sa = sin(ang);
-        float camD = length(uCamPos.xz - base); float wid = 0.24 * (1.0 + smoothstep(9.0, 70.0, camD) * 2.2) * grow;
+        float camD = length(uCamPos.xz - base); vFar = smoothstep(7.0, 30.0, camD); float wid = 0.24 * (1.0 + smoothstep(9.0, 70.0, camD) * 2.2) * grow;
         vec3 lp = vec3(position.x * wid, t * h, position.z * wid); lp = vec3(ca * lp.x - sa * lp.z, lp.y, sa * lp.x + ca * lp.z);
         float wave = sin(dot(base, uWindDir) * 0.3 - uTime * 1.25 + sin(base.y * 0.09 + uTime * 0.17) * 2.4);
         float gust = 0.5 + 0.5 * sin(base.x * 0.04 - uTime * 0.21 + base.y * 0.03);
@@ -1056,8 +1053,9 @@ const WN = small ? 34000 : 76000;
         vec3 wp = vec3(base.x, 0.0, base.y) + lp; vSheen = smoothstep(0.15, 1.0, wave * gust) + ring * 0.8; vW = wp; vRand = aRand.y;
         vFog = smoothstep(uFogNear, uFogFar, length(wp - uCamPos)); gl_Position = projectionMatrix * viewMatrix * vec4(wp, 1.0); }`,
     fragmentShader: `uniform sampler2D uTex; uniform vec3 uSunDir,uSunCol,uHorizon,uRose,uCamPos; uniform float uExposure;
-      varying vec2 vUv; varying float vFog; varying float vSheen; varying vec3 vW; varying float vRand;
-      void main(){ vec4 tx = texture2D(uTex, vUv); float a = (tx.a - 0.42) / max(fwidth(tx.a), 1e-4) + 0.5; if (a < 0.01) discard;
+      varying vec2 vUv; varying float vFog; varying float vSheen; varying vec3 vW; varying float vRand; varying float vFar;
+      void main(){ vec4 tx = texture2D(uTex, vUv); float sharp = (tx.a - 0.42) / max(fwidth(tx.a), 1e-4) + 0.5;
+        float a = mix(sharp, smoothstep(0.08, 0.55, tx.a), vFar); if (a < 0.01) discard;
         float part = tx.g, lum = tx.r;
         vec3 alb = part > 0.8 ? vec3(0.86, 0.62, 0.27) : part > 0.5 ? vec3(0.92, 0.72, 0.38) : part > 0.3 ? vec3(0.22, 0.2, 0.09) : vec3(0.26, 0.22, 0.10);
         alb *= (0.55 + 0.75 * lum) * (0.82 + 0.36 * vRand);
@@ -1120,7 +1118,6 @@ function layoutTitle() {
   const D = 64, cam = new THREE.PerspectiveCamera(fieldCam.fov, vw / vh, .05, 1500); cam.position.set(HERO.px, HERO.py, HERO.pz); cam.lookAt(HERO.tx, HERO.ty, HERO.tz); cam.updateMatrixWorld();
   const hh = D * Math.tan(cam.fov * Math.PI / 360), hw = hh * cam.aspect, cxN = ((left + sw / 2) / vw) * 2 - 1, cyN = 1 - ((top + sh / 2) / vh) * 2;
   title.mesh.position.copy(new THREE.Vector3(cxN * hw, cyN * hh, -D).applyMatrix4(cam.matrixWorld)); title.mesh.quaternion.copy(cam.quaternion); title.mesh.scale.set(sw / vw * 2 * hw, sh / vh * 2 * hh, 1);
-  $('#eyebrow').style.top = Math.max(96, top + padT * k - 30) + 'px';
 }
 const CLOSE = { px: .32, py: .95, pz: 1.5, tx: 0, ty: .95, tz: 0 }, HIGH = { px: 0, py: 24, pz: 42, tx: 0, ty: 0, tz: -30 };
 const fcam = { ...HERO }, look = new THREE.Vector3(), par = { x: 0, y: 0 };
@@ -1806,7 +1803,6 @@ const nextFrame = () => new Promise(r => setTimeout(r, 16));
   gsap.timeline({ delay: .35 })
     .to(finalPass.uniforms.uFade, { value: 1, duration: 2.2, ease: 'power2.out' }, 0)
     .to(rev, { x: 1, duration: 1.8, ease: 'expo.out' }, .3).to(rev, { y: 1, duration: 1.8, ease: 'expo.out' }, .48).to(rev, { z: 1, w: 1, duration: 1.8, ease: 'expo.out' }, .66)
-    .to('#eyebrow', { opacity: 1, duration: 1 }, .5)
     .from('.hero__foot > *', { opacity: 0, y: 20, duration: 1.1, stagger: .1, ease: 'power3.out' }, .7)
     .add(cycleSuspects, .9);
 })().catch(err => { console.error(err); const l = $('#loader'); if (l) l.remove(); document.documentElement.classList.add('no-gl'); document.body.classList.remove('locked'); lenis && lenis.start(); });
