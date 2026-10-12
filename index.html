@@ -71,7 +71,7 @@ a{color:inherit}
 :focus-visible{outline:2px solid var(--ember);outline-offset:3px}
 
 /* ---------- global chrome ---------- */
-#webgl{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:1;pointer-events:none;visibility:hidden}
+#webgl{position:fixed;left:0;top:0;width:100vw;height:100%;display:block;z-index:1;pointer-events:none;visibility:hidden}
 .grain{position:fixed;inset:-50%;z-index:240;pointer-events:none;opacity:.055;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   animation:grainShift .9s steps(4) infinite}
@@ -339,7 +339,8 @@ html.theme-dark .trace__pin,html.theme-dark .coda,html.theme-dark .trace__head .
 .trace__head .meta{transition:color .9s var(--ease-out)}
 .trace__head{position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 76px);padding:0 var(--gutter);z-index:3}
 .trace__cv{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
-.trace__float{position:absolute;inset:0;z-index:0;pointer-events:none}
+.trace__float{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity .9s var(--ease-out)}
+html.theme-dark .trace__float{opacity:1}
 .trace__float canvas{position:absolute;left:0;top:0;opacity:.34;will-change:transform;transition:opacity .5s var(--ease-out)}
 .trace__obj{position:absolute;left:0;top:0;z-index:2;cursor:pointer;outline-offset:6px}
 .trace__obj img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0}
@@ -432,17 +433,20 @@ html.theme-dark .trace__pin,html.theme-dark .coda,html.theme-dark .trace__head .
 
 
 /* ---------- section index (wayfinding) ---------- */
-.index{position:fixed;right:var(--gutter);top:50%;transform:translateY(-50%);z-index:110;color:var(--ink);opacity:0;pointer-events:none;transition:color .3s,opacity .5s var(--ease-out)}
+.index{position:fixed;right:max(6px,calc(var(--gutter) / 2 - 11px));top:50%;transform:translateY(-50%);z-index:110;color:var(--ink);opacity:0;pointer-events:none;transition:color .3s,opacity .5s var(--ease-out)}
 .index.on{opacity:1;pointer-events:auto}
 .index.on-dark{color:var(--straw)}
 .index ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;align-items:flex-end}
-.index a{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;padding:5px 0}
-.index .l{opacity:0;transform:translateX(8px);transition:opacity .3s,transform .45s var(--ease-out);white-space:nowrap}
-.index .n{opacity:.45;font-variant-numeric:tabular-nums;transition:opacity .3s}
-.index:hover .l,.index a:focus-visible .l{opacity:1;transform:none}
-.index i{display:block;width:12px;height:1.5px;background:currentColor;opacity:.35;transition:width .55s var(--ease-out),opacity .3s,background-color .3s}
-.index li.active i{width:30px;opacity:1;background:var(--ember)}
-.index li.active .n{opacity:1}
+.index a{position:relative;display:flex;align-items:center;justify-content:flex-end;min-width:30px;text-decoration:none;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;padding:5px 0}
+.index .l{position:absolute;right:calc(100% + 30px);top:50%;opacity:0;transform:translate(8px,-50%);transition:opacity .3s,transform .45s var(--ease-out);white-space:nowrap;padding:2px 6px;border-radius:3px;background:var(--paper);pointer-events:none}
+.index.on-dark .l{background:#0c0a08}
+.index .n{position:absolute;right:calc(100% + 4px);top:50%;transform:translateY(-50%);opacity:0;font-variant-numeric:tabular-nums;transition:opacity .3s;pointer-events:none}
+.index:hover .l,.index a:focus-visible .l{opacity:1;transform:translate(0,-50%)}
+.index:hover .n,.index a:focus-visible .n{opacity:.6}
+.index:hover li.active .n{opacity:1}
+.index i{display:block;width:10px;height:1.5px;background:currentColor;opacity:.35;transition:width .55s var(--ease-out),opacity .3s,background-color .3s}
+.index li.active i{width:22px;opacity:1;background:var(--ember)}
+.index li.active .n{opacity:0}
 @media (max-width:900px){.index{display:none}}
 /* ---------- lightbox ---------- */
 .lb{position:fixed;inset:0;z-index:250;background:rgba(12,10,8,.95);display:grid;grid-template-rows:minmax(0,1fr) auto;gap:18px;padding:calc(env(safe-area-inset-top,0px) + 80px) var(--gutter) calc(env(safe-area-inset-bottom,0px) + var(--gutter));color:var(--straw)}
@@ -489,6 +493,9 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
 }
 @media (max-width:560px){
   .hud .brand b,.odo-wrap .mono{display:none}
+  .desk{padding-inline:10px}
+  .deed{padding:34px 22px}
+  .articles li{grid-template-columns:minmax(0,1fr);gap:6px}
   .chapter__num{display:none}
   .seal{width:100px;height:100px}
 }
@@ -1087,28 +1094,29 @@ const title = (function () {
         float r = band < 0.5 ? uRev.x : band < 1.5 ? uRev.y : band < 2.5 ? uRev.z : uRev.w; float e = 1.0 - pow(1.0 - r, 3.0);
         float bh = 1.0 / uLines; float sy = yy - (1.0 - e) * bh * 0.95; if (sy < band * bh) discard;
         vec4 t = texture2D(uTex, vec2(vUv.x, 1.0 - sy)); float a = t.a * uAlpha * smoothstep(0.0, 0.25, e);
-        a *= mix(1.0, 0.55, smoothstep(0.5, 1.0, yy));
+        a *= mix(1.0, uLines > 2.5 ? 0.9 : 0.55, smoothstep(0.5, 1.0, yy));
         gl_FragColor = vec4(mix(vec3(0.07, 0.05, 0.04), vec3(0.96, 0.92, 0.82), uNight) * uExposure, a * min(uExposure * 1.5, 1.0)); }` });
   const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), mat); mesh.renderOrder = 5; fieldScene.add(mesh);
   return { cvs, ctx, tex, mat, mesh };
 })();
 const HERO = { px: 0, py: 1.85, pz: 7.4, tx: 0, ty: 1.35, tz: -20 };
 function layoutTitle() {
-  const vw = innerWidth, vh = innerHeight, gut = Math.max(16, Math.min(44, vw * .03)) + 10;
-  const fs = Math.max(46, Math.min(176, vw * .108)), F = 220, ctx = title.ctx;
+  // vw spans the GL canvas (under the scrollbar too); cv is the visible layout width the title must fit and centre in
+  const vw = innerWidth, vh = innerHeight, cv = document.documentElement.clientWidth || vw, gut = Math.max(16, Math.min(44, cv * .03)) + 10;
+  const fs = Math.max(46, Math.min(176, cv * .108)), F = 220, ctx = title.ctx;
   ctx.font = `400 ${F}px "Anthropic Serif W", Georgia, serif`;
-  const words = 'The greatest con in human history'.split(' '), maxW = (vw - gut * 2) / fs * F, lines = []; let cur = '';
+  const words = 'The greatest con in human history'.split(' '), maxW = (cv - gut * 2) / fs * F, lines = []; let cur = '';
   for (const w of words) { const t = cur ? cur + ' ' + w : w; if (ctx.measureText(t).width > maxW && cur) { lines.push(cur); cur = w; } else cur = t; } lines.push(cur);
-  if (vw >= 700) { lines.length = 0; lines.push('The greatest con', 'in human history'); }
+  if (cv >= 700) { lines.length = 0; lines.push('The greatest con', 'in human history'); }
   const lh = F * .94, padT = F * .12, padB = F * .34, track = -.045 * F; if ('letterSpacing' in ctx) ctx.letterSpacing = `${track}px`; let wMax = 0; lines.forEach(l => wMax = Math.max(wMax, ctx.measureText(l).width + ('letterSpacing' in ctx ? 0 : track * l.length)));
-  let fsx = fs; if (wMax / F * fsx > vw - gut * 2) fsx = (vw - gut * 2) / wMax * F;
+  let fsx = fs; if (wMax / F * fsx > cv - gut * 2) fsx = (cv - gut * 2) / wMax * F;
   const cw = Math.ceil(wMax + F * .2), ch = Math.ceil(padT + lh * lines.length + padB); title.cvs.width = cw; title.cvs.height = ch;
   ctx.font = `400 ${F}px "Anthropic Serif W", Georgia, serif`; ctx.fillStyle = '#fff'; ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'center'; if ('letterSpacing' in ctx) ctx.letterSpacing = `${track}px`;
   const asc = F * .74, tx = cw / 2 - ('letterSpacing' in ctx ? track / 2 : 0);
     lines.forEach((l, i) => ctx.fillText(l, tx, padT + asc + i * lh)); title.tex.needsUpdate = true; title.mat.uniforms.uLines.value = lines.length;
   const k = fsx / F, sw = cw * k, sh = ch * k, pitch = Math.atan2(HERO.py - HERO.ty, HERO.pz - HERO.tz);
   const horizonY = vh * (.5 - Math.tan(pitch) / Math.tan(fieldCam.fov * Math.PI / 360) / 2);
-  const baseLast = (padT + asc + (lines.length - 1) * lh) * k, top = Math.max(vh * .15, horizonY + fsx * .16 - baseLast), left = (vw - sw) / 2;
+  const baseLast = (padT + asc + (lines.length - 1) * lh) * k, top = Math.max(vh * .15, horizonY + fsx * (cv < 700 ? -.75 : .16) - baseLast), left = (cv - sw) / 2;
   const D = 64, cam = new THREE.PerspectiveCamera(fieldCam.fov, vw / vh, .05, 1500); cam.position.set(HERO.px, HERO.py, HERO.pz); cam.lookAt(HERO.tx, HERO.ty, HERO.tz); cam.updateMatrixWorld();
   const hh = D * Math.tan(cam.fov * Math.PI / 360), hw = hh * cam.aspect, cxN = ((left + sw / 2) / vw) * 2 - 1, cyN = 1 - ((top + sh / 2) / vh) * 2;
   title.mesh.position.copy(new THREE.Vector3(cxN * hw, cyN * hh, -D).applyMatrix4(cam.matrixWorld)); title.mesh.quaternion.copy(cam.quaternion); title.mesh.scale.set(sw / vw * 2 * hw, sh / vh * 2 * hh, 1);
@@ -1453,7 +1461,7 @@ const TRACE = [
 ];
 const FLOATS = [['img/rice-panicles.jpg', .04, .2, 116, .5], ['img/stalks-mono.jpg', .83, .14, 92, .8], ['img/cypresses.jpg', .1, .66, 104, 1.1], ['img/grasses-night.jpg', .85, .58, 120, .65], ['img/harvesters.jpg', .03, 1.02, 132, .9], ['img/rice-panicles.jpg', .76, 1.08, 88, 1.25], ['img/stalks-mono.jpg', .2, 1.32, 76, 1], ['img/grasses-night.jpg', .66, 1.4, 100, .75]];
 const DOT_PAL = ['#a8411a', '#e0521c', '#e2b864', '#f4e7c4'];
-const tracePin = $('#tracePin'), traceCv = $('#traceCv'), tctx = traceCv.getContext('2d'), traceObj = $('#traceObj'), traceImg = $('#traceImg'), traceText = $('#traceText'), traceCap = $('#traceCap'), traceLine = $('#traceLine'), traceTitle = $('#traceTitle'), traceRail = $('#traceRail');
+const tracePin = $('#tracePin'), traceCv = $('#traceCv'), tctx = traceCv.getContext('2d'), traceObj = $('#traceObj'), traceImg = $('#traceImg'), traceText = $('#traceText'), traceCap = $('#traceCap'), traceLine = $('#traceLine'), traceTitle = $('#traceTitle'), traceRail = $('#traceRail'), traceHead = $('.trace__head');
 traceRail.innerHTML = TRACE.map(o => `<li>${o.y.replace(',', '')}</li>`).join(''); const railItems = $$('li', traceRail);
 const T = { out: 1, imgs: TRACE.map(o => { const im = new Image(); im.src = o.src; return im; }), grids: [], rects: [], W: 0, H: 0, dpr: 1, shown: -2, token: 0, key: '', mx: -999, my: -999, a: -1, b: 0, e: 0, floats: [] };
 const lum = (d, k) => (d[k] * .3 + d[k + 1] * .59 + d[k + 2] * .11) / 255;
@@ -1508,7 +1516,7 @@ function traceShow(k) {
 function traceFrame(p) {
   const K = TRACE.length, u = clamp(p) * (K + .9) - 1, i = clamp(Math.floor(u), -1, K - 1), f = u - i;
   T.a = i; T.b = i + 1; T.e = i < K - 1 ? easeIO(map(f, .42, 1)) : 0; T.out = i === K - 1 ? 1 - easeIO(map(f, .42, .86)) : 1;
-  traceText.style.opacity = T.out < 1 ? T.out.toFixed(3) : ''; traceObj.style.visibility = i < 0 || T.out < .3 ? 'hidden' : 'visible';
+  traceText.style.opacity = traceHead.style.opacity = traceRail.style.opacity = T.out < 1 ? T.out.toFixed(3) : ''; traceObj.style.visibility = i < 0 || T.out < .3 ? 'hidden' : 'visible';
   traceTitle.style.opacity = i < 0 ? (1 - T.e).toFixed(3) : 0; traceTitle.style.transform = `translate(-50%,calc(-50% - ${(i < 0 ? T.e * 40 : 40).toFixed(1)}px))`;
   traceRender(); traceShow(T.e > .5 ? T.b : T.a); traceRail.style.setProperty('--p', clamp((i + T.e) / (K - 1)).toFixed(4));
   T.floats.forEach(fl => fl.move(p));
@@ -1615,7 +1623,7 @@ const windows = $$('[data-window]'), progressBar = $('#progressBar');
 const rv = { q: $('.rv-q'), sig: $('.rv-sig'), origin: $('.rv-origin'), area: $('.rv-area'), quote: $('.rv-quote') }, areaNum = $('#areaNum'), revTag = $('#revTag');
 const lvTime = $('#lvTime'), lvWheat = $('#lvWheat'), lvBirth = $('#lvBirth'), tagXY = $('#tagXY');
 const sections = $$('main [data-year]'), hud = $('.hud'); let frameN = 0;
-const idx = $('#index'), idxItems = $$('#index li'), idxTargets = $$('#index a').map(a => $(a.getAttribute('href'))), recSec = $('#record'); let idxActive = -2;
+const idx = $('#index'), idxItems = $$('#index li'), idxTargets = $$('#index a').map(a => $(a.getAttribute('href'))), recSec = $('#record'), chapterStageEl = $('#chapterStage'); let idxActive = -2;
 const tV = new THREE.Vector3();
 let curKey = '', simStarted = false, vertical = innerWidth < 900;
 function cardBox(r) { const vis = 2 * pCam.position.z * Math.tan(pCam.fov * Math.PI / 360), visW = vis * pCam.aspect; return { cx: ((r.left + r.width / 2) / innerWidth - .5) * visW, cy: (.5 - (r.top + r.height / 2) / innerHeight) * vis, w: r.width / innerWidth * visW, h: r.height / innerHeight * vis }; }
@@ -1628,6 +1636,7 @@ function frame() {
 
   // hero cover
   const cover = clamp(y / (vh * .95)); tornUpdate(cover, t);
+  const recTop = recSec.getBoundingClientRect().top, chFade = clamp((recTop - vh * .3) / (vh * .55)); chapterStageEl.style.opacity = chFade < 1 ? chFade.toFixed(3) : '';
   heroCard.style.transform = `scale(${1 - cover * .07}) translateY(${-cover * 3}vh)`; heroShade.style.opacity = cover * .6;
 
   const iR = interSec.getBoundingClientRect(), interPr = clamp(-iR.top / Math.max(1, iR.height - vh));
@@ -1646,7 +1655,7 @@ function frame() {
   const rP = revealST ? revealST.progress : 0;
   W.field = 0; W.particles = 0;
   if (active && active.type === 'hero') W.field = 1 - cover * .6;
-  if (active && active.type === 'chapter') W.particles = 1;
+  if (active && active.type === 'chapter') W.particles = chFade;
   if (active && active.type === 'reveal') { W.field = map(rP, .3, .4); W.particles = 1 - map(rP, .32, .42); }
   if (active && active.type === 'painting') W.particles = map(interPr, .52, .6);
   interImg.style.opacity = (active && active.type === 'painting') ? (1 - map(interPr, .56, .64)).toFixed(3) : 1;
@@ -1712,7 +1721,7 @@ function frame() {
 
   // reveal overlays
   if (active && active.type === 'reveal') {
-    rv.q.style.opacity = win(rP, 0, .05, .13, .17); rv.sig.style.opacity = win(rP, .16, .2, .28, .32); rv.origin.style.opacity = win(rP, .38, .42, .48, .52);
+    rv.q.style.opacity = rP < .05 ? 1 : win(rP, 0, .05, .13, .17); rv.sig.style.opacity = win(rP, .16, .2, .28, .32); rv.origin.style.opacity = win(rP, .38, .42, .48, .52);
     rv.area.style.opacity = map(rP, .5, .56) * (1 - map(rP, .79, .83)); const rr = Math.pow(map(rP, .45, .8), 2); areaNum.firstChild.nodeValue = fmt(2190000 * rr * rr);
     rv.quote.style.opacity = map(rP, .84, .9); rv.quote.style.transform = `translateY(calc(-50% + ${(1 - map(rP, .84, .92)) * 30}px))`;
     revTag.textContent = rP > .16 ? 'Identity: Triticum aestivum' : 'Identity: withheld';
@@ -1741,12 +1750,12 @@ function frame() {
     idx.classList.toggle('on', y > vh * .8);
     let ai = -1; idxTargets.forEach((t, i) => { const host = t.closest('.pin-spacer') || t; if (host.getBoundingClientRect().top < vh * .5) ai = i; });
     if (ai !== idxActive) { idxActive = ai; idxItems.forEach((li, i) => li.classList.toggle('active', i === ai)); }
-    const lu = recSec.getBoundingClientRect().top, dark = lu < vh * .55 && revealST && y < revealST.end - vh * .2;
+    const lu = recSec.getBoundingClientRect().top, dark = lu < vh * .45 && revealST && y < revealST.end - vh * .2;
     document.documentElement.classList.toggle('theme-dark', !!dark);
     const pt = document.elementsFromPoint(vw - 30, vh / 2).find(e => !e.closest('.index'));
-    idx.classList.toggle('on-dark', !!dark || !!(pt && pt.closest('.stage,.desk,.footer__card,.interlude__card')));
+    idx.classList.toggle('on-dark', !!dark || !!(pt && !pt.closest('.deed') && pt.closest('.stage,.desk,.footer__card,.interlude__card')));
   }
-  if (!(frameN++ % 6)) { const el = document.elementsFromPoint(innerWidth / 2, 34).find(e => !e.closest('.hud')); hud.classList.toggle('on-dark', document.documentElement.classList.contains('theme-dark') || !!(el && el.closest('.stage,.desk,.footer__card,.interlude__card'))); }
+  if (!(frameN++ % 6)) { const el = document.elementsFromPoint(innerWidth / 2, 34).find(e => !e.closest('.hud')); hud.classList.toggle('on-dark', document.documentElement.classList.contains('theme-dark') || !!(el && !el.closest('.deed') && el.closest('.stage,.desk,.footer__card,.interlude__card'))); }
   progressBar.style.transform = `scaleX(${clamp(y / Math.max(1, document.documentElement.scrollHeight - vh)).toFixed(4)})`;
   if (!(active && active.type === 'chapter')) { let yr = 'AD 2026'; for (const s of sections) { const host = s.closest('.pin-spacer') || s; if (host.getBoundingClientRect().top < vh * .5) yr = s.dataset.year; } setYear(traceST && traceST.isActive && traceYear ? traceYear : yr); }
   const sec = (now - S.t0) / 1000; lvTime.textContent = `${String(Math.floor(sec / 60)).padStart(2, '0')}:${String(Math.floor(sec % 60)).padStart(2, '0')}`; lvWheat.textContent = fmt(sec * 790e6 / 31557600); lvBirth.textContent = fmt(sec * 132e6 / 31557600);
