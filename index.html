@@ -194,7 +194,8 @@ main>section,main>div{position:relative;z-index:3}
 .eyebrow{transition:color 1.2s var(--ease-out)}
 /* ---------- THESIS ---------- */
 .thesis{position:relative;z-index:3;background:var(--paper)}
-.thesis::before{content:"";position:absolute;left:0;right:0;top:-30px;height:32px;background:var(--paper);-webkit-mask:var(--torn) center/100% 100% no-repeat;mask:var(--torn) center/100% 100% no-repeat;pointer-events:none}
+.torn{position:absolute;left:0;top:calc(1px - var(--torn-h));display:block;width:100%;height:var(--torn-h);fill:var(--paper);pointer-events:none;--torn-h:150px}
+@media (max-width:700px){.torn{--torn-h:96px}}
 .thesis__stage{height:100svh;display:flex;flex-direction:column;justify-content:center;gap:clamp(40px,8vh,100px);padding:0 var(--gutter)}
 .fill{position:relative;font-family:var(--f-display);font-size:clamp(30px,4.4vw,74px);letter-spacing:-.035em;line-height:1.14;text-indent:clamp(90px,17vw,300px);max-width:min(1400px,92%)}
 .fill::before{content:"";position:absolute;left:clamp(28px,6vw,110px);top:.36em;width:clamp(12px,1.3vw,22px);height:clamp(12px,1.3vw,22px);border-radius:50%;background:var(--ember)}
@@ -558,6 +559,7 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
   </section>
 
   <section class="thesis" id="thesis" data-year="10,000 BC">
+    <svg class="torn" id="torn" viewBox="0 0 1600 150" preserveAspectRatio="none" aria-hidden="true"><path/></svg>
     <div class="section" style="padding-bottom:0"><div class="meta mono"><span>Chapter I</span><span>The offer</span><span>10,000 BC</span></div></div>
     <div class="thesis__stage" id="thesisStage">
       <p class="fill" data-fill>Twelve thousand years ago, a wild grass made humanity an offer: more food, a roof over our heads, and more children than ever.</p>
@@ -1155,18 +1157,18 @@ function buildFormations(vertical) {
       if (d < .16 || dd < .27) { sp(f, i, x, y, gauss() * .07, .9); sc(f, i, 1.3, 1.0, .7, .14); i++; } }
     commit('MARK', f); }
   // week
-  { const fW = [3, 3, 3, 3, 3, 3, 2], aW = [5, 4, 4, 5, 4, 4, 4], tilt = p => rotY3(rotX(p, -.5), .3), per = Math.floor(N / 168);
+  { const fW = [3, 3, 3, 3, 3, 3, 2], aW = [5, 4, 4, 5, 4, 4, 4], tilt = p => p, per = Math.floor(N / 168), G = .205;
     const make = farm => { const f = newF(); seed = 21; let i = 0;
       for (let d = 0; d < 7; d++) for (let h = 0; h < 24; h++) { const sleep = h < 6 || h >= 22, wf = h >= 8 && h < 8 + fW[d], wa = h >= 8 && h < 8 + aW[d], work = farm ? wa : wf, extra = farm && wa && !wf;
-        const x0 = (h - 11.5) * .205, y0 = (3 - d) * .24, sx = .085, dz = work ? .62 : .05;
-        for (let k = 0; k < per; k++, i++) { const face = R(); let lx, ly, lz;
-          if (face < .34) { lx = (R() * 2 - 1) * sx; ly = (R() * 2 - 1) * sx; lz = dz; } else if (face < .5) { lx = (R() * 2 - 1) * sx; ly = (R() * 2 - 1) * sx; lz = 0; }
-          else { const e = (R() * 4) | 0, t = R() * 2 - 1; lz = R() * dz; if (e < 2) { lx = e === 0 ? sx : -sx; ly = t * sx; } else { ly = e === 2 ? sx : -sx; lx = t * sx; } }
+        const x0 = (h - 11.5) * G, y0 = (3 - d) * G, sx = .082;
+        for (let k = 0; k < per; k++, i++) { let lx, ly, lz = 0;
+          if (work || R() < .3) { lx = (R() * 2 - 1) * sx; ly = (R() * 2 - 1) * sx; }
+          else { const e = (R() * 4) | 0, t = R() * 2 - 1; if (e < 2) { lx = e === 0 ? sx : -sx; ly = t * sx; } else { ly = e === 2 ? sx : -sx; lx = t * sx; } }
           const [x, y, z] = tilt([x0 + lx, y0 + ly, lz]); sp(f, i, x, y, z, work ? .9 : .7);
           if (sleep) sc(f, i, .42, .42, .5, .085); else if (extra) sc(f, i, 2.0, .62, .25, .22); else if (work) sc(f, i, 1.45, .98, .45, .16); else sc(f, i, .92, .8, .6, .1); } }
       dustFill(f, i, N, .5); return f; };
     commit('WEEK_A', make(false)); commit('WEEK_B', make(true));
-    ANCH.week = { day: d => tilt([-12.3 * .205, (3 - d) * .24, 0]), hour: h => tilt([(h - 11.5) * .205, 3.75 * .24, 0]), title: tilt([-12.3 * .205, 5.2 * .24, 0]) }; }
+    ANCH.week = { day: d => [-12.3 * G, (3 - d) * G, 0], hour: h => [(h - 11.5) * G, 3.9 * G, 0], title: [-12.3 * G, 5.6 * G, 0] }; }
   // bodies
   { const draw = wide => { const c = document.createElement('canvas'); c.width = 160; c.height = 400; const x = c.getContext('2d'), H = 400, cx = 80; x.fillStyle = '#fff'; x.strokeStyle = '#fff'; x.lineCap = 'round';
       x.beginPath(); x.ellipse(cx, H * .065, H * .046, H * .058, 0, 0, Math.PI * 2); x.fill(); x.fillRect(cx - H * .018, H * .11, H * .036, H * .04);
@@ -1453,7 +1455,7 @@ const FLOATS = [['img/rice-panicles.jpg', .04, .2, 116, .5], ['img/stalks-mono.j
 const DOT_PAL = ['#a8411a', '#e0521c', '#e2b864', '#f4e7c4'];
 const tracePin = $('#tracePin'), traceCv = $('#traceCv'), tctx = traceCv.getContext('2d'), traceObj = $('#traceObj'), traceImg = $('#traceImg'), traceText = $('#traceText'), traceCap = $('#traceCap'), traceLine = $('#traceLine'), traceTitle = $('#traceTitle'), traceRail = $('#traceRail');
 traceRail.innerHTML = TRACE.map(o => `<li>${o.y.replace(',', '')}</li>`).join(''); const railItems = $$('li', traceRail);
-const T = { imgs: TRACE.map(o => { const im = new Image(); im.src = o.src; return im; }), grids: [], rects: [], W: 0, H: 0, dpr: 1, shown: -2, token: 0, key: '', mx: -999, my: -999, a: -1, b: 0, e: 0, floats: [] };
+const T = { out: 1, imgs: TRACE.map(o => { const im = new Image(); im.src = o.src; return im; }), grids: [], rects: [], W: 0, H: 0, dpr: 1, shown: -2, token: 0, key: '', mx: -999, my: -999, a: -1, b: 0, e: 0, floats: [] };
 const lum = (d, k) => (d[k] * .3 + d[k + 1] * .59 + d[k + 2] * .11) / 255;
 function traceRect(k) {
   const im = T.imgs[k], asp = im.naturalWidth ? clamp(im.naturalWidth / im.naturalHeight, .55, 2.6) : 1, vw = T.W, vh = T.H;
@@ -1467,7 +1469,8 @@ function traceSample(k) {
   const off = document.createElement('canvas'); off.width = cols; off.height = rows; const o = off.getContext('2d', { willReadFrequently: true }); o.drawImage(im, 0, 0, cols, rows);
   const d = o.getImageData(0, 0, cols, rows).data, buckets = [[], [], [], []], rad = new Float32Array(cols * rows), hash = new Float32Array(cols * rows);
   for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) { const n = j * cols + i, L = lum(d, n * 4); rad[n] = Math.min(.62, Math.pow(L, .8) * .58); hash[n] = (((i * 73856093) ^ (j * 19349663)) >>> 0) % 1000 / 1000; if (rad[n] > .07) buckets[L > .72 ? 3 : L > .5 ? 2 : L > .28 ? 1 : 0].push(n); }
-  T.grids[k] = { cols, rows, rad, hash, buckets };
+  const wave = new Float32Array(cols * rows); for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) { const n = j * cols + i, dx = (i + .5) / cols - .5, dy = (j + .5) / rows - .5; wave[n] = Math.min(1, Math.hypot(dx, dy) * 1.25) * .82 + hash[n] * .18; }
+  T.grids[k] = { cols, rows, rad, hash, wave, buckets };
 }
 function traceLayout() {
   const r = tracePin.getBoundingClientRect(); T.W = r.width; T.H = r.height; T.dpr = Math.min(devicePixelRatio || 1, 1.75);
@@ -1476,35 +1479,36 @@ function traceLayout() {
   T.floats.forEach(f => f.layout());
 }
 function traceGrid(k, box, amt) {
-  const g = T.grids[k]; if (!g || amt <= .002) return;
-  const cw = box.w / g.cols, chh = box.h / g.rows, cell = Math.min(cw, chh), sw = cell * 11, x = tctx;
+  const g = T.grids[k]; if (!g || !box || amt <= .002) return;
+  const cw = box.w / g.cols, chh = box.h / g.rows, cell = Math.min(cw, chh), sw = cell * 11, x = tctx, soft = amt < .999;
   for (let b = 0; b < 4; b++) { const list = g.buckets[b]; x.fillStyle = DOT_PAL[b]; x.beginPath();
     for (let q = 0; q < list.length; q++) { const n = list[q], i = n % g.cols, j = (n - i) / g.cols, cx = box.x + (i + .5) * cw, cy = box.y + (j + .5) * chh;
-      let r = g.rad[n] * cell; if (amt < 1) r *= clamp(amt * 1.6 - g.hash[n] * .6);
+      let r = g.rad[n] * cell; if (soft) { let v = clamp((amt * 1.45 - g.wave[n] * .45) / 1); v = v * v * (3 - 2 * v); r *= v; }
       if (T.mx > -900) { const dd = Math.hypot(cx - T.mx, cy - T.my); if (dd < sw) r *= 1 + (1 - dd / sw) * .9; }
-      if (r < .45) continue; x.moveTo(cx + r, cy); x.arc(cx, cy, r, 0, 6.2832); }
+      if (r < .4) continue; x.moveTo(cx + r, cy); x.arc(cx, cy, r, 0, 6.2832); }
     x.fill(); }
 }
 function traceRender() {
-  const { a, b, e } = T, key = a + '|' + b + '|' + e.toFixed(4) + '|' + T.mx.toFixed(0) + '|' + T.my.toFixed(0) + '|' + T.W;
+  const { a, b, e, out } = T, key = a + '|' + b + '|' + e.toFixed(4) + '|' + out.toFixed(4) + '|' + T.mx.toFixed(0) + '|' + T.my.toFixed(0) + '|' + T.W;
   if (key === T.key) return; T.key = key; tctx.clearRect(0, 0, T.W, T.H);
-  const ra = T.rects[a], rb = T.rects[b], box = !ra ? rb : !rb ? ra : { x: lerp(ra.x, rb.x, e), y: lerp(ra.y, rb.y, e), w: lerp(ra.w, rb.w, e), h: lerp(ra.h, rb.h, e) };
-  T.box = box; if (!box) return; if (a >= 0) traceGrid(a, box, 1 - e); if (b < TRACE.length) traceGrid(b, box, a < 0 ? e : e);
-  const cur = e > .5 ? b : a, rc = T.rects[clamp(cur, 0, TRACE.length - 1)];
-  if (rc) { traceObj.style.transform = `translate(${box.x.toFixed(1)}px,${box.y.toFixed(1)}px)`; traceObj.style.width = box.w.toFixed(1) + 'px'; traceObj.style.height = box.h.toFixed(1) + 'px'; }
+  // each object keeps its own rectangle: the outgoing one recedes from its edges, the incoming one grows from its centre
+  if (a >= 0) traceGrid(a, T.rects[a], (1 - map(e, 0, .7)) * out);
+  if (b < TRACE.length && e > .3) traceGrid(b, T.rects[b], map(e, .3, 1));
+  const cur = e > .5 ? b : a, rc = T.rects[clamp(cur, 0, TRACE.length - 1)]; T.box = cur >= 0 && out > .3 ? rc : null;
+  if (rc) { traceObj.style.transform = `translate(${rc.x.toFixed(1)}px,${rc.y.toFixed(1)}px)`; traceObj.style.width = rc.w.toFixed(1) + 'px'; traceObj.style.height = rc.h.toFixed(1) + 'px'; }
 }
 function traceShow(k) {
   if (k === T.shown) return; T.shown = k; const tok = ++T.token; traceText.classList.add('is-swapping');
   railItems.forEach((li, i) => li.classList.toggle('on', i === k));
-  traceObj.style.visibility = k < 0 ? 'hidden' : 'visible';
   setTimeout(() => { if (tok !== T.token) return; const o = TRACE[k];
     traceCap.textContent = o ? `${String(k + 1).padStart(2, '0')} / 05 · ${o.prop}` : ''; traceLine.textContent = o ? o.line : '';
     if (o) { traceImg.src = o.src; traceImg.alt = o.alt; traceObj.setAttribute('aria-label', 'Open photograph: ' + o.name); }
     traceText.classList.remove('is-swapping'); }, k < 0 ? 0 : 260);
 }
 function traceFrame(p) {
-  const K = TRACE.length, u = clamp(p) * (K + .35) - 1, i = clamp(Math.floor(u), -1, K - 1), f = u - i;
-  T.a = i; T.b = i + 1; T.e = i < K - 1 ? easeIO(map(f, .5, 1)) : 0;
+  const K = TRACE.length, u = clamp(p) * (K + .9) - 1, i = clamp(Math.floor(u), -1, K - 1), f = u - i;
+  T.a = i; T.b = i + 1; T.e = i < K - 1 ? easeIO(map(f, .42, 1)) : 0; T.out = i === K - 1 ? 1 - easeIO(map(f, .42, .86)) : 1;
+  traceText.style.opacity = T.out < 1 ? T.out.toFixed(3) : ''; traceObj.style.visibility = i < 0 || T.out < .3 ? 'hidden' : 'visible';
   traceTitle.style.opacity = i < 0 ? (1 - T.e).toFixed(3) : 0; traceTitle.style.transform = `translate(-50%,calc(-50% - ${(i < 0 ? T.e * 40 : 40).toFixed(1)}px))`;
   traceRender(); traceShow(T.e > .5 ? T.b : T.a); traceRail.style.setProperty('--p', clamp((i + T.e) / (K - 1)).toFixed(4));
   T.floats.forEach(fl => fl.move(p));
@@ -1540,7 +1544,7 @@ function renderVerdict() {
 }
 $$('.v-btns .btn').forEach(b => b.addEventListener('click', () => { myVote = b.dataset.v; try { localStorage.setItem('wheat-verdict', myVote); } catch (e) {} Sound.thump(); renderVerdict(); }));
 renderVerdict();
-if (lenis && !reduce) { let snapT = 0; lenis.on('scroll', () => { clearTimeout(snapT); snapT = setTimeout(() => { if (!chapterST || ch.dragging) return; const y = scrollY, a = chapterST.start, b = chapterST.end; if (y <= a + 4 || y >= b - 4) return; const len = (b - a) / 6, sIdx = Math.floor((y - a) / len), target = a + len * (sIdx + .6); if (Math.abs(target - y) > 4 && Math.abs(target - y) < len * .45) lenis.scrollTo(target, { duration: .9 }); }, 180); }); }
+if (lenis && !reduce) { let snapT = 0; lenis.on('scroll', () => { clearTimeout(snapT); snapT = setTimeout(() => { if (!chapterST || ch.dragging) return; const y = scrollY, a = chapterST.start, b = chapterST.end; if (y <= a + 4 || y >= b - 4) return; const len = (b - a) / 6, sIdx = Math.floor((y - a) / len), target = a + len * (sIdx + .8); if (Math.abs(target - y) > 4 && Math.abs(target - y) < len * .45) lenis.scrollTo(target, { duration: .9 }); }, 180); }); }
 $('#restart').addEventListener('click', () => { goTo(0); $('#main').focus({ preventScroll: true }); });
 $$('#index a').forEach(a => a.addEventListener('click', e => { e.preventDefault(); const t = $(a.getAttribute('href')); const host = t.closest('.pin-spacer') || t; goTo(host.getBoundingClientRect().top + scrollY + (t.id === 'reveal' ? 2 : 0)); t.tabIndex = -1; t.focus({ preventScroll: true }); }));
 const lb = $('#lb'), lbImg = $('#lbImg'); let lbFrom = null, lbSrcEl = null;
@@ -1559,9 +1563,19 @@ function closeLB() {
 $('#lbClose').addEventListener('click', closeLB);
 lb.addEventListener('click', e => { if (e.target === lb) closeLB(); });
 addEventListener('keydown', e => { if (e.key === 'Escape') closeLB(); });
-(function torn() { let x = 0; const pts = []; seed = 17; while (x <= 1600) { pts.push([x, 10 + R() * 12 + (R() < .18 ? R() * 9 : 0)]); x += 4 + R() * 18; }
-  const d = 'M0 32 ' + pts.map(p => `L${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join(' ') + ' L1600 32 Z';
-  document.documentElement.style.setProperty('--torn', `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 32' preserveAspectRatio='none'><path d='${d}' fill='black'/></svg>`)}")`); })();
+// torn edge: each tooth bites upward in steps as the page covers the hero, and chews while you scroll
+const torn = (function () { const path = $('#torn path'), T = []; seed = 17; let x = 0;
+  const nz = (x, k) => .5 + .26 * Math.sin(x * .0041 + k) + .16 * Math.sin(x * .0113 + k * 2.3) + .08 * Math.sin(x * .029 + k * 4.1);
+  while (x <= 1600) { const w = 4 + R() * 14; T.push({ x, w, hb: 7 + R() * 9 + (R() < .16 ? R() * 8 : 0), d: .08 + nz(x, 1.7) * .5 + R() * .08, m: 16 + nz(x, 4.2) * 76 + R() * 16, st: 3 + ((R() * 3) | 0), lip: (R() - .5) * 6 }); x += w; }
+  return { path, T, key: '' }; })();
+function tornUpdate(p, t) {
+  const H = 150, chew = !reduce && S.vel > .6, jf = chew ? Math.floor(t * 11) : 0, key = Math.round(p * 80) + '|' + jf; if (key === torn.key) return; torn.key = key;
+  let d = `M0 ${H} `;
+  torn.T.forEach((o, i) => { const g = clamp((p * 1.3 - o.d) / .32), q = Math.floor(g * o.st + .0001) / o.st; let h = o.hb + q * o.m;
+    if (chew && g > 0 && g < 1) h += ((i * 7919 + jf * 104729) % 11) - 5;
+    const y = clamp(H - h, 1, H - 2), y2 = clamp(y + o.lip, 1, H - 2); d += `L${o.x.toFixed(1)} ${y.toFixed(1)} L${(o.x + o.w * .62).toFixed(1)} ${y2.toFixed(1)} `; });
+  torn.path.setAttribute('d', d + `L1600 ${H} Z`);
+}
 function fitWord() { const el = $('.footer__word'), host = el.parentElement, cs = getComputedStyle(host), avail = host.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight); el.style.fontSize = '100px'; const w = el.scrollWidth; el.style.fontSize = (100 * avail / w * .995) + 'px'; }
 fitWord(); document.fonts && document.fonts.ready.then(fitWord); addEventListener('resize', fitWord);
 
@@ -1581,8 +1595,8 @@ $$('[data-reveal],.meta,[data-lines]').forEach(el => io.observe(el));
 let thesisST, chapterST, revealST, traceST;
 function buildScroll() {
   thesisST = ScrollTrigger.create({ trigger: '#thesisStage', start: 'top top', end: () => '+=' + innerHeight * 1.7, pin: true, anticipatePin: 1 });
-  chapterST = ScrollTrigger.create({ trigger: '#chapterStage', start: 'top top', end: () => '+=' + innerHeight * 7.2, pin: true, anticipatePin: 1, onEnter: () => $('#chKeeper').classList.add('is-lit') });
-  traceST = ScrollTrigger.create({ trigger: '#tracePin', start: 'top top', end: () => '+=' + innerHeight * 6.2, pin: true, anticipatePin: 1 });
+  chapterST = ScrollTrigger.create({ trigger: '#chapterStage', start: 'top top', end: () => '+=' + innerHeight * 8.4, pin: true, anticipatePin: 1, onEnter: () => $('#chKeeper').classList.add('is-lit') });
+  traceST = ScrollTrigger.create({ trigger: '#tracePin', start: 'top top', end: () => '+=' + innerHeight * 7, pin: true, anticipatePin: 1 });
   revealST = ScrollTrigger.create({ trigger: '#revealStage', start: 'top top', end: () => '+=' + innerHeight * 5.4, pin: true, anticipatePin: 1 });
   ScrollTrigger.create({ trigger: '#verdict', start: 'top 70%', onEnter: () => { if (!signed) { signed = true; $('#finalSig').alt = 'Signature added for you'; autoScribble(() => stamp('Your ancestors already signed.'), true); } } });
   ScrollTrigger.refresh();
@@ -1613,7 +1627,7 @@ function frame() {
   const vel = y - S.lastY; S.vel = lerp(S.vel, Math.abs(vel), .15); S.lastY = y;
 
   // hero cover
-  const cover = clamp(y / (vh * .95));
+  const cover = clamp(y / (vh * .95)); tornUpdate(cover, t);
   heroCard.style.transform = `scale(${1 - cover * .07}) translateY(${-cover * 3}vh)`; heroShade.style.opacity = cover * .6;
 
   const iR = interSec.getBoundingClientRect(), interPr = clamp(-iR.top / Math.max(1, iR.height - vh));
@@ -1651,12 +1665,12 @@ function frame() {
   // particles: stage resolution
   pCam.position.set(par.x * .35, -par.y * .25, 11); pCam.lookAt(0, 0, 0);
   if (W.particles > .002) {
-    let prev, cur, morph, local, box, stepIdx = -1, fullXf;
+    let prev, cur, morph, local, box, stepIdx = -1, fullXf, grow = 1, growPrev = 1;
     if (active.type === 'chapter') {
       const p = chapterST ? (y - chapterST.start) / Math.max(1, chapterST.end - chapterST.start) : 0, s = clamp(p, 0, .99999) * 6;
       stepIdx = Math.min(5, Math.floor(s)); const f = p < 0 ? 0 : s - stepIdx;
       cur = STEPS[stepIdx]; prev = stepIdx === 0 ? PRE : STEPS[stepIdx - 1];
-      morph = p < 0 ? 0 : easeIO(map(f, 0, .18)); local = map(f, .2, .86);
+      morph = p < 0 ? 0 : easeIO(map(f, 0, .16)); local = map(f, .18, .62); grow = 1 + .07 * easeIO(map(f, .6, 1)); growPrev = stepIdx === 0 ? 1 : 1.07;
       box = cardBox(active.r); fullXf = false;
       applyStep(stepIdx); ch.lastWithin = f; paintDesc(f);
       ch.dots.forEach((d, i) => d.style.transform = `scaleX(${i < stepIdx ? 1 : i === stepIdx ? clamp(f) : 0})`); { const pr = clamp((stepIdx + clamp(f)) / 6); dialProg.style.strokeDashoffset = (169.65 * (1 - pr)).toFixed(2); dialHand.style.transform = `rotate(${(pr * 360).toFixed(1)}deg)`; }
@@ -1668,9 +1682,9 @@ function frame() {
     }
     setAttrs(prev, cur);
     const scale = fullXf === 'paint' ? Math.max(box.w / (4.6 * PAINT_ASPECT), box.h / 4.6) * 1.06 : fullXf ? box.h / 8.6 : Math.min(box.w / 5.8, box.h / 4.8);
-    const sc_ = scale, cyOff = fullXf === true ? box.h * .04 : 0;
+    const sc_ = scale * grow, cyOff = fullXf === true ? box.h * .04 : 0;
     PU.uXfCur.value.set(box.cx, box.cy + cyOff, sc_, rotFor(cur, t, local));
-    const prevScale = prev === PRE ? Math.min(box.w, box.h) / 6.4 : sc_;
+    const prevScale = prev === PRE ? Math.min(box.w, box.h) / 6.4 : scale * growPrev;
     PU.uXfPrev.value.set(box.cx, box.cy + cyOff, prevScale, prev.rot ? rotFor(prev, t, 1) : 0);
     if (cur === PRE) PU.uXfCur.value.z = prevScale;
     PU.uMorph.value = morph; PU.uLocal.value = local; PU.uTime.value = t;
@@ -1746,7 +1760,7 @@ addEventListener('click', e => { if (e.target.closest('button,a,.deed,input')) r
   if (W.field > .4 && e.target.closest('#heroCard,#revealCard')) { ndc.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1); ray.setFromCamera(ndc, fieldCam); if (ray.ray.intersectPlane(groundPlane, hit)) { FU.uGust.value.set(hit.x, hit.z, FU.uTime.value); Sound.tick(220); } } });
 chapterCard.addEventListener('click', e => { if (ch.idx !== 2 || e.target.closest('button')) return; ndc.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1); ray.setFromCamera(ndc, pCam); if (!ray.ray.intersectPlane(zPlane, hit)) return; const b = cardBox(chapterCard.getBoundingClientRect()), s = Math.min(b.w / 5.8, b.h / 4.8); AG.infectAt((hit.x - b.cx) / s, (hit.y - b.cy) / s); });
 $('#simReset').addEventListener('click', () => { AG.seed(); AG.infectFirst(); simStarted = true; });
-function goStep(i) { if (!chapterST) return; i = clamp(i, 0, 5); const len = (chapterST.end - chapterST.start) / 6; goToY(chapterST.start + len * (i + .6)); }
+function goStep(i) { if (!chapterST) return; i = clamp(i, 0, 5); const len = (chapterST.end - chapterST.start) / 6; goToY(chapterST.start + len * (i + .8)); }
 $$('#chDots button').forEach(b => b.addEventListener('click', () => goStep(+b.dataset.step)));
 addEventListener('keydown', e => { if (!chapterST || e.target.closest('input,textarea') || !lb.hidden) return; const y = scrollY; if (y < chapterST.start - 2 || y > chapterST.end + 2) return;
   if (e.key === 'ArrowRight') { e.preventDefault(); goStep(ch.idx + 1); } else if (e.key === 'ArrowLeft') { e.preventDefault(); goStep(ch.idx - 1); } });
@@ -1754,7 +1768,10 @@ chapterCard.addEventListener('click', e => { if (!coarse || ch.idx === 2 || e.ta
 let resizeT = 0;
 function onResize() { const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); composer.setSize(w, h); bloom.setSize(w / 2, h / 2); finalPass.uniforms.uRes.value.set(w, h); fieldCam.aspect = pCam.aspect = w / h; fieldCam.updateProjectionMatrix(); pCam.updateProjectionMatrix();
   const v = w < 900; if (v !== vertical) { vertical = v; buildArena(v); curKey = ''; if (simStarted) AG.seed(); } FU.uHideR.value = w < h ? 4.6 : 3.2; layoutTitle(); ScrollTrigger.refresh(); }
-addEventListener('resize', () => { clearTimeout(resizeT); resizeT = setTimeout(onResize, 160); });
+// the GL buffer, cameras and title follow the window every frame; the heavier rebuild waits for the resize to settle
+let resizeRaf = 0;
+function resizeGL() { resizeRaf = 0; const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); composer.setSize(w, h); bloom.setSize(w / 2, h / 2); finalPass.uniforms.uRes.value.set(w, h); fieldCam.aspect = pCam.aspect = w / h; fieldCam.updateProjectionMatrix(); pCam.updateProjectionMatrix(); layoutTitle(); }
+addEventListener('resize', () => { if (!resizeRaf) resizeRaf = requestAnimationFrame(resizeGL); clearTimeout(resizeT); resizeT = setTimeout(onResize, 160); });
 
 /* ============================== boot ============================== */
 const ldNum = $('#ldNum'), ldBar = $('#ldBar'), ldNote = $('#ldNote'), prog = { v: 0, target: 8 };
