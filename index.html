@@ -255,12 +255,17 @@ main>section,main>div{position:relative;z-index:3}
 .sign-actions{display:flex;gap:12px;flex-wrap:wrap}
 .btn:active,.pill:active{scale:.96}
 .btn,.pill,.snd,#restart{transition-property:background,color,border-color,opacity,scale,transform;transition-duration:.3s,.3s,.3s,.3s,.15s,.5s;transition-timing-function:ease,ease,ease,ease,ease,var(--ease-out)}
-.btn{display:inline-flex;align-items:center;gap:10px;padding:14px 22px;border:1px solid currentColor;font-family:var(--f-body);font-weight:500;font-size:.92rem;border-radius:999px;transition:background .3s,color .3s,border-color .3s,opacity .3s,scale .15s}
+/* contract buttons: a ruled form box with a tick square, set in the deed's mono */
+.btn{position:relative;display:inline-flex;align-items:center;gap:12px;padding:16px 22px 16px 18px;border:1px solid currentColor;border-radius:2px;font-family:var(--f-mono);font-weight:500;font-size:11.5px;line-height:1;letter-spacing:.14em;text-transform:uppercase;transition:background .3s,color .3s,border-color .3s,opacity .3s,scale .15s}
+.btn::after{content:"";position:absolute;inset:4px;border:1px solid currentColor;opacity:.3;pointer-events:none}
+.btn::before{content:"";flex:none;width:11px;height:11px;border:1px solid currentColor;background:linear-gradient(currentColor,currentColor) center/0 0 no-repeat;transition:background-size .25s var(--ease-out)}
+.btn:not([disabled]):hover::before,.btn.chosen::before,.btn.done::before{background-size:5px 5px}
 .btn[disabled]{opacity:.32;cursor:not-allowed}
+.btn.done[disabled]{opacity:.88}
 .btn-ink{background:var(--ink);color:var(--paper-hi);border-color:var(--ink)}
-.btn-ink:not([disabled]):hover{background:var(--ember);border-color:var(--ember)}
-.btn-ghost{color:var(--ink);border-color:rgba(23,20,15,.35)}
-.btn-ghost:hover{background:rgba(23,20,15,.07)}
+.btn-ink:not([disabled]):hover{background:#2c261d;border-color:#2c261d}
+.btn-ghost{color:var(--ink);border-color:rgba(23,20,15,.6)}
+.btn-ghost:not([disabled]):hover{background:rgba(23,20,15,.06)}
 .btn-ember{background:#b9400f;color:var(--paper-hi);border-color:#b9400f}
 .btn-ember:hover{background:#9e3610;border-color:#9e3610}
 .btn-line{color:var(--straw);border-color:rgba(241,230,200,.3)}
@@ -427,7 +432,7 @@ html.theme-dark .trace__float{opacity:1}
 .verdict{display:flex;flex-direction:column;gap:16px;padding-top:14px;border-top:1px dashed rgba(23,20,15,.35)}
 .verdict h3{font-family:var(--f-display);font-size:clamp(1.8rem,3.6vw,2.6rem);letter-spacing:-.035em}
 .v-btns{display:flex;gap:12px;flex-wrap:wrap}
-.v-btns .btn.chosen{box-shadow:0 0 0 2px #e8dec6,0 0 0 3px var(--ink)}
+.v-btns .btn.chosen{box-shadow:0 0 0 3px #e8dec6,0 0 0 4px var(--ink)}
 .v-result{display:flex;flex-direction:column;gap:12px}
 .v-note{font-family:var(--f-mono);font-size:10px;letter-spacing:.06em;color:var(--ink-soft)}
 
@@ -1505,12 +1510,12 @@ function autoScribble(done, fast) {
   const o = { k: 0 }; let dn = 0; gsap.to(o, { k: 1, duration: fast ? .01 : 1.5, ease: 'power1.inOut', onUpdate: () => { const n = Math.floor(o.k * (pts.length - 1)); for (; dn < n; dn++) inkLine(pts[dn], pts[dn + 1], 1.4 + Math.abs(Math.sin(dn * .21)) * 1.8); }, onComplete: done });
 }
 function stamp(text) {
-  signed = true; signBtn.disabled = true; skipBtn.disabled = true; const fsg = $('#finalSig'); fsg.src = sigEl.toDataURL('image/png'); fsg.hidden = false;
+  signed = true; signBtn.disabled = true; skipBtn.disabled = true; if (!skipBtn.classList.contains('done')) signBtn.classList.add('done'); const fsg = $('#finalSig'); fsg.src = sigEl.toDataURL('image/png'); fsg.hidden = false;
   const stl = gsap.timeline().fromTo(seal, { opacity: 0, scale: reduce ? 1 : 2.6, rotate: reduce ? -12 : -34 }, { opacity: .92, scale: 1, rotate: -12, duration: reduce ? .2 : .32, ease: 'power4.in', onComplete: () => Sound.thump() }); if (!reduce) stl.fromTo('#deed', { y: 0 }, { y: 3, duration: .06, yoyo: true, repeat: 3, ease: 'none' });
   signMsg.innerHTML = `${text}<span class="mono">Sealed · 9,500 BC · keep scrolling to read the fine print</span>`; signMsg.tabIndex = -1; signMsg.focus({ preventScroll: true });
 }
 signBtn.addEventListener('click', () => { if (signed) return; if (ink < 80) { signed = true; signBtn.disabled = skipBtn.disabled = true; autoScribble(() => stamp('The contract is sealed.')); } else stamp('The contract is sealed.'); });
-skipBtn.addEventListener('click', () => { skipBtn.disabled = true; signBtn.disabled = true; signed = true; autoScribble(() => stamp('That’s fine. Your ancestors already signed.')); });
+skipBtn.addEventListener('click', () => { skipBtn.classList.add('done'); skipBtn.disabled = true; signBtn.disabled = true; signed = true; autoScribble(() => stamp('That’s fine. Your ancestors already signed.')); });
 
 // chapter III: one object at a time, traced through the record; each object is a rectangle of dots
 const TRACE = [
