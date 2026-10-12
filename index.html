@@ -199,17 +199,17 @@ main>section,main>div{position:relative;z-index:3}
 
 /* ---------- THESIS ---------- */
 .thesis{position:relative;z-index:3;background:var(--paper)}
-.torn{position:absolute;left:0;top:calc(1px - var(--torn-h));display:block;width:100%;height:var(--torn-h);pointer-events:none;--torn-h:150px}
-@media (max-width:700px){.torn{--torn-h:96px}}
+.torn{position:absolute;left:0;top:calc(1px - var(--torn-h));display:block;width:100%;height:var(--torn-h);pointer-events:none;--torn-h:400px}
+@media (max-width:700px){.torn{--torn-h:260px}}
 .thesis__stage{height:100svh;display:flex;flex-direction:column;justify-content:center;gap:clamp(40px,8vh,100px);padding:0 var(--gutter)}
 .fill{position:relative;font-family:var(--f-display);font-size:clamp(30px,4.4vw,74px);letter-spacing:-.035em;line-height:1.14;text-indent:clamp(90px,17vw,300px);max-width:min(1400px,92%)}
 .fill::before{content:"";position:absolute;left:clamp(28px,6vw,110px);top:.36em;width:clamp(12px,1.3vw,22px);height:clamp(12px,1.3vw,22px);border-radius:50%;background:var(--ember)}
-.fill--2::before{background:var(--pill-sage)}
 .fill .w{color:var(--ink-ghost)}
 .facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--gutter);padding:0 var(--gutter) clamp(80px,12vh,160px)}
 .fact{border-top:1px solid var(--ink);padding-top:16px;min-width:0}
 .fact__num{font-family:var(--f-display);font-size:var(--fs-d3);letter-spacing:-.045em;line-height:1;font-variant-numeric:tabular-nums}
 .fact__unit{font-family:var(--f-display);font-size:clamp(18px,1.8vw,28px);color:var(--ember-ink);margin-left:4px}
+.fact__mag{color:var(--ink)}
 .fact__label{display:block;margin-top:12px;color:var(--ink-soft)}
 
 /* ---------- CONTRACT (desk) ---------- */
@@ -601,7 +601,7 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
     </div>
     <div class="facts">
       <div class="fact" data-reveal><span class="fact__num" data-count="8.2" data-dec="1">0</span><span class="fact__unit">billion</span><span class="fact__label mono">People bound by the deal</span></div>
-      <div class="fact" data-reveal><span class="fact__num" data-count="2.19" data-dec="2">0</span><span class="fact__unit">M km²</span><span class="fact__label mono">Planted with wheat today</span></div>
+      <div class="fact" data-reveal><span class="fact__num" data-count="2.19" data-dec="2">0</span><span class="fact__unit"><span class="fact__mag">M</span> km²</span><span class="fact__label mono">Planted with wheat today</span></div>
       <div class="fact" data-reveal><span class="fact__num" data-count="60">0</span><span class="fact__unit">%</span><span class="fact__label mono">Of plant calories from 3 grasses</span></div>
       <div class="fact" data-reveal><span class="fact__num" data-count="12000">0</span><span class="fact__unit">yrs</span><span class="fact__label mono">In force, without renewal</span></div>
     </div>
@@ -1677,13 +1677,16 @@ const torn = (function () {
 function tornUpdate(p) {
   const st = torn; if (!st.N) st.build(); if (!st.N) return;
   const L = .02 + .98 * clamp(p * 1.12), key = Math.round(L * 500); if (key === st.key) return; st.key = key;
-  const { cols, rows, cell, N, ctx } = st, th = 1 - L; ctx.clearRect(0, 0, st.W, st.H); ctx.fillStyle = '#ebe5d9';
+  // measured in px: the edge keeps the same raggedness at any canvas size, and its highest dot never touches the canvas top
+  const { cols, rows, cell, N, ctx } = st, small = st.W < 700, A = small ? 134 : 210, up = small ? 19 : 30, solidAt = small ? 6 : 9;
+  const front0 = st.H - 3, frontMin = A / 2 + up + 6, front = lerp(front0, frontMin, L);
+  ctx.clearRect(0, 0, st.W, st.H); ctx.fillStyle = '#ebe5d9';
   const solid = new Path2D(), dots = new Path2D();
-  for (let y = 0; y < rows; y++) { const g = y / (rows - 1);
-    for (let x = 0; x < cols; x++) { const v = g + (N[y * cols + x] - .5) * 1.4 - th, cx = (x + .5) * cell, cy = (y + .5) * cell;
+  for (let y = 0; y < rows; y++) { const py = (y + .5) * cell;
+    for (let x = 0; x < cols; x++) { const v = py + (N[y * cols + x] - .5) * A - front, cx = (x + .5) * cell;
       // solid paper behind the front, then a band of shrinking dots where the edge breaks up
-      if (v > .06 || y >= rows - 1) solid.rect(x * cell - .3, y * cell - .3, cell + .6, cell + .6);
-      else if (v > -.2) { const k = (v + .2) / .26, r = cell * .62 * Math.sqrt(k); if (r > .35) { dots.moveTo(cx + r, cy); dots.arc(cx, cy, r, 0, 6.2832); } } } }
+      if (v > solidAt || y >= rows - 1) solid.rect(x * cell - .3, y * cell - .3, cell + .6, cell + .6);
+      else if (v > -up) { const k = (v + up) / (up + solidAt), r = cell * .62 * Math.sqrt(k); if (r > .35) { dots.moveTo(cx + r, py); dots.arc(cx, py, r, 0, 6.2832); } } } }
   ctx.fill(solid); ctx.fill(dots);
 }
 function fitWord() { const el = $('.footer__word'), host = el.parentElement, cs = getComputedStyle(host), avail = host.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight); el.style.fontSize = '100px'; const w = el.scrollWidth; el.style.fontSize = (100 * avail / w * .995) + 'px'; }
