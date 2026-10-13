@@ -330,14 +330,12 @@ main>section,main>div{position:relative;z-index:3}
 
 .interlude__pins{position:absolute;left:0;right:0;top:-6%;height:112%;z-index:3;pointer-events:none;will-change:transform}
 /* hotspots in the page's own language: a registration mark and a squared plate with a numbered tag chip */
-.pin{position:absolute;left:0;top:0;display:flex;align-items:center;gap:12px;transform:translate(-7px,-50%);color:var(--straw)}
-.pin.l{flex-direction:row-reverse;transform:translate(calc(-100% + 7px),-50%)}
+.pin{position:absolute;left:0;top:0;display:flex;align-items:flex-end;gap:12px;transform:translate(-7px,calc(-100% + 7px));color:var(--straw)}
+.pin.l{flex-direction:row-reverse;transform:translate(calc(-100% + 7px),calc(-100% + 7px))}
 .pin i{position:relative;flex:none;width:14px;height:14px;border:1px solid var(--straw);opacity:var(--pa,0);scale:calc(.6 + var(--pa,0) * .4);filter:blur(calc((1 - var(--pa,0)) * 3px))}
 .pin i::after{content:"";position:absolute;left:50%;top:50%;width:4px;height:4px;margin:-2px 0 0 -2px;background:var(--ember)}
 /* plate: one width for all, equal padding on every side (text boxes trimmed to the glyphs), serif title over a quiet sans caption */
 .pin>span{display:flex;flex-direction:column;gap:12px;padding:18px 20px;border-radius:2px;background:rgba(14,12,9,.9);box-shadow:inset 0 0 0 1px rgba(241,230,200,.12);box-sizing:border-box;width:max-content;text-align:left;opacity:var(--pa,0);filter:blur(calc((1 - var(--pa,0)) * 6px))}
-.pin.up{align-items:flex-end;transform:translate(-7px,calc(-100% + 7px))}
-.pin.l.up{transform:translate(calc(-100% + 7px),calc(-100% + 7px))}
 .pin b{display:block;font-family:var(--f-display);font-weight:400;font-size:22px;letter-spacing:-.02em;line-height:1.05;color:#f6ecd6;text-box:trim-both cap alphabetic}
 .pin em{display:block;font-style:normal;font-family:var(--f-body);font-size:13px;letter-spacing:0;line-height:1.4;color:rgba(241,230,200,.62);white-space:nowrap;text-box:trim-both cap alphabetic}
 @media (max-width:700px){.pin>span{max-width:184px;padding:14px 15px;gap:9px}.pin b{font-size:18px}.pin em{font-size:12px;white-space:normal;text-wrap:balance}}
@@ -1710,7 +1708,7 @@ function layoutPins() { const W = pinsBox.offsetWidth, H = pinsBox.offsetHeight,
   pins.forEach((p, i) => { const [x, y] = xy[i], vx = cw / 2 + zs * (x - W / 2) + tx, vy = chh / 2 + zs * (y - H / 2) + ty; p.style.left = x.toFixed(1) + 'px'; p.style.top = y.toFixed(1) + 'px';
     // each plate keeps its chosen side so neighbours never collide, and flips only if it would run off the card
     const bw = (p.lastElementChild.offsetWidth + 26) * zs, left = p.dataset.side === 'l' ? vx - bw > 12 : vx + bw > cw - 12;
-    p.classList.toggle('l', left); p.classList.toggle('up', vy > chh * .62); p.hidden = vx < 28 || vx > cw - 28 || vy < 96 || vy > chh - 24; }); }
+    p.classList.toggle('l', left); p.hidden = vx < 28 || vx > cw - 28 || vy < 96 || vy > chh - 24; }); }
 new ResizeObserver(layoutPins).observe(pinsBox); interImg.addEventListener('load', layoutPins);
 { const ei = new Image(); ei.onload = () => { const go = () => { if (!F.EAR_LAND) return setTimeout(go, 150); try { buildEarPhoto(ei); } catch (e) { console.warn(e); } }; go(); }; ei.src = 'img/wheat-ear.jpg'; }
 (interImg.complete && interImg.naturalWidth ? Promise.resolve() : new Promise(r => interImg.addEventListener('load', r, { once: true }))).then(() => { try { buildPaint(interImg); } catch (e) { console.warn(e); } });
