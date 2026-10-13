@@ -79,7 +79,7 @@ a{color:inherit}
   animation:grainShift .9s steps(4) infinite}
 @keyframes grainShift{0%{transform:translate(0,0)}25%{transform:translate(-2%,3%)}50%{transform:translate(3%,-2%)}75%{transform:translate(-3%,-3%)}100%{transform:translate(2%,2%)}}
 .progressbar{position:fixed;top:0;left:0;z-index:150;width:100%;height:2px;background:var(--ember);transform-origin:left;transform:scaleX(0);pointer-events:none}
-.hud{position:fixed;left:0;right:0;top:0;z-index:120;display:flex;justify-content:space-between;align-items:flex-start;padding:calc(env(safe-area-inset-top,0px) + 26px) var(--gutter) 0;pointer-events:none;color:var(--ink);transition:color .3s}
+.hud{position:fixed;left:0;right:0;top:0;z-index:120;display:flex;justify-content:space-between;align-items:flex-start;padding:calc(env(safe-area-inset-top,0px) + var(--hud-pad)) calc(env(safe-area-inset-right,0px) + var(--hud-pad)) 0 calc(env(safe-area-inset-left,0px) + var(--hud-pad));--hud-pad:calc(var(--bleed) + clamp(16px,1.7vw,28px));pointer-events:none;color:var(--ink);transition:color .3s}
 .hud.on-dark{color:var(--straw)}
 @property --hud-scrim{syntax:'<color>';inherits:false;initial-value:rgba(235,229,217,.88)}
 .hud::before{content:"";position:absolute;inset:0 0 -34px;z-index:-1;pointer-events:none;background:linear-gradient(var(--hud-scrim),transparent);transition:opacity .4s,--hud-scrim .6s var(--ease-out);--hud-scrim:rgba(235,229,217,.88)}
