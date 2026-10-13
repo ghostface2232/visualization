@@ -84,6 +84,7 @@ a{color:inherit}
 @property --hud-scrim{syntax:'<color>';inherits:false;initial-value:rgba(235,229,217,.88)}
 .hud::before{content:"";position:absolute;inset:0 0 -34px;z-index:-1;pointer-events:none;background:linear-gradient(var(--hud-scrim),transparent);transition:opacity .4s,--hud-scrim .6s var(--ease-out);--hud-scrim:rgba(235,229,217,.88)}
 .hud.on-dark::before{--hud-scrim:rgba(12,10,8,0)}
+@supports (corner-shape:superellipse(2)){*,*::before,*::after{corner-shape:superellipse(1.3)}.cursor__dot,.anno i,.fill::before,.pill{corner-shape:round}}
 .brand{display:flex;align-items:center;gap:10px}
 .brand svg{width:18px;height:26px}
 .brand svg path{fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round}
@@ -1714,6 +1715,14 @@ const lvTime = $('#lvTime'), lvWheat = $('#lvWheat'), lvBirth = $('#lvBirth'), t
 const sections = $$('main [data-year]'), hud = $('.hud'); let frameN = 0;
 const idx = $('#index'), idxItems = $$('#index li'), idxTargets = $$('#index a').map(a => $(a.getAttribute('href'))), recSec = $('#record'), chapterStageEl = $('#chapterStage'); let idxActive = -2;
 const tV = new THREE.Vector3();
+// clip-path for a rect with superellipse corners (|x|^p + |y|^p = 1, p = 2^k), matching CSS corner-shape: superellipse(k)
+const SQ = !!(window.CSS && CSS.supports && CSS.supports('corner-shape', 'superellipse(2)'));
+function sqClip(x0, y0, x1, y1, r, k = 1.3) {
+  r = Math.max(0, Math.min(r, (x1 - x0) / 2, (y1 - y0) / 2)); if (!SQ) return `inset(${y0.toFixed(1)}px calc(100% - ${x1.toFixed(1)}px) calc(100% - ${y1.toFixed(1)}px) ${x0.toFixed(1)}px round ${r.toFixed(1)}px)`;
+  const e = 2 / Math.pow(2, k), N = 9, pts = [], c = (cx, cy, sx, sy, a0, a1) => { for (let i = 0; i <= N; i++) { const t = (a0 + (a1 - a0) * i / N) * Math.PI / 2; pts.push(`${(cx + sx * r * Math.pow(Math.cos(t), e)).toFixed(1)}px ${(cy + sy * r * Math.pow(Math.sin(t), e)).toFixed(1)}px`); } };
+  c(x0 + r, y0 + r, -1, -1, 0, 1); c(x1 - r, y0 + r, 1, -1, 1, 0); c(x1 - r, y1 - r, 1, 1, 0, 1); c(x0 + r, y1 - r, -1, 1, 1, 0);
+  return `polygon(${pts.join(',')})`;
+}
 let cardRad = parseFloat(getComputedStyle(heroCard).borderRadius) || 20;
 const setText = (el, v) => { if (el._t !== v) { el._t = v; el.textContent = v; } };
 let curKey = '', simStarted = false, vertical = innerWidth < 900;
@@ -1742,7 +1751,7 @@ function frame() {
     const r = el.getBoundingClientRect(), a = Math.max(0, Math.min(r.bottom, vh) - Math.max(r.top, 0)) * Math.max(0, Math.min(r.right, vw) - Math.max(r.left, 0));
     if (a > best) { best = a; active = { type, r }; }
   }
-  if (active) { const r = active.r, rad = cardRad; canvas.style.visibility = 'visible'; finalPass.uniforms.uCard.value.set(r.left / vw, 1 - r.bottom / VH, r.width / vw, r.height / VH); canvas.style.clipPath = `inset(${r.top.toFixed(1)}px ${(vw - r.right).toFixed(1)}px ${(VH - r.bottom).toFixed(1)}px ${r.left.toFixed(1)}px round ${rad}px)`; }
+  if (active) { const r = active.r, rad = cardRad; canvas.style.visibility = 'visible'; finalPass.uniforms.uCard.value.set(r.left / vw, 1 - r.bottom / VH, r.width / vw, r.height / VH); canvas.style.clipPath = sqClip(r.left, r.top, r.right, r.bottom, rad); }
   else canvas.style.visibility = 'hidden';
   { const co = active && active.type === 'chapter' && chFade < 1 ? chFade.toFixed(3) : ''; if (canvas._o !== co) { canvas._o = co; canvas.style.opacity = co; } }
 
@@ -1849,14 +1858,14 @@ function frame() {
   // editorial motion: chapter media grow-in, cards grow, interlude
   // a window near the end of the page finishes growing by the time the page can't scroll any further
   const toEnd = Math.max(0, document.documentElement.scrollHeight - innerHeight - scrollY);
-  if (!reduce) windows.forEach(g => { const r = g.getBoundingClientRect(); if (r.top > vh || r.bottom < 0) return; const e = easeIO(clamp((vh - r.top) / Math.max(1, Math.min(vh * .9, vh - r.top + toEnd)))), iy = (1 - e) * 8, ix = (1 - e) * (vw < 900 ? 10 : 22), rr = lerp(40, parseFloat(getComputedStyle(g).borderRadius) || 24, e); g.style.clipPath = e >= 1 ? '' : `inset(${iy.toFixed(2)}% ${ix.toFixed(2)}% ${iy.toFixed(2)}% ${ix.toFixed(2)}% round ${rr.toFixed(1)}px)`; });
+  if (!reduce) windows.forEach(g => { const r = g.getBoundingClientRect(); if (r.top > vh || r.bottom < 0) return; const e = easeIO(clamp((vh - r.top) / Math.max(1, Math.min(vh * .9, vh - r.top + toEnd)))), iy = (1 - e) * 8, ix = (1 - e) * (vw < 900 ? 10 : 22), rr = lerp(40, parseFloat(getComputedStyle(g).borderRadius) || 24, e); g.style.clipPath = e >= 1 ? '' : sqClip(g.offsetWidth * ix / 100, g.offsetHeight * iy / 100, g.offsetWidth * (1 - ix / 100), g.offsetHeight * (1 - iy / 100), rr); });
   { const r = interSec.getBoundingClientRect(), pr = clamp(-r.top / Math.max(1, r.height - vh));
     const pa = pinAlpha(pr).toFixed(3);
     if (pinsBox._pa !== pa) { pinsBox._pa = pa; pinsBox.style.setProperty('--pa', pa); }
     // no horizontal travel: the painting holds the hotspots centred, with a slow settle in scale and a slight vertical drift
     { const zs = reduce ? 1.07 : 1.12 - pr * .1, [tx, ty] = pinShift(zs, reduce ? 0 : (pr - .5) * -.06 * pinsBox.offsetHeight);
       PG.tx = tx; PG.ty = ty; PG.zs = zs; interImg.style.transform = pinsBox.style.transform = `translate3d(${tx.toFixed(1)}px,${ty.toFixed(1)}px,0) scale(${zs.toFixed(4)})`; }
-    { const e = reduce ? 1 : easeIO(clamp((vh - r.top) / vh)), iy = (1 - e) * 8, ix = (1 - e) * (vw < 900 ? 10 : 22); interCard.style.clipPath = e >= 1 ? '' : `inset(${iy.toFixed(2)}% ${ix.toFixed(2)}% ${iy.toFixed(2)}% ${ix.toFixed(2)}% round ${lerp(40, 24, e).toFixed(1)}px)`; }
+    { const e = reduce ? 1 : easeIO(clamp((vh - r.top) / vh)), iy = (1 - e) * 8, ix = (1 - e) * (vw < 900 ? 10 : 22); interCard.style.clipPath = e >= 1 ? '' : sqClip(interCard.offsetWidth * ix / 100, interCard.offsetHeight * iy / 100, interCard.offsetWidth * (1 - ix / 100), interCard.offsetHeight * (1 - iy / 100), lerp(40, 24, e)); }
     iwords.forEach((w, i) => { const a0 = .62 + i * .07, e = easeO(map(pr, a0, a0 + .12)); w.style.opacity = e.toFixed(3); if (reduce) return; w.style.transform = `translate3d(${((1 - e) * (i === 0 ? -60 : i === 2 ? 60 : 0)).toFixed(1)}px,${((1 - e) * 40).toFixed(1)}px,0)`; w.style.filter = e < 1 ? `blur(${((1 - e) * 10).toFixed(1)}px)` : ''; });
     setText($('#paintTag'), pr > .46 ? `Dissolving · ${Math.round(map(pr, .46, .88) * 100)}% to grain` : 'Oil on oak · 119 × 162 cm'); }
   if (thesisST) paintFill(clamp(thesisST.progress * 1.05));
