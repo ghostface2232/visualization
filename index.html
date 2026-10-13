@@ -327,12 +327,13 @@ main>section,main>div{position:relative;z-index:3}
 .pin.l{flex-direction:row-reverse;transform:translate(calc(-100% + 7px),-50%)}
 .pin i{position:relative;flex:none;width:14px;height:14px;border:1px solid var(--straw);opacity:var(--pa,0);scale:calc(.6 + var(--pa,0) * .4);filter:blur(calc((1 - var(--pa,0)) * 3px))}
 .pin i::after{content:"";position:absolute;left:50%;top:50%;width:4px;height:4px;margin:-2px 0 0 -2px;background:var(--ember)}
-.pin>span{display:flex;flex-direction:column;gap:5px;padding:14px;border-radius:2px;background:rgba(15,13,10,.86);box-shadow:inset 0 0 0 1px rgba(241,230,200,.14);box-sizing:border-box;width:148px;justify-content:center;opacity:var(--pa,0);filter:blur(calc((1 - var(--pa,0)) * 6px))}
+/* plate: one width for all, equal padding on every side (text boxes trimmed to the glyphs), serif title over a quiet sans caption */
+.pin>span{display:flex;flex-direction:column;gap:12px;padding:18px 20px;border-radius:2px;background:rgba(14,12,9,.9);box-shadow:inset 0 0 0 1px rgba(241,230,200,.12);box-sizing:border-box;width:max-content;text-align:left;opacity:var(--pa,0);filter:blur(calc((1 - var(--pa,0)) * 6px))}
 .pin.up{align-items:flex-end;transform:translate(-7px,calc(-100% + 7px))}
 .pin.l.up{transform:translate(calc(-100% + 7px),calc(-100% + 7px))}
-.pin.l>span{text-align:right}
-.pin b{font-family:var(--f-display);font-weight:400;font-size:18px;letter-spacing:-.015em;line-height:1.1}
-.pin em{font-style:normal;font-family:var(--f-mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:rgba(241,230,200,.66);line-height:1.4;white-space:nowrap}
+.pin b{display:block;font-family:var(--f-display);font-weight:400;font-size:22px;letter-spacing:-.02em;line-height:1.05;color:#f6ecd6;text-box:trim-both cap alphabetic}
+.pin em{display:block;font-style:normal;font-family:var(--f-body);font-size:13px;letter-spacing:0;line-height:1.4;color:rgba(241,230,200,.62);white-space:nowrap;text-box:trim-both cap alphabetic}
+@media (max-width:700px){.pin>span{max-width:184px;padding:14px 15px;gap:9px}.pin b{font-size:18px}.pin em{font-size:12px;white-space:normal;text-wrap:balance}}
 .anno.grp{flex-direction:column;align-items:center;gap:6px;text-align:center}
 .anno.grp .nm{font-size:9px;letter-spacing:.14em;color:rgba(241,230,200,.6)}
 .anno.grp .sh{display:none}
@@ -704,11 +705,11 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
     <div class="interlude__card" id="interCard">
       <img src="img/harvesters.jpg" alt="Pieter Bruegel the Elder, The Harvesters, 1565: peasants cutting and binding wheat, others resting under a pear tree" id="interImg">
       <div class="interlude__pins" id="pins" aria-hidden="true">
-        <span class="pin" data-u=".215" data-v=".745" data-side="r"><i></i><span><b>The reapers</b><em>Dawn to dusk,<br>by hand</em></span></span>
-        <span class="pin" data-u=".56" data-v=".8" data-side="r"><i></i><span><b>Asleep at noon</b><em>The August day is<br>twelve hours long</em></span></span>
-        <span class="pin l" data-u=".725" data-v=".29" data-side="l"><i></i><span><b>The church</b><em>One tenth of<br>every harvest</em></span></span>
-        <span class="pin" data-u=".77" data-v=".8" data-side="r"><i></i><span><b>Lunch</b><em>Bread, porridge,<br>a few pears</em></span></span>
-        <span class="pin l" data-u=".875" data-v=".63" data-side="l"><i></i><span><b>The sheaves</b><em>Stacked, counted,<br>carted off</em></span></span>
+        <span class="pin" data-u=".215" data-v=".745" data-side="r"><i></i><span><b>The reapers</b><em>Dawn to dusk, by hand</em></span></span>
+        <span class="pin" data-u=".56" data-v=".8" data-side="r"><i></i><span><b>Asleep at noon</b><em>The August day is twelve hours long</em></span></span>
+        <span class="pin l" data-u=".725" data-v=".29" data-side="l"><i></i><span><b>The church</b><em>One tenth of every harvest</em></span></span>
+        <span class="pin" data-u=".77" data-v=".8" data-side="r"><i></i><span><b>Lunch</b><em>Bread, porridge, a few pears</em></span></span>
+        <span class="pin l" data-u=".875" data-v=".63" data-side="l"><i></i><span><b>The sheaves</b><em>Stacked, counted, carted off</em></span></span>
       </div>
       <ul class="sr-only"><li>The reapers: dawn to dusk, by hand.</li><li>The sheaves: stacked, counted, carted off.</li><li>The church: one tenth of every harvest.</li><li>Lunch: bread, porridge, a few pears.</li><li>Asleep at noon: the August day is twelve hours long.</li></ul>
       <div class="interlude__words" role="img" aria-label="More grain, more toil, no way back."><span class="iw" aria-hidden="true">More <em>grain,</em></span><span class="iw" aria-hidden="true">more <em>toil,</em></span><span class="iw" aria-hidden="true">no way <em>back.</em></span></div>
