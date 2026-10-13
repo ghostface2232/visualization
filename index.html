@@ -430,10 +430,7 @@ html.theme-dark .trace__float{opacity:1}
 .footer__bg{position:absolute;inset:0;background-size:cover;background-position:center 60%;opacity:.28;filter:saturate(.8) contrast(1.05);mix-blend-mode:luminosity}
 .footer__card::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(18,16,13,.4),rgba(18,16,13,.92) 70%)}
 .footer__card>*{position:relative}
-.footer__cols{display:grid;grid-template-columns:minmax(0,1fr);max-width:40rem;gap:var(--gutter);padding:clamp(36px,6vh,64px) 0 clamp(40px,7vh,90px)}
-.footer__col{display:flex;flex-direction:column;gap:12px;min-width:0}
-.footer__col p{font-size:14px;line-height:1.55;color:rgba(245,241,232,.75)}
-.footer__word{width:max-content;font-family:var(--f-display);font-size:12vw;letter-spacing:-.045em;line-height:.86;color:var(--ember);white-space:nowrap;padding-bottom:.06em}
+.footer__word{width:max-content;margin-top:clamp(56px,11vh,130px);font-family:var(--f-display);font-size:12vw;letter-spacing:-.015em;line-height:.86;color:var(--ember);white-space:nowrap;padding-bottom:.06em}
 .footer__bar{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;border-top:1px solid rgba(245,241,232,.2);padding-top:16px;margin-top:20px;color:rgba(245,241,232,.7)}
 .footer__bar button:hover{color:var(--paper-hi)}
 
@@ -486,9 +483,8 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
   .dots{display:none}
   .facts{grid-template-columns:repeat(2,minmax(0,1fr))}
   .live{grid-template-columns:minmax(0,1fr)}
-  .footer__cols{grid-template-columns:minmax(0,1fr)}
   .tag.tr,.tag.br{display:none}
-  .live,.footer__cols{row-gap:clamp(40px,10vw,56px)}
+  .live{row-gap:clamp(40px,10vw,56px)}
   .facts{row-gap:clamp(32px,8vw,48px)}
   .chapter__desc{min-height:7.5em}
   .chapter__stat .u{flex-basis:100%}
@@ -797,11 +793,6 @@ html.theme-dark,html.theme-dark body{background:#0c0a08}
   <div class="footer__card" data-window>
     <div class="footer__bg" style="background-image:url(img/cypresses.jpg)"></div>
     <div class="meta meta--dark mono"><span>Colophon</span><span>About this page</span><span>2026</span></div>
-    <div class="footer__cols">
-      <div class="footer__col">
-        <p>All figures are estimates. This page argues one reading of the Agricultural Revolution: that it was a con. Archaeologists still disagree about why people settled and what it cost them.</p>
-        <p>Type: Butler, SF Pro. Field, grain and globe rendered live in WebGL.</p></div>
-    </div>
     <div class="footer__word" aria-hidden="true">The Wheat Contract</div>
     <div class="footer__bar mono"><span>© 2026 · A study in one grass</span><span>9500 BC → present</span><button type="button" id="restart" data-hover data-magnet>Back to top <span aria-hidden="true">↑</span></button></div>
   </div>
